@@ -1,0 +1,13 @@
+<h1>
+  <a href="{{ config.base_url }}">{{ config.title | default(value="Site") }}</a>
+</h1>
+
+{% if config.extra.main_menu %}
+<nav>
+  <ul>
+    {% for item in config.extra.main_menu %}
+    <li><a href="{{ item.url }}">{{ item.name }}</a></li>
+    {% endfor %}
+  </ul>
+</nav>
+{% endif %}

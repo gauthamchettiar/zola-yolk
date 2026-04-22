@@ -1,0 +1,6 @@
+name = "zola-qk"
+description = "A simple Zola theme with base, header, and footer templates"
+license = "MIT"
+homepage = "https://example.com"
+min_version = "0.17.0"
+author = "Gautham Chettiar"
