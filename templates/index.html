@@ -5,21 +5,7 @@
 {% endblock title %}
 
 {% block content %}
-{% if section.content %}
-  {{ section.content | safe }}
-{% endif %}
-
+{% include "partials/content.html" %}
 <h2>Recent posts</h2>
-{% if section.pages | length > 0 %}
-  <ul>
-	{% for page in section.pages %}
-	<li>
-	  <a href="{{ page.permalink }}">{{ page.title }}</a>
-	  {% if page.date %}<small>{{ page.date }}</small>{% endif %}
-	</li>
-	{% endfor %}
-  </ul>
-{% else %}
-  <p>No posts yet.</p>
-{% endif %}
+{% include "partials/widgets/recent_posts.html" %}
 {% endblock content %}

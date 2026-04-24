@@ -1,0 +1,5 @@
+{% if page is defined %}
+  {{ page.content | safe }}
+{% elif section is defined and section.content %}
+  {{ section.content | safe }}
+{% endif %}

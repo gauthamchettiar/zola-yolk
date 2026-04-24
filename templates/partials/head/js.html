@@ -1,0 +1,123 @@
+{% if config.extra.theme_mode %}
+<script>
+  (function () {
+    const STORAGE_KEY = "theme";
+    const root = document.documentElement;
+
+    function applyTheme(theme) {
+      root.setAttribute("data-theme", theme);
+      localStorage.setItem(STORAGE_KEY, theme);
+    }
+
+    // On load: respect stored preference, then OS preference
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      applyTheme(stored);
+    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      applyTheme("dark");
+    } else {
+      applyTheme("light");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const btn = document.getElementById("theme-toggle");
+      if (!btn) return;
+
+      function syncIcon() {
+        const isDark = root.getAttribute("data-theme") === "dark";
+        btn.querySelector("i").className =
+          (isDark ? "fa-solid fa-sun" : "fa-solid fa-moon");
+      }
+
+      btn.addEventListener("click", function () {
+        const isDark = root.getAttribute("data-theme") === "dark";
+        applyTheme(isDark ? "light" : "dark");
+        syncIcon();
+      });
+
+      syncIcon();
+    });
+  })();
+</script>
+{% endif %}
+
+{% if config.extra.search %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var modal    = document.getElementById("search-modal");
+    var input    = document.getElementById("search-input");
+    var results  = document.getElementById("search-results");
+    var openBtn  = document.getElementById("search-toggle");
+    var closeBtn = document.getElementById("search-close");
+    var backdrop = document.getElementById("search-backdrop");
+
+    if (!modal) return;
+
+    function openModal() {
+      modal.removeAttribute("hidden");
+      input.value = "";
+      results.innerHTML = "";
+      input.focus();
+    }
+
+    function closeModal() {
+      modal.setAttribute("hidden", "");
+    }
+
+    if (openBtn)  openBtn.addEventListener("click", openModal);
+    if (closeBtn) closeBtn.addEventListener("click", closeModal);
+    if (backdrop) backdrop.addEventListener("click", closeModal);
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeModal();
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        openModal();
+      }
+    });
+
+    input.addEventListener("input", function () {
+      var query = input.value.trim();
+      results.innerHTML = "";
+      if (!query || query.length < 2) return;
+
+      if (!window.searchIndex) return;
+      var index = elasticlunr.Index.load(window.searchIndex);
+
+      var hits = index.search(query, {
+        fields: { title: { boost: 2 }, body: { boost: 1 } },
+        expand: true
+      });
+
+      if (hits.length === 0) {
+        var empty = document.createElement("li");
+        empty.className = "search-modal__results__empty";
+        empty.textContent = 'No results for "' + query + '"';
+        results.appendChild(empty);
+        return;
+      }
+
+      hits.slice(0, 8).forEach(function (hit) {
+        var doc = index.documentStore.getDoc(hit.ref);
+        var li  = document.createElement("li");
+        var a   = document.createElement("a");
+        a.href  = hit.ref;
+
+        var title = document.createElement("div");
+        title.className = "search-modal__results__title";
+        title.textContent = doc.title || hit.ref;
+
+        var summary = document.createElement("div");
+        summary.className = "search-modal__results__summary";
+        var bodyText = (doc.body || "").replace(/<[^>]+>/g, "");
+        summary.textContent = bodyText.slice(0, 160) + (bodyText.length > 160 ? "..." : "");
+
+        a.appendChild(title);
+        if (summary.textContent) a.appendChild(summary);
+        li.appendChild(a);
+        results.appendChild(li);
+      });
+    });
+  });
+</script>
+{% endif %}

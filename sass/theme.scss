@@ -1,0 +1,44 @@
+:root {
+  --font-size: 1rem;
+  --max-width: 42rem;
+
+  --color-bg: #faf8f2;
+  --color-text: #1a1a1a;
+  --color-text-muted: #7a7060;
+  --color-primary-accent: oklch(.42 .22 95);
+  --color-secondary-accent: oklch(.48 .30 345);
+  --color-link: oklch(.40 .30 166);
+  --color-border: #e0d8c4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #1a1a1a;
+    --color-text: #fff;
+    --color-text-muted: #999999;
+    --color-primary-accent: oklch(.92 .15 95);
+    --color-secondary-accent: oklch(.76 .25 345);
+    --color-link: oklch(.87 .24 166);
+    --color-border: #444444;
+  }
+}
+
+[data-theme="dark"] {
+  --color-bg: #1a1a1a;
+  --color-text: #fff;
+  --color-text-muted: #999999;
+  --color-primary-accent: oklch(.92 .15 95);
+  --color-secondary-accent: oklch(.76 .25 345);
+  --color-link: oklch(.87 .24 166);
+  --color-border: #444444;
+}
+
+[data-theme="light"] {
+  --color-bg: #faf8f2;
+  --color-text: #1a1a1a;
+  --color-text-muted: #7a7060;
+  --color-primary-accent: oklch(.42 .22 95);
+  --color-secondary-accent: oklch(.48 .30 345);
+  --color-link: oklch(.40 .30 166);
+  --color-border: #e0d8c4;
+}

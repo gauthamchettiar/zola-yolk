@@ -1,6 +1,11 @@
-name = "zola-qk"
-description = "A simple Zola theme with base, header, and footer templates"
+name = "zola-yolk"
+description = "A minimal monospace Zola theme with dark/light mode, search, Font Awesome icons, and a component-based template architecture."
 license = "MIT"
-homepage = "https://example.com"
-min_version = "0.17.0"
-author = "Gautham Chettiar"
+homepage = "https://codeberg.org/gthmchttr/zola-yolk"
+min_version = "0.19.0"
+demo = ""
+tags = ["blog", "minimal", "monospace", "dark-mode", "search"]
+
+[author]
+name = "Gautham Chettiar"
+homepage = "https://gauthamchettiar.com"

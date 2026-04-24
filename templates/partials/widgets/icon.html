@@ -1,0 +1,15 @@
+{# 
+  Icon widget — renders a Font Awesome icon.
+  Used via {% include %} with variables set in calling context, or via shortcode.
+
+  Variables (all optional):
+    icon_name      — FA icon name (default: "question")
+    icon_style     — FA style: solid | regular | brands (default: "solid")
+    icon_class     — extra CSS classes (default: "")
+    icon_aria      — aria-label text (default: icon_name)
+#}
+{%- set _name  = icon_name  | default(value="question") -%}
+{%- set _style = icon_style | default(value="solid") -%}
+{%- set _class = icon_class | default(value="") -%}
+{%- set _aria  = icon_aria  | default(value=_name) -%}
+<i class="fa-{{ _style }} fa-{{ _name }}{% if _class %} {{ _class }}{% endif %}" aria-label="{{ _aria }}"></i>

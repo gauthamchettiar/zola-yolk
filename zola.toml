@@ -1,5 +1,6 @@
 # The URL the site will be built for
 base_url = "https://example.com"
+title = "zola-yolk"
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
@@ -7,10 +8,40 @@ compile_sass = true
 # Whether to build a search index to be used later on by a JavaScript library
 build_search_index = true
 
+taxonomies = [
+    { name = "tags" },
+]
+
 [markdown]
+definition_list = true
+bottom_footnotes = true
 
 [markdown.highlighting]
 theme = "catppuccin-mocha"
 
 [extra]
-# Put all your custom variables here
+# Sections to include in the recent posts widget (folder names under content/)
+content_sections = ["posts"]
+
+# Set to true when any icon shortcode or widget is used in the site
+font_awesome = true
+
+# Set to true to show a dark/light mode toggle button in the header
+theme_mode = true
+
+# Set to true to show a search button in the header (requires build_search_index = true)
+search = true
+
+# Google Fonts to load. Each entry becomes a `family=` param in the Google Fonts URL.
+# Example: "IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400"
+google_fonts = [
+    "IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400",
+]
+
+[[extra.main_menu]]
+name = "Posts"
+url = "/posts"
+
+[[extra.main_menu]]
+name = "Tags"
+url = "/tags"

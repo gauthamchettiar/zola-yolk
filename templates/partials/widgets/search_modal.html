@@ -1,0 +1,22 @@
+<div class="search-modal" id="search-modal" role="dialog" aria-modal="true" aria-label="Search" hidden>
+  <div class="search-modal__backdrop" id="search-backdrop"></div>
+  <div class="search-modal__box">
+    <div class="search-modal__header">
+      <label for="search-input" class="search-modal__icon">
+        {%- set icon_name = "magnifying-glass" -%}{%- set icon_style = "solid" -%}{%- include "partials/widgets/icon.html" -%}
+      </label>
+      <input
+        id="search-input"
+        class="search-modal__input"
+        type="search"
+        placeholder="Search posts…"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <button class="search-modal__close" id="search-close" aria-label="Close search">
+        {%- set icon_name = "xmark" -%}{%- set icon_style = "solid" -%}{%- include "partials/widgets/icon.html" -%}
+      </button>
+    </div>
+    <ul class="search-modal__results" id="search-results" role="listbox"></ul>
+  </div>
+</div>

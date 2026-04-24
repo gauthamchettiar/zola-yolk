@@ -1,0 +1,20 @@
+{#
+  Icon shortcode — renders a Font Awesome icon in Markdown content.
+
+  Usage:
+    {{ icon(name="star") }}
+    {{ icon(name="star", style="regular") }}
+    {{ icon(name="github", style="brands") }}
+    {{ icon(name="star", class="my-class", aria="favourite") }}
+
+  Parameters:
+    name   — FA icon name (required)
+    style  — solid | regular | brands (default: "solid")
+    class  — extra CSS classes (default: "")
+    aria   — aria-label override (default: name)
+#}
+{%- set icon_name  = name -%}
+{%- set icon_style = style | default(value="solid") -%}
+{%- set icon_class = class | default(value="") -%}
+{%- set icon_aria  = aria  | default(value=name) -%}
+{%- include "partials/widgets/icon.html" -%}

@@ -1,13 +1,19 @@
-<h1>
-  <a href="{{ config.base_url }}">{{ config.title | default(value="Site") }}</a>
-</h1>
-
-{% if config.extra.main_menu %}
-<nav>
-  <ul>
-    {% for item in config.extra.main_menu %}
-    <li><a href="{{ item.url }}">{{ item.name }}</a></li>
-    {% endfor %}
-  </ul>
-</nav>
-{% endif %}
+<div class="header-bar">
+  {% include "partials/widgets/breadcrumb.html" %}
+  {% include "partials/widgets/menu.html" %}
+  {% if config.extra.theme_mode or config.extra.search %}
+  <div class="header-actions">
+    {% if config.extra.search %}
+    <button class="search-toggle" id="search-toggle" aria-label="Open search">
+      {%- set icon_name = "magnifying-glass" -%}{%- set icon_style = "solid" -%}{%- include "partials/widgets/icon.html" -%}
+    </button>
+    {% endif %}
+    {% if config.extra.theme_mode %}
+    <span class="header-sep">|</span>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light mode">
+      {%- set icon_name = "moon" -%}{%- set icon_style = "solid" -%}{%- include "partials/widgets/icon.html" -%}
+    </button>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>

@@ -1,0 +1,7 @@
+{%- set_global rp_pages = [] -%}
+{%- for section_name in config.extra.content_sections -%}
+  {%- set sec = get_section(path=section_name ~ "/_index.md") -%}
+  {%- set_global rp_pages = rp_pages | concat(with=sec.pages) -%}
+{%- endfor -%}
+{% set pages = rp_pages %}
+{% include "partials/widgets/list/recent.html" %}
