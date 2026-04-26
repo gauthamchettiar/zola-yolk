@@ -1,1 +1,1 @@
-<span class="meta-value">[{%- for tag in page.taxonomies.tags -%}<a href="{{ get_url(path='tags/' ~ tag) }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}{%- endfor -%}]</span>
+<span class="meta-value">[{%- for tag in page.taxonomies.tags -%}<a href="{{ get_taxonomy_url(kind='tags', name=tag) }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}{%- endfor -%}]</span>

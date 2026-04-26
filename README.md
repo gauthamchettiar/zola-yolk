@@ -1,16 +1,13 @@
-# zola-yolk
+# zola-yolk 🟡
 
-A minimal, monospace Zola theme with dark/light mode, full-text search, Font Awesome icon support, and a component-based template architecture.
+A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
 ## Features
 
 - Monospace typography (IBM Plex Mono via Google Fonts)
 - Dark / light mode toggle with `localStorage` persistence, respects `prefers-color-scheme`
 - Full-text search modal powered by elasticlunr (Ctrl/Cmd+K or click icon)
-- Font Awesome 6 icon support via shortcode and template widget
 - Component-based template architecture (`partials/`, `partials/widgets/`, `partials/head/`)
-- Year-grouped post listings on section and tag pages
-- Configurable via `zola.toml` `[extra]` — no template edits required for common features
 
 ## Installation
 
@@ -31,44 +28,6 @@ Set the theme in your `zola.toml`:
 
 ```toml
 theme = "zola-yolk"
-
-# Required for search
-build_search_index = true
-
-# Required for definition lists and footnotes
-[markdown]
-definition_list = true
-bottom_footnotes = true
-
-[markdown.highlighting]
-theme = "catppuccin-mocha"  # or any theme supported by Zola
-
-[extra]
-# Folder names under content/ to include in the recent posts widget
-content_sections = ["posts"]
-
-# Load Font Awesome — set true if you use {{ icon(...) }} anywhere
-enable_font_awesome_icon = true
-
-# Show dark/light mode toggle button in the header
-enable_theme_switcher = true
-
-# Show search button in the header (requires build_search_index = true)
-search = true
-
-# Google Fonts families to load (each becomes a family= param)
-google_fonts = [
-    "IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400",
-]
-
-# Navigation menu items
-[[extra.main_menu]]
-name = "Posts"
-url = "/posts"
-
-[[extra.main_menu]]
-name = "Tags"
-url = "/tags"
 ```
 
 ### Taxonomies

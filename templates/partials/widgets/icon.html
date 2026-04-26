@@ -6,10 +6,11 @@
     icon_name      — FA icon name (default: "question")
     icon_style     — FA style: solid | regular | brands (default: "solid")
     icon_class     — extra CSS classes (default: "")
-    icon_aria      — aria-label text (default: icon_name)
+    icon_aria      — aria-label text; omit (or leave unset) to render aria-hidden="true" instead
+                     (correct when icon is inside a button/label that already has an accessible name)
 #}
 {%- set _name  = icon_name  | default(value="question") -%}
 {%- set _style = icon_style | default(value="solid") -%}
 {%- set _class = icon_class | default(value="") -%}
-{%- set _aria  = icon_aria  | default(value=_name) -%}
-<i class="fa-{{ _style }} fa-{{ _name }}{% if _class %} {{ _class }}{% endif %}" aria-label="{{ _aria }}"></i>
+{%- set _aria  = icon_aria  | default(value="") -%}
+<i class="fa-{{ _style }} fa-{{ _name }}{% if _class %} {{ _class }}{% endif %}"{% if _aria %} aria-label="{{ _aria }}"{% else %} aria-hidden="true"{% endif %}></i>

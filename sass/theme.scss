@@ -1,7 +1,4 @@
-:root {
-  --font-size: 1rem;
-  --max-width: 42rem;
-
+@mixin light-theme-vars {
   --color-bg: #faf8f2;
   --color-text: #1a1a1a;
   --color-text-muted: #7a7060;
@@ -11,19 +8,7 @@
   --color-border: #e0d8c4;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --color-bg: #1a1a1a;
-    --color-text: #fff;
-    --color-text-muted: #999999;
-    --color-primary-accent: oklch(.92 .15 95);
-    --color-secondary-accent: oklch(.76 .25 345);
-    --color-link: oklch(.87 .24 166);
-    --color-border: #444444;
-  }
-}
-
-[data-theme="dark"] {
+@mixin dark-theme-vars {
   --color-bg: #1a1a1a;
   --color-text: #fff;
   --color-text-muted: #999999;
@@ -33,12 +18,31 @@
   --color-border: #444444;
 }
 
+:root {
+  --font-size: 1rem;
+  --max-width: 42rem;
+
+  // System font stack — used as fallback when no Google Font is configured
+  --font-family-default: ui-monospace, Menlo, Monaco, "Cascadia Code", "Segoe UI Mono", Consolas, "Courier New", monospace;
+
+  // Override these via google_font config; they fall back to system stacks
+  --font-family-body: var(--font-family-default);
+  --font-family-header: var(--font-family-default);
+  --font-family-code: var(--font-family-default);
+
+  @include light-theme-vars;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    @include dark-theme-vars;
+  }
+}
+
+[data-theme="dark"] {
+  @include dark-theme-vars;
+}
+
 [data-theme="light"] {
-  --color-bg: #faf8f2;
-  --color-text: #1a1a1a;
-  --color-text-muted: #7a7060;
-  --color-primary-accent: oklch(.42 .22 95);
-  --color-secondary-accent: oklch(.48 .30 345);
-  --color-link: oklch(.40 .30 166);
-  --color-border: #e0d8c4;
+  @include light-theme-vars;
 }

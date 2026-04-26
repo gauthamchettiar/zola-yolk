@@ -67,6 +67,8 @@
 
     if (!modal) return;
 
+    var cachedIndex = null;
+
     function openModal() {
       modal.removeAttribute("hidden");
       input.value = "";
@@ -90,13 +92,32 @@
       }
     });
 
+    modal.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+      e.preventDefault();
+      var links = Array.from(results.querySelectorAll("a"));
+      if (!links.length) return;
+      var active = document.activeElement;
+      var idx = links.indexOf(active);
+      if (e.key === "ArrowDown") {
+        if (idx === -1 || idx === links.length - 1) links[0].focus();
+        else links[idx + 1].focus();
+      } else {
+        if (idx <= 0) input.focus();
+        else links[idx - 1].focus();
+      }
+    });
+
     input.addEventListener("input", function () {
       var query = input.value.trim();
       results.innerHTML = "";
       if (!query || query.length < 2) return;
 
       if (!window.searchIndex) return;
-      var index = elasticlunr.Index.load(window.searchIndex);
+      if (!cachedIndex) {
+        cachedIndex = elasticlunr.Index.load(window.searchIndex);
+      }
+      var index = cachedIndex;
 
       var hits = index.search(query, {
         fields: { title: { boost: 2 }, body: { boost: 1 } },

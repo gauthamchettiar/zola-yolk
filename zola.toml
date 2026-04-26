@@ -22,13 +22,22 @@ light_theme = "catppuccin-latte"
 dark_theme = "catppuccin-mocha"
 
 [extra]
-# Sections to include in the recent posts widget (folder names under content/)
+# Sections to include in the recent posts widget (folder names under content/).
+# Defaults to all root-level sections if not set.
 content_sections = ["posts"]
 
-# Google Fonts to load.
-google_fonts = [
-    "IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400",
-]
+# Google Fonts to load, split by usage. Each overrides the corresponding CSS variable
+# with the named font first and the system stack as fallback.
+# body   — sets --font-family-body   (body text)
+# header — sets --font-family-header (headings); falls back to body if unset
+# code   — sets --font-family-code   (pre/code blocks); falls back to body if unset
+# Fonts are deduped automatically so a shared font is only requested once.
+google_font = {
+    body   = ["IBM Plex Mono"],
+    header = ["IBM Plex Mono"],
+    code   = ["IBM Plex Mono"]
+}
+
 
 # Set to true when any icon shortcode or widget is used in the site
 enable_font_awesome_icon = true
@@ -38,6 +47,9 @@ enable_theme_switcher = true
 
 # Set to true to show a search button in the header (requires build_search_index = true)
 enable_search = true
+
+# Footer text (plain text or HTML).
+footer = "crafted with ❤️ for [zola](https://www.getzola.org/)"
 
 [[extra.main_menu]]
 name = "Posts"

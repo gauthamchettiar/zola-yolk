@@ -3,7 +3,7 @@
 {% block title %}{{ term.name }} | {{ config.title | default(value="Site") }}{% endblock title %}
 
 {% block content %}
-<h1>Tags :: {{ term.name | capitalize }} ({{ term.pages | length }})</h1>
+<h1>{{ taxonomy.name | capitalize }} :: {{ term.name | capitalize }} ({{ term.pages | length }})</h1>
 {% set pages = term.pages %}
 {% include "partials/widgets/list/simple.html" %}
 {% endblock content %}

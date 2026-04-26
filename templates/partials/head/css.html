@@ -1,11 +1,22 @@
-{% if config.extra.google_fonts %}
+{%- set gf_body   = config.extra.google_font.body   | default(value=[]) -%}
+{%- set gf_header = config.extra.google_font.header | default(value=[]) -%}
+{%- set gf_code   = config.extra.google_font.code   | default(value=[]) -%}
+{%- set gf_all    = gf_body | concat(with=gf_header) | concat(with=gf_code) | unique -%}
+{% if gf_all %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?{% for font in config.extra.google_fonts %}family={{ font }}{% if not loop.last %}&{% endif %}{% endfor %}&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?{% for font in gf_all %}family={{ font | replace(from=" ", to="+") }}{% if not loop.last %}&amp;{% endif %}{% endfor %}&amp;display=swap" rel="stylesheet">
 {% endif %}
 {% if config.extra.enable_font_awesome_icon %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer">
 {% endif %}
 <link rel="stylesheet" href="{{ get_url(path="main.css") }}">
+{%- if gf_body or gf_header or gf_code %}
+<style>:root {
+{%- if gf_body %} --font-family-body: "{{ gf_body | first }}", var(--font-family-default);{% endif %}
+{%- if gf_header %} --font-family-header: "{{ gf_header | first }}", var(--font-family-default);{% endif %}
+{%- if gf_code %} --font-family-code: "{{ gf_code | first }}", var(--font-family-default);{% endif %}
+}</style>
+{%- endif %}
 <link id="giallo-light" rel="stylesheet" href="{{ get_url(path="giallo-light.css") }}" media="(prefers-color-scheme: light)">
 <link id="giallo-dark" rel="stylesheet" href="{{ get_url(path="giallo-dark.css") }}" media="(prefers-color-scheme: dark)">

@@ -1,4 +1,1 @@
-<p>
-  Made with ❤️ for
-  <a href="https://www.getzola.org/" title="link to zola website">zola</a>
-</p>
+{{ config.extra.footer | default(value="Written with ❤️") | markdown | safe }}

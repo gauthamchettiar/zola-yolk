@@ -5,7 +5,7 @@
     {%- for anc_path in ancestors -%}
       {%- if anc_path != "_index.md" -%}
         {%- set anc = get_section(path=anc_path) -%}
-        <span class="sep">/</span><a href="{{ anc.permalink }}">{{ anc_path | split(pat="/") | first }}</a>
+        <span class="sep">/</span><a href="{{ anc.permalink }}">{{ anc.title }}</a>
       {%- endif -%}
     {%- endfor -%}
     <span class="sep">/</span>
