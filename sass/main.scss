@@ -77,6 +77,9 @@ h6::before  { content: "###### "; }
 
 // Breadcrumb header
 .breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
   flex: 1;
   min-width: 0;
   font-size: 1rem;
@@ -88,6 +91,10 @@ h6::before  { content: "###### "; }
     &:hover {
       color: var(--color-secondary-accent);
     }
+  }
+
+  .crumb {
+    white-space: nowrap;
   }
 
   .sep {
@@ -336,6 +343,9 @@ mark {
 }
 
 table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
   border-collapse: collapse;
   margin: 1.5rem 0;
   font-size: 0.9rem;

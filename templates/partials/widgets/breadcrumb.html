@@ -1,20 +1,22 @@
 <nav class="breadcrumb">
-  <a href="{{ config.base_url }}">{{ config.title | default(value="Site") }}</a>
+  {%- set has_path = page is defined or (section is defined and section.components | length > 0) or terms is defined or term is defined -%}
+  {%- if has_path -%}
+    <span class="crumb"><a href="{{ config.base_url }}">{{ config.title | default(value="Site") }}</a><span class="sep">/</span></span>
+  {%- else -%}
+    <a href="{{ config.base_url }}">{{ config.title | default(value="Site") }}</a>
+  {%- endif -%}
   {%- if page is defined or (section is defined and section.components | length > 0) -%}
     {%- if page is defined -%}{%- set ancestors = page.ancestors -%}{%- else -%}{%- set ancestors = section.ancestors -%}{%- endif -%}
     {%- for anc_path in ancestors -%}
       {%- if anc_path != "_index.md" -%}
         {%- set anc = get_section(path=anc_path) -%}
-        <span class="sep">/</span><a href="{{ anc.permalink }}">{{ anc.title }}</a>
+        <span class="crumb"><a href="{{ anc.permalink }}">{{ anc.title }}</a><span class="sep">/</span></span>
       {%- endif -%}
     {%- endfor -%}
-    <span class="sep">/</span>
   {%- endif -%}
-
   {%- if terms is defined or term is defined -%}
-    <span class="sep">/</span>
     {%- if term is defined -%}
-      <a href="{{ get_url(path=taxonomy.name) }}">{{ taxonomy.name }}</a><span class="sep">/</span>
+      <span class="crumb"><a href="{{ get_url(path=taxonomy.name) }}">{{ taxonomy.name }}</a><span class="sep">/</span></span>
     {%- endif -%}
   {%- endif -%}
 </nav>

@@ -49,7 +49,7 @@ enable_theme_switcher = true
 enable_search = true
 
 # Footer text (plain text or HTML).
-footer = "crafted with ❤️ for [zola](https://www.getzola.org/)"
+footer = "Made with ❤️ for [zola](https://www.getzola.org/)"
 
 [[extra.main_menu]]
 name = "Posts"

@@ -2,6 +2,12 @@
 
 A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
+**dark-theme**: 
+![light-theme-screenshot](/screenshot-light.png)
+
+**light-theme**: 
+![dark-theme-screenshot](/screenshot-dark.png)
+
 ## Features
 
 - Monospace typography (IBM Plex Mono via Google Fonts)
@@ -15,7 +21,7 @@ A minimal, monospace Zola theme with dark/light mode, full-text search, and mult
 
 ```sh
 cd your-zola-site
-git submodule add https://codeberg.org/gthmchttr/zola-yolk.git themes/zola-yolk
+git submodule add https://github.com/gauthamchettiar/zola-yolk.git themes/zola-yolk
 ```
 
 ### Manual download
