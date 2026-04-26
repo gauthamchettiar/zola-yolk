@@ -31,9 +31,9 @@ If you want to use the same icon component in templates, include the widget dire
 {% include "partials/widgets/icon.html" %}
 ```
 
-> Make sure you enable font_awesome in zola.toml
+> Make sure you enable enable_font_awesome_icon in zola.toml
 > ```toml
 > # zola.toml
-> font_awesome = true
+> enable_font_awesome_icon = true
 > ```
 

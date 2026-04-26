@@ -1,12 +1,26 @@
-{% if config.extra.theme_mode %}
+{% if config.extra.enable_theme_switcher %}
 <script>
   (function () {
     const STORAGE_KEY = "theme";
     const root = document.documentElement;
 
+    function updateSyntaxTheme(theme) {
+      var darkLink = document.getElementById("giallo-dark");
+      var lightLink = document.getElementById("giallo-light");
+      if (!darkLink || !lightLink) return;
+      if (theme === "dark") {
+        darkLink.media = "all";
+        lightLink.media = "not all";
+      } else {
+        lightLink.media = "all";
+        darkLink.media = "not all";
+      }
+    }
+
     function applyTheme(theme) {
       root.setAttribute("data-theme", theme);
       localStorage.setItem(STORAGE_KEY, theme);
+      updateSyntaxTheme(theme);
     }
 
     // On load: respect stored preference, then OS preference
@@ -41,7 +55,7 @@
 </script>
 {% endif %}
 
-{% if config.extra.search %}
+{% if config.extra.enable_search %}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     var modal    = document.getElementById("search-modal");

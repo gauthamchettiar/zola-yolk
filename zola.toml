@@ -17,26 +17,27 @@ definition_list = true
 bottom_footnotes = true
 
 [markdown.highlighting]
-theme = "catppuccin-mocha"
+style = "class"
+light_theme = "catppuccin-latte"
+dark_theme = "catppuccin-mocha"
 
 [extra]
 # Sections to include in the recent posts widget (folder names under content/)
 content_sections = ["posts"]
 
-# Set to true when any icon shortcode or widget is used in the site
-font_awesome = true
-
-# Set to true to show a dark/light mode toggle button in the header
-theme_mode = true
-
-# Set to true to show a search button in the header (requires build_search_index = true)
-search = true
-
-# Google Fonts to load. Each entry becomes a `family=` param in the Google Fonts URL.
-# Example: "IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400"
+# Google Fonts to load.
 google_fonts = [
     "IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400",
 ]
+
+# Set to true when any icon shortcode or widget is used in the site
+enable_font_awesome_icon = true
+
+# Set to true to show a dark/light mode toggle button in the header
+enable_theme_switcher = true
+
+# Set to true to show a search button in the header (requires build_search_index = true)
+enable_search = true
 
 [[extra.main_menu]]
 name = "Posts"

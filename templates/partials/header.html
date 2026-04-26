@@ -1,14 +1,14 @@
 <div class="header-bar">
   {% include "partials/widgets/breadcrumb.html" %}
   {% include "partials/widgets/menu.html" %}
-  {% if config.extra.theme_mode or config.extra.search %}
+  {% if config.extra.enable_theme_switcher or config.extra.enable_search %}
   <div class="header-actions">
-    {% if config.extra.search %}
+    {% if config.extra.enable_search %}
     <button class="search-toggle" id="search-toggle" aria-label="Open search">
       {%- set icon_name = "magnifying-glass" -%}{%- set icon_style = "solid" -%}{%- include "partials/widgets/icon.html" -%}
     </button>
     {% endif %}
-    {% if config.extra.theme_mode %}
+    {% if config.extra.enable_theme_switcher %}
     <span class="header-sep">|</span>
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light mode">
       {%- set icon_name = "moon" -%}{%- set icon_style = "solid" -%}{%- include "partials/widgets/icon.html" -%}

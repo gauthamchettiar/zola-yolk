@@ -48,10 +48,10 @@ theme = "catppuccin-mocha"  # or any theme supported by Zola
 content_sections = ["posts"]
 
 # Load Font Awesome — set true if you use {{ icon(...) }} anywhere
-font_awesome = true
+enable_font_awesome_icon = true
 
 # Show dark/light mode toggle button in the header
-theme_mode = true
+enable_theme_switcher = true
 
 # Show search button in the header (requires build_search_index = true)
 search = true
@@ -106,7 +106,7 @@ tags = ["zola", "example"]
 
 ## Icon shortcode
 
-Requires `font_awesome = true` in `zola.toml`.
+Requires `enable_font_awesome_icon = true` in `zola.toml`.
 
 ```
 {{ icon(name="star") }}
