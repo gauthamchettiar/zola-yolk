@@ -1,7 +1,7 @@
 name = "zola-yolk"
 description = "A minimal monospace Zola theme with dark/light mode, search, Font Awesome icons, and a component-based template architecture."
 license = "MIT"
-homepage = "https://codeberg.org/gthmchttr/zola-yolk"
+homepage = "https://github.com/gauthamchettiar/zola-yolk"
 min_version = "0.19.0"
 demo = ""
 tags = ["blog", "minimal", "monospace", "dark-mode", "search"]
