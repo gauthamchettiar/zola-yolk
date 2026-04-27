@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
       - name: Sync Font Awesome icons
         run: uv run --project scripts/py-ssg-tools pst sync icons --source font-awesome --dest static/icons/font-awesome
       - name: Sync Google Fonts
