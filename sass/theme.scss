@@ -21,14 +21,10 @@
 :root {
   --font-size: 1rem;
   --max-width: 42rem;
+  --font-weight: 400;
+  --font-weight-bold: 700;
 
-  // System font stack — used as fallback when no Google Font is configured
-  --font-family-default: ui-monospace, Menlo, Monaco, "Cascadia Code", "Segoe UI Mono", Consolas, "Courier New", monospace;
-
-  // Override these via google_font config; they fall back to system stacks
-  --font-family-body: var(--font-family-default);
-  --font-family-header: var(--font-family-default);
-  --font-family-code: var(--font-family-default);
+  --font-family: 'IBM Plex Mono', Menlo, Monaco, Consolas, monospace;
 
   @include light-theme-vars;
 }

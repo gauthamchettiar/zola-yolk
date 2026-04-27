@@ -1,7 +1,0 @@
-{% if config.extra.main_menu %}
-<nav class="section-nav">
-  {%- for item in config.extra.main_menu -%}
-    <a class="section-item" href="{{ item.url }}">[{{ item.name }}]</a>
-  {%- endfor -%}
-</nav>
-{% endif %}

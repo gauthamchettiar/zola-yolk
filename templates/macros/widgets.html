@@ -1,0 +1,40 @@
+{#
+  Renders an SVG icon from the static/icons folder using a CSS mask.
+  Parameters:
+    source — icon pack subfolder (default: "font-awesome")
+    style  — icon style subfolder: solid | regular | brands (default: "solid")
+    name   — icon filename without extension (default: "question")
+    class  — extra CSS classes (default: "")
+    aria   — aria-label text; omit (or leave empty) to render aria-hidden="true" instead
+             (correct when the icon is decorative or inside an already-labelled element)
+#}
+{% macro icon(source="font-awesome", style="solid", name="question", class="", aria="") -%}
+{%- set _icon_path = "icons/" ~ source ~ "/" ~ style ~ "/" ~ name ~ ".svg" -%}
+{%- set _icon_url = get_url(path=_icon_path) -%}
+<span class="icon{% if class %} {{ class }}{% endif %}" style="--icon-url: url('{{ _icon_url }}')"{% if aria %} aria-label="{{ aria }}"{% else %} aria-hidden="true"{% endif %}></span>
+{%- endmacro icon %}
+
+{#
+  Renders the page metadata line: date, reading time, and tags.
+  Parameters:
+    page  — the page object (required)
+#}
+{% macro meta(page) %}
+{% if page.date or page.reading_time or page.taxonomies.tags %}
+<div class="page-meta">
+  <span class="meta-brace">{ </span>
+  {%- if page.date -%}
+    <span class="meta-key">date</span><span class="meta-sep"> = </span><span class="meta-value"><time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time></span>
+  {%- endif -%}
+  {%- if page.date and page.reading_time -%}<span class="meta-sep">, </span>{%- endif -%}
+  {%- if page.reading_time -%}
+    <span class="meta-key">read_time</span><span class="meta-sep"> = </span><span class="meta-value">{{ page.reading_time }} min</span>
+  {%- endif -%}
+  {%- if (page.date or page.reading_time) and page.taxonomies.tags -%}<span class="meta-sep">, </span>{%- endif -%}
+  {%- if page.taxonomies.tags -%}
+    <span class="meta-key">tags</span><span class="meta-sep"> = </span><span class="meta-value">[{%- for tag in page.taxonomies.tags -%}<a href="{{ get_taxonomy_url(kind='tags', name=tag) }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}{%- endfor -%}]</span>
+  {%- endif -%}
+  <span class="meta-brace"> }</span>
+</div>
+{% endif %}
+{% endmacro meta %}

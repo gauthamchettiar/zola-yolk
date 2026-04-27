@@ -1,13 +1,8 @@
 # The URL the site will be built for
 base_url = "https://zola-yolk.gauthamchettiar.com"
 title = "zola-yolk"
-
-# Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
-
-# Whether to build a search index to be used later on by a JavaScript library
 build_search_index = true
-
 taxonomies = [
     { name = "tags" },
 ]
@@ -26,22 +21,6 @@ dark_theme = "catppuccin-mocha"
 # Defaults to all root-level sections if not set.
 content_sections = ["posts"]
 
-# Google Fonts to load, split by usage. Each overrides the corresponding CSS variable
-# with the named font first and the system stack as fallback.
-# body   — sets --font-family-body   (body text)
-# header — sets --font-family-header (headings); falls back to body if unset
-# code   — sets --font-family-code   (pre/code blocks); falls back to body if unset
-# Fonts are deduped automatically so a shared font is only requested once.
-google_font = {
-    body   = ["IBM Plex Mono"],
-    header = ["IBM Plex Mono"],
-    code   = ["IBM Plex Mono"]
-}
-
-
-# Set to true when any icon shortcode or widget is used in the site
-enable_font_awesome_icon = true
-
 # Set to true to show a dark/light mode toggle button in the header
 enable_theme_switcher = true
 
@@ -50,6 +29,12 @@ enable_search = true
 
 # Footer text (plain text or HTML).
 footer = "Made with ❤️ for [zola](https://www.getzola.org/)"
+
+# Self-hosted fonts to load. Each entry needs a source (subfolder under static/fonts/)
+# and a name matching the synced folder under that source.
+[[extra.fonts]]
+source = "google"
+name = "IBM Plex Mono"
 
 [[extra.main_menu]]
 name = "Posts"

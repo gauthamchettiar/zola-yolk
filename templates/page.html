@@ -5,7 +5,7 @@
 {% block content %}
 <article>
   <h1 class="page-title">{{ page.title }}</h1>
-  {% include "partials/widgets/page_meta.html" %}
+  {{ widgets::meta(page=page) }}
   {% include "partials/content.html" %}
 </article>
 {% endblock content %}

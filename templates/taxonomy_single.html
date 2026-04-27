@@ -4,6 +4,5 @@
 
 {% block content %}
 <h1>{{ taxonomy.name | capitalize }} :: {{ term.name | capitalize }} ({{ term.pages | length }})</h1>
-{% set pages = term.pages %}
-{% include "partials/widgets/list/simple.html" %}
+{{ list::by_year(pages=term.pages) }}
 {% endblock content %}

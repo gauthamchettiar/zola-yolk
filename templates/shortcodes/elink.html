@@ -1,0 +1,18 @@
+{#
+  elink shortcode — renders an external hyperlink with optional new-tab and icon behaviour.
+
+  Usage:
+    {% elink(href="https://example.com") %}Link text{% end %}
+    {% elink(href="https://example.com", new_tab=false) %}Link text{% end %}
+    {% elink(href="https://example.com", show_icon=false) %}Link text{% end %}
+
+  Parameters:
+    href       — destination URL (required)
+    new_tab    — open in a new tab with rel="noopener noreferrer" (default: true)
+    show_icon  — append an external-link indicator icon after the text (default: true)
+#}
+{%- import "macros/widgets.html" as widgets -%}
+{%- set _href      = href -%}
+{%- set _new_tab   = new_tab   | default(value=true) -%}
+{%- set _show_icon = show_icon | default(value=true) -%}
+<a href="{{ _href | safe }}"{% if _new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ body | safe }}{% if _show_icon %}&nbsp;{{- widgets::icon(name="arrow-up-right-from-square") -}}{% endif %}</a>

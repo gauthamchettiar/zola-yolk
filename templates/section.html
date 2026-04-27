@@ -5,6 +5,5 @@
 {% block content %}
 <h1 class="section-title">{{ section.title }} ({{ section.pages | length }})</h1>
 {% include "partials/content.html" %}
-{% set pages = section.pages %}
-{% include "partials/widgets/list/simple.html" %}
+{{ list::by_year(pages=section.pages) }}
 {% endblock content %}

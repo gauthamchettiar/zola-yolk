@@ -13,8 +13,5 @@
     class  — extra CSS classes (default: "")
     aria   — aria-label override (default: name)
 #}
-{%- set icon_name  = name -%}
-{%- set icon_style = style | default(value="solid") -%}
-{%- set icon_class = class | default(value="") -%}
-{%- set icon_aria  = aria  | default(value=name) -%}
-{%- include "partials/widgets/icon.html" -%}
+{%- import "macros/widgets.html" as widgets -%}
+{{- widgets::icon(source=source | default(value="font-awesome"), style=style | default(value="solid"), name=name, class=class | default(value=""), aria=aria | default(value=name)) -}}

@@ -1,3 +1,8 @@
+{#
+  Renders the site breadcrumb trail.
+  Reads Zola context globals: config, page, section, terms, term, taxonomy.
+#}
+{% macro breadcrumb() %}
 <nav class="breadcrumb">
   {%- set has_path = page is defined or (section is defined and section.components | length > 0) or terms is defined or term is defined -%}
   {%- if has_path -%}
@@ -10,7 +15,7 @@
     {%- for anc_path in ancestors -%}
       {%- if anc_path != "_index.md" -%}
         {%- set anc = get_section(path=anc_path) -%}
-        <span class="crumb"><a href="{{ anc.permalink }}">{{ anc.title }}</a><span class="sep">/</span></span>
+        <span class="crumb"><a href="{{ anc.permalink }}">{{ anc.title | lower }}</a><span class="sep">/</span></span>
       {%- endif -%}
     {%- endfor -%}
   {%- endif -%}
@@ -20,3 +25,18 @@
     {%- endif -%}
   {%- endif -%}
 </nav>
+{% endmacro breadcrumb %}
+
+{#
+  Renders the main site navigation menu from config.extra.main_menu.
+  Reads Zola context global: config.
+#}
+{% macro menu() %}
+{% if config.extra.main_menu %}
+<nav class="section-nav">
+  {%- for item in config.extra.main_menu -%}
+    <a class="section-item" href="{{ item.url }}">[{{ item.name }}]</a>
+  {%- endfor -%}
+</nav>
+{% endif %}
+{% endmacro menu %}

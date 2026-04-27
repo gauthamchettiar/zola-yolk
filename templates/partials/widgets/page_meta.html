@@ -1,5 +1,0 @@
-{% if page.date or page.reading_time or page.taxonomies.tags %}
-<div class="page-meta">
-  <span class="meta-brace">{ </span>{%- if page.date -%}<span class="meta-key">date</span><span class="meta-sep"> = </span>{% include "partials/widgets/meta/date.html" %}{%- endif -%}{%- if page.date and page.reading_time -%}<span class="meta-sep">, </span>{%- endif -%}{%- if page.reading_time -%}<span class="meta-key">read_time</span><span class="meta-sep"> = </span>{% include "partials/widgets/meta/read_time.html" %}{%- endif -%}{%- if (page.date or page.reading_time) and page.taxonomies.tags -%}<span class="meta-sep">, </span>{%- endif -%}{%- if page.taxonomies.tags -%}<span class="meta-key">tags</span><span class="meta-sep"> = </span>{% include "partials/widgets/meta/tags.html" %}{%- endif -%}<span class="meta-brace"> }</span>
-</div>
-{% endif %}

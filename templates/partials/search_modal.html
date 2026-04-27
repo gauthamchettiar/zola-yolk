@@ -3,7 +3,7 @@
   <div class="search-modal__box">
     <div class="search-modal__header">
       <label for="search-input" class="search-modal__icon">
-        {%- set icon_name = "magnifying-glass" -%}{%- set icon_style = "solid" -%}{%- include "partials/widgets/icon.html" -%}
+        {{- widgets::icon(name="magnifying-glass") -}}
       </label>
       <input
         id="search-input"
@@ -14,7 +14,7 @@
         spellcheck="false"
       >
       <button class="search-modal__close" id="search-close" aria-label="Close search">
-        {%- set icon_name = "xmark" -%}{%- set icon_style = "solid" -%}{%- include "partials/widgets/icon.html" -%}
+        {{- widgets::icon(name="xmark") -}}
       </button>
     </div>
     <ul class="search-modal__results" id="search-results" role="list"></ul>

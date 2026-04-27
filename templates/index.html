@@ -7,5 +7,5 @@
 {% block content %}
 {% include "partials/content.html" %}
 <h2>Recent posts</h2>
-{% include "partials/widgets/recent_posts.html" %}
+{{ list::recents(sections=config.extra.content_sections | default(value=[])) }}
 {% endblock content %}
