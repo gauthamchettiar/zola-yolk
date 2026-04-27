@@ -1,0 +1,30 @@
+name: Sync static assets
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday at 06:00 UTC
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Sync Font Awesome icons
+        run: uv run --project scripts/py-ssg-tools pst sync icons --source font-awesome --dest static/icons/font-awesome
+      - name: Sync Google Fonts
+        run: uv run --project scripts/py-ssg-tools pst sync fonts --name "IBM Plex Mono" --dest static/fonts/google --weights 400,700
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add static/icons/ static/fonts/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: sync static assets"
+            git push
+          fi

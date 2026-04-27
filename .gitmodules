@@ -1,0 +1,3 @@
+[submodule "scripts/py-ssg-tools"]
+	path = scripts/py-ssg-tools
+	url = https://github.com/gauthamchettiar/py-ssg-tools
