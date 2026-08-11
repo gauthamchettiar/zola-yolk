@@ -1,0 +1,31 @@
+{#
+  code shortcode — shows several code blocks as tabs.
+
+  Usage:
+    {% code(titles=["Python", "Java"]) %}
+    ```python
+    print("hi")
+    ```
+    ```java
+    System.out.println("hi");
+    ```
+    {% end %}
+
+  Parameters:
+    titles — one label per code block, in order (required)
+
+  The body should contain nothing but fenced code blocks: each top-level block
+  it produces becomes one panel, and panels are matched to titles by position.
+
+  Tab switching is a radio group, so it needs no JavaScript and the arrow keys
+  move between tabs. `nth` is Zola's per-page invocation counter, which keeps
+  each group's radios from colliding with another `code` block on the page.
+#}
+{%- set _titles = titles | default(value=[]) -%}
+<div class="tabs">
+{%- for title in _titles %}
+  <input type="radio" name="tabs-{{ nth }}" id="tabs-{{ nth }}-{{ loop.index0 }}"{% if loop.first %} checked{% endif %}>
+  <label for="tabs-{{ nth }}-{{ loop.index0 }}">{{ title }}</label>
+{%- endfor %}
+  <div class="tabs-panels">{{ body | markdown | safe }}</div>
+</div>
