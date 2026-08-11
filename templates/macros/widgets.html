@@ -27,6 +27,17 @@
 {%- endmacro elink %}
 
 {#
+  Marked-up run of text. <mark> is the element for text called out for
+  reference, which is what both decorations mean here.
+    text        — the text to mark (required)
+    color       — white | yellow | pink | green | muted (default: "yellow")
+    decoration  — highlight (filled) | border (outlined) (default: "highlight")
+#}
+{% macro mark(text, color="yellow", decoration="highlight") -%}
+<mark class="mark" data-color="{{ color }}" data-decoration="{{ decoration }}">{{ text | safe }}</mark>
+{%- endmacro mark %}
+
+{#
   Renders the page metadata line: date, reading time, and tags.
 
   Renders as `{ date = …, read_time = …, tags = [a, b] }`. The braces, the ` = `

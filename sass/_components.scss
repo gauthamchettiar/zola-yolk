@@ -149,7 +149,7 @@ dialog {
 
 // One colour map for every decorated component, so adding a colour is a single
 // line here rather than one line per component.
-.border {
+.border, .mark {
   --accent: var(--color-text);
 
   &[data-color="yellow"] { --accent: var(--color-primary-accent); }
@@ -179,6 +179,23 @@ dialog {
   // Don't let the body's first/last margin push away from the frame.
   > :first-child { margin-top: 0; }
   > :last-child { margin-bottom: 0; }
+}
+
+// Called-out text (the `mark` shortcode). The bare <mark> rule in _base.scss
+// stays the plain default; these variants pick a colour and a treatment.
+.mark {
+  padding: 0.15rem 0.35rem;
+
+  &[data-decoration="highlight"] {
+    background-color: var(--accent);
+    color: var(--color-bg);
+  }
+
+  &[data-decoration="border"] {
+    background: none;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
 }
 
 // Tabbed code blocks (the `code` shortcode).
