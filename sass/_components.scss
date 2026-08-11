@@ -179,19 +179,36 @@ dialog {
 // extra markup. Spacing comes from `gap`, so the children's own margins are
 // cleared to stop the two compounding.
 .row, .col {
+  --gap: 1rem;
+
   display: flex;
-  gap: 1rem;
+  gap: var(--gap);
   margin: 1.5rem 0;
 
-  &[data-gap="sm"] { gap: 0.5rem; }
-  &[data-gap="md"] { gap: 1rem; }
-  &[data-gap="lg"] { gap: 2rem; }
+  &[data-gap="sm"] { --gap: 0.5rem; }
+  &[data-gap="md"] { --gap: 1rem; }
+  &[data-gap="lg"] { --gap: 2rem; }
 
   // All of it, not just the block axis: `p` and the headings carry
   // `margin: … auto`, and an auto inline margin on a flex item eats the free
   // space and centres the box. Spacing here is `gap`'s job anyway.
   > * { margin: 0; }
 }
+
+// Stacked rows read as one grid, so the space between them should match the
+// space between columns rather than the wider block margin used against prose.
+// The first one's bottom margin has to go too, or the pair would collapse to
+// the larger of the two values.
+.row:has(+ .row), .row:has(+ .col),
+.col:has(+ .row), .col:has(+ .col) { margin-bottom: 0; }
+
+.row + .row, .row + .col,
+.col + .row, .col + .col { margin-top: var(--gap); }
+
+// Nested in another row or col these are flex items, already spaced by `gap` —
+// this must come last so the sibling rule above cannot reintroduce a margin.
+.row > .row, .row > .col,
+.col > .row, .col > .col { margin: 0; }
 
 .row {
   flex-wrap: wrap;
@@ -218,6 +235,7 @@ dialog {
 .col {
   flex-direction: column;
 }
+
 // Content that breaks out of the reading column (the `wide` shortcode).
 //
 // `left: 50%` moves the box to the centre of whatever contains it, and
