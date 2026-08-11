@@ -87,3 +87,17 @@
 
   .header-sep { color: var(--color-text-muted); }
 }
+
+// Below this width the trail, the menu and the buttons stop fitting on one
+// line. Send the menu to a row of its own rather than let the breadcrumb break
+// mid-trail — reordering keeps the buttons alongside the trail above it.
+// Tuned to the longest trail this theme produces; widen it for a longer title.
+@media (max-width: 28rem) {
+  .header-actions { order: 1; }
+
+  .site-nav {
+    order: 2;
+    flex-basis: 100%;
+    margin-right: 0; // a margin here would push a 100%-basis item into overflow
+  }
+}
