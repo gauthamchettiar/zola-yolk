@@ -1,20 +1,20 @@
 {#
-  wide shortcode — lets content break out of the normal reading column.
+  wide shortcode — lets content break out of the reading column.
 
-  Usage:
-    {% wide() %}
+  markdown:
+    {% wide(size="lg") %}
     ![a wide screenshot](/images/wide.png)
     {% end %}
 
-    {% wide(size="xl") %}
-    Spans the whole screen.
-    {% end %}
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::wide(content="<img src='/images/wide.png' alt=''>", size="lg") }}
 
   Parameters:
     size — sm | md | lg | xl (default: "md")
 
-  Widths live in CSS (.wide in sass/_components.scss), so adding a size is a
-  one-line change there. Every size is capped at the viewport minus the page
-  gutter, so on narrow screens they all fall back to the normal column width.
+  Every size is capped at the viewport minus the page gutter, so on narrow
+  screens they all fall back to the normal column width.
 #}
-<div class="wide" data-size="{{ size | default(value="md") }}">{{ body | markdown | safe }}</div>
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::wide(content=body | markdown, size=size | default(value="md")) }}

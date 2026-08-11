@@ -1,31 +1,23 @@
 {#
-  col shortcode — stacks its contents vertically with even spacing.
+  col shortcode — stacks its contents, and forms one column inside a `row`.
 
-  Mostly used inside `row` to group several blocks into a single column:
-
+  markdown:
     {% row() %}
-    {% col() %}
-    ### Left
-    Text under the heading.
+    {% col(span="2") %}
+    Twice the width.
     {% end %}
     {% col() %}
-    ### Right
-    Text under the heading.
+    Half of that.
     {% end %}
     {% end %}
 
-  On its own it is a way to space a group of blocks evenly:
-
-    {% col(gap="lg") %}
-    First block.
-    Second block.
-    {% end %}
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::col(content="<p>Twice the width.</p>", span="2") }}
 
   Parameters:
     gap   — sm | md | lg (default: "md")
-    span  — how many shares of the row's width to take (default: 1). Works like
-            a table colspan: span="2" beside a default column is twice as wide.
-            Only has an effect inside a `row`.
+    span  — shares of the row's width; works like a table colspan (default: 1)
 #}
-<div class="col" data-gap="{{ gap | default(value="md") }}"
-     {%- if span %} style="--span: {{ span }}"{% endif %}>{{ body | markdown | safe }}</div>
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::col(content=body | markdown, gap=gap | default(value="md"), span=span | default(value="")) }}

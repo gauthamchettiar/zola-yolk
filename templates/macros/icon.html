@@ -1,0 +1,24 @@
+{#
+  The icon primitive.
+
+  It lives in its own file because the other macro files need to call it, and
+  Tera can neither resolve `self::` when a macro is invoked from a different
+  template nor import a file into itself. Importing this one file is the only
+  arrangement that lets `widgets` and `blocks` share it.
+
+  Prefer calling it as `widgets::icon` — that namespace re-exports this macro
+  and is the one the docs use.
+
+  Parameters:
+    source — icon pack subfolder (default: "font-awesome")
+    style  — icon style subfolder: solid | regular | brands (default: "solid")
+    name   — icon filename without extension (default: "question")
+    class  — extra CSS classes (default: "")
+    aria   — aria-label text; omit (or leave empty) to render aria-hidden="true"
+             instead (correct when the icon is decorative or sits inside an
+             already-labelled element)
+#}
+{% macro icon(source="font-awesome", style="solid", name="question", class="", aria="") -%}
+{%- set _icon_url = get_url(path="icons/" ~ source ~ "/" ~ style ~ "/" ~ name ~ ".svg") -%}
+<span class="icon{% if class %} {{ class }}{% endif %}" style="--icon-url: url('{{ _icon_url }}')"{% if aria %} role="img" aria-label="{{ aria }}"{% else %} aria-hidden="true"{% endif %}></span>
+{%- endmacro icon %}

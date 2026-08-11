@@ -1,0 +1,85 @@
+{% import "macros/icon.html" as base %}
+{#
+  Block-level building blocks, shared by the shortcodes of the same name.
+
+  Every macro here takes `content` as already-rendered HTML. The matching
+  shortcode is a one-line wrapper that passes `body | markdown`, so markdown
+  authors and template authors get identical output from one definition:
+
+    markdown   {% border(color="pink") %}text{% end %}
+    template   {% import "macros/blocks.html" as blocks %}
+               {{ blocks::border(content="<p>text</p>", color="pink") }}
+#}
+
+{#
+  A framed block.
+    content — inner HTML (required)
+    size    — sm | md | lg | xl        (default: "md")
+    color   — white | yellow | pink | green | muted (default: "white")
+#}
+{% macro border(content, size="md", color="white") -%}
+<div class="border" data-size="{{ size }}" data-color="{{ color }}">{{ content | safe }}</div>
+{%- endmacro border %}
+
+{#
+  Content that breaks out of the reading column.
+    content — inner HTML (required)
+    size    — sm | md | lg | xl (default: "md")
+#}
+{% macro wide(content, size="md") -%}
+<div class="wide" data-size="{{ size }}">{{ content | safe }}</div>
+{%- endmacro wide %}
+
+{#
+  Side-by-side layout; each top-level block of `content` becomes a column.
+    content — inner HTML (required)
+    gap     — sm | md | lg (default: "md")
+    span    — shares of the parent row's width, when nested (default: unset)
+#}
+{% macro row(content, gap="md", span="") -%}
+<div class="row" data-gap="{{ gap }}"{% if span %} style="--span: {{ span }}"{% endif %}>{{ content | safe }}</div>
+{%- endmacro row %}
+
+{#
+  Stacked layout; one column inside a row.
+    content — inner HTML (required)
+    gap     — sm | md | lg (default: "md")
+    span    — shares of the row's width (default: unset)
+#}
+{% macro col(content, gap="md", span="") -%}
+<div class="col" data-gap="{{ gap }}"{% if span %} style="--span: {{ span }}"{% endif %}>{{ content | safe }}</div>
+{%- endmacro col %}
+
+{#
+  Content shown only in the light theme.
+    content — inner HTML (required)
+#}
+{% macro lmode(content) -%}
+<div class="only-light">{{ content | safe }}</div>
+{%- endmacro lmode %}
+
+{#
+  Content shown only in the dark theme.
+    content — inner HTML (required)
+#}
+{% macro dmode(content) -%}
+<div class="only-dark">{{ content | safe }}</div>
+{%- endmacro dmode %}
+
+{#
+  Tabbed panels; each top-level block of `content` becomes one panel.
+    content — inner HTML (required)
+    titles  — one label per panel, in order (required)
+    id      — unique per group on a page. The shortcode passes Zola's `nth`;
+              supply your own when calling from a template.
+#}
+{% macro code(content, titles, id="1") -%}
+<div class="tabs">
+{%- for title in titles %}
+  <input type="radio" name="tabs-{{ id }}" id="tabs-{{ id }}-{{ loop.index0 }}"{% if loop.first %} checked{% endif %}>
+  <label for="tabs-{{ id }}-{{ loop.index0 }}">{{ title }}</label>
+{%- endfor %}
+  <div class="tabs-panels">{{ content | safe }}</div>
+</div>
+{%- endmacro code %}
+

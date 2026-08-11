@@ -1,14 +1,16 @@
 {#
-  dmode shortcode — its contents appear only while the dark theme is active.
+  dmode shortcode — its contents appear only in the dark theme.
 
-  Usage:
+  markdown:
     {% dmode() %}
-    Any markdown. Shown in dark mode, hidden in light mode.
+    ![dark](/images/home-dark.png)
     {% end %}
 
-  See lmode.html for the light-mode counterpart. Both variants are always present
-  in the HTML; CSS reveals whichever matches the active theme (.only-light /
-  .only-dark in sass/_components.scss). Because the inactive one is display:none
-  it is hidden from screen readers too, so only the visible variant is announced.
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::dmode(content="<p>Dark only.</p>") }}
+
+  See lmode for the light counterpart.
 #}
-<div class="only-dark">{{ body | markdown | safe }}</div>
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::dmode(content=body | markdown) }}

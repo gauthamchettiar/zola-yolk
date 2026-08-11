@@ -1,0 +1,23 @@
+{#
+  quote shortcode — an attributed quotation.
+
+  markdown:
+    {% quote(author="Alan Kay", cite="1971") %}
+    The best way to predict the future is to invent it.
+    {% end %}
+
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::quote(content="<p>…</p>", author="Alan Kay", cite="1971") }}
+
+  Parameters:
+    author — who said it (default: none)
+    cite   — the work it came from, rendered in <cite> (default: none)
+    url    — source URL; sets the blockquote's cite attribute (default: none)
+    color  — white | yellow | pink | green | muted (default: "pink")
+
+  Rendered as <figure>/<blockquote>/<figcaption>: the attribution describes the
+  quote, so HTML requires it outside the <blockquote> itself.
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::quote(content=body | markdown, author=author | default(value=""), cite=cite | default(value=""), url=url | default(value=""), color=color | default(value="pink")) }}

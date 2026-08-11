@@ -1,14 +1,18 @@
 {#
-  lmode shortcode — its contents appear only while the light theme is active.
+  lmode shortcode — its contents appear only in the light theme.
 
-  Usage:
+  markdown:
     {% lmode() %}
-    Any markdown. Shown in light mode, hidden in dark mode.
+    ![light](/images/home-light.png)
     {% end %}
 
-  See dmode.html for the dark-mode counterpart. Both variants are always present
-  in the HTML; CSS reveals whichever matches the active theme (.only-light /
-  .only-dark in sass/_components.scss). Because the inactive one is display:none
-  it is hidden from screen readers too, so only the visible variant is announced.
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::lmode(content="<p>Light only.</p>") }}
+
+  See dmode for the dark counterpart. Both variants are always in the HTML and
+  CSS reveals the matching one, so this works with JavaScript disabled. The
+  hidden one is display:none, so screen readers only announce the visible one.
 #}
-<div class="only-light">{{ body | markdown | safe }}</div>
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::lmode(content=body | markdown) }}

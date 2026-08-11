@@ -1,3 +1,4 @@
+{% import "macros/icon.html" as base %}
 {#
   Renders an SVG icon from the static/icons folder using a CSS mask.
   Parameters:
@@ -9,9 +10,21 @@
              (correct when the icon is decorative or inside an already-labelled element)
 #}
 {% macro icon(source="font-awesome", style="solid", name="question", class="", aria="") -%}
-{%- set _icon_url = get_url(path="icons/" ~ source ~ "/" ~ style ~ "/" ~ name ~ ".svg") -%}
-<span class="icon{% if class %} {{ class }}{% endif %}" style="--icon-url: url('{{ _icon_url }}')"{% if aria %} role="img" aria-label="{{ aria }}"{% else %} aria-hidden="true"{% endif %}></span>
+{{- base::icon(source=source, style=style, name=name, class=class, aria=aria) -}}
 {%- endmacro icon %}
+
+{#
+  An external hyperlink.
+    text       — visible link text (required)
+    href       — destination URL (required)
+    new_tab    — open in a new tab with rel="noopener noreferrer" (default: true)
+    show_icon  — append an external-link indicator (default: true)
+#}
+{% macro elink(text, href, new_tab=true, show_icon=true) -%}
+<a href="{{ href | safe }}"{% if new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ text | safe }}
+{%- if show_icon %}&nbsp;{{ base::icon(name="arrow-up-right-from-square") }}{% endif -%}
+</a>
+{%- endmacro elink %}
 
 {#
   Renders the page metadata line: date, reading time, and tags.

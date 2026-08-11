@@ -1,7 +1,7 @@
 {#
   code shortcode — shows several code blocks as tabs.
 
-  Usage:
+  markdown:
     {% code(titles=["Python", "Java"]) %}
     ```python
     print("hi")
@@ -11,21 +11,17 @@
     ```
     {% end %}
 
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::code(content=rendered_panels, titles=["Python", "Java"], id="api") }}
+
   Parameters:
     titles — one label per code block, in order (required)
 
-  The body should contain nothing but fenced code blocks: each top-level block
-  it produces becomes one panel, and panels are matched to titles by position.
-
-  Tab switching is a radio group, so it needs no JavaScript and the arrow keys
-  move between tabs. `nth` is Zola's per-page invocation counter, which keeps
-  each group's radios from colliding with another `code` block on the page.
+  The body should contain nothing but fenced code blocks: each becomes a panel,
+  paired with a title by position. Switching is a radio group, so it needs no
+  JavaScript and the arrow keys move between tabs. The shortcode passes Zola's
+  per-page `nth` as the group id; from a template, supply your own.
 #}
-{%- set _titles = titles | default(value=[]) -%}
-<div class="tabs">
-{%- for title in _titles %}
-  <input type="radio" name="tabs-{{ nth }}" id="tabs-{{ nth }}-{{ loop.index0 }}"{% if loop.first %} checked{% endif %}>
-  <label for="tabs-{{ nth }}-{{ loop.index0 }}">{{ title }}</label>
-{%- endfor %}
-  <div class="tabs-panels">{{ body | markdown | safe }}</div>
-</div>
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::code(content=body | markdown, titles=titles | default(value=[]), id=nth) }}
