@@ -84,3 +84,26 @@
 </div>
 {%- endmacro code %}
 
+{#
+  An attributed quotation. Rendered as <figure>/<blockquote>/<figcaption>,
+  which is the pattern HTML defines for a quote with its attribution — the
+  attribution is about the quote, so it must sit outside the <blockquote>.
+    content — inner HTML (required)
+    author  — who said it (default: none)
+    cite    — the work it came from, rendered in <cite> (default: none)
+    url     — source URL, used for the blockquote's cite attribute (default: none)
+    color   — white | yellow | pink | green | muted (default: "pink")
+#}
+{% macro quote(content, author="", cite="", url="", color="pink") -%}
+<figure class="quote" data-color="{{ color }}">
+  <blockquote{% if url %} cite="{{ url }}"{% endif %}>{{ content | safe }}</blockquote>
+  {%- if author or cite %}
+  <figcaption>
+    {%- if author %}{{ author }}{% endif -%}
+    {%- if author and cite %}, {% endif -%}
+    {%- if cite %}<cite>{% if url %}<a href="{{ url }}">{{ cite }}</a>{% else %}{{ cite }}{% endif %}</cite>{% endif -%}
+  </figcaption>
+  {%- endif %}
+</figure>
+{%- endmacro quote %}
+
