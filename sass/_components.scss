@@ -149,7 +149,7 @@ dialog {
 
 // One colour map for every decorated component, so adding a colour is a single
 // line here rather than one line per component.
-.border, .mark, .quote {
+.border, .mark, .quote, .admonition {
   --accent: var(--color-text);
 
   &[data-color="yellow"] { --accent: var(--color-primary-accent); }
@@ -219,6 +219,30 @@ dialog {
   }
 
   cite { font-style: italic; }
+}
+
+// Callout (the `admonition` shortcode).
+//
+// The tint is only 4%: the accents are tuned to just over 4.5:1 against the
+// page background, so a stronger wash eats that margin and drops the title
+// below AA — at 8% the pink title measured 4.23:1.
+.admonition {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--accent);
+  background: color-mix(in oklab, var(--accent) 4%, transparent);
+
+  .admonition-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5ch;
+    margin: 0 0 0.4rem;
+    color: var(--accent);
+    font-weight: var(--font-weight-bold);
+  }
+
+  > :first-child { margin-top: 0; }
+  > :last-child { margin-bottom: 0; }
 }
 
 // Tabbed code blocks (the `code` shortcode).

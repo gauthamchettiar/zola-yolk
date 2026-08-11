@@ -107,3 +107,22 @@
 </figure>
 {%- endmacro quote %}
 
+{#
+  A callout set apart from the main flow — <aside> is the element for content
+  that is tangential to what surrounds it.
+    content — inner HTML (required)
+    title   — heading text beside the icon (default: none)
+    icon    — Font Awesome name (default: "circle-info")
+    color   — white | yellow | pink | green | muted (default: "yellow")
+#}
+{% macro admonition(content, title="", icon="circle-info", color="yellow") -%}
+<aside class="admonition" data-color="{{ color }}">
+  {%- if icon or title %}
+  <p class="admonition-title">
+    {%- if icon %}{{ base::icon(name=icon) }}{% endif -%}
+    {%- if title %}<span>{{ title }}</span>{% endif -%}
+  </p>
+  {%- endif %}
+  {{ content | safe }}
+</aside>
+{%- endmacro admonition %}
