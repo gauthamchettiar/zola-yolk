@@ -68,6 +68,14 @@ li > p:first-child {
   display: inline;
 }
 
+// A task item already has a checkbox; the bullet on top of it is noise.
+// Matching on the checkbox itself means a list can mix task and plain items.
+li:has(> input[type="checkbox"]) {
+  list-style: none;
+
+  > input[type="checkbox"] { margin-inline-end: 0.5ch; }
+}
+
 // Match the nested-list indent so definition lists don't sit at the browser
 // default of 40px and read as an outlier next to the flush lists above.
 dd {
