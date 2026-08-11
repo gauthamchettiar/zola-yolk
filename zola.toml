@@ -3,6 +3,8 @@ base_url = "https://zola-yolk.gauthamchettiar.com"
 title = "zola-yolk"
 compile_sass = true
 build_search_index = true
+# Emits atom.xml; the theme links to it from <head> when this is on.
+generate_feeds = true
 taxonomies = [
     { name = "tags" },
 ]

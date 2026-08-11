@@ -1,0 +1,28 @@
+// Design tokens. Everything visual is driven from here.
+//
+// Colours use light-dark(): the first value applies in light mode, the second
+// in dark. Which one wins is decided by `color-scheme`, so the whole palette
+// switches by changing that single property — no media queries, no overrides.
+
+:root {
+  color-scheme: light dark;
+
+  --font-family: 'IBM Plex Mono', Menlo, Monaco, Consolas, monospace;
+  --font-size: 1rem;
+  --font-weight: 400;
+  --font-weight-bold: 700;
+  --max-width: 42rem;
+
+  --color-bg:               light-dark(#faf8f2, #1a1a1a);
+  --color-text:             light-dark(#1a1a1a, #fff);
+  --color-text-muted:       light-dark(#7a7060, #999999);
+  --color-border:           light-dark(#e0d8c4, #444444);
+  --color-primary-accent:   light-dark(oklch(.42 .22 95),  oklch(.92 .15 95));
+  --color-secondary-accent: light-dark(oklch(.48 .30 345), oklch(.76 .25 345));
+  --color-link:             light-dark(oklch(.40 .30 166), oklch(.87 .24 166));
+}
+
+// The theme toggle writes data-theme on <html>; pinning color-scheme here
+// overrides the OS preference for every token above at once.
+[data-theme="light"] { color-scheme: light; }
+[data-theme="dark"]  { color-scheme: dark; }

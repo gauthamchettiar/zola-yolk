@@ -9,32 +9,30 @@
              (correct when the icon is decorative or inside an already-labelled element)
 #}
 {% macro icon(source="font-awesome", style="solid", name="question", class="", aria="") -%}
-{%- set _icon_path = "icons/" ~ source ~ "/" ~ style ~ "/" ~ name ~ ".svg" -%}
-{%- set _icon_url = get_url(path=_icon_path) -%}
-<span class="icon{% if class %} {{ class }}{% endif %}" style="--icon-url: url('{{ _icon_url }}')"{% if aria %} aria-label="{{ aria }}"{% else %} aria-hidden="true"{% endif %}></span>
+{%- set _icon_url = get_url(path="icons/" ~ source ~ "/" ~ style ~ "/" ~ name ~ ".svg") -%}
+<span class="icon{% if class %} {{ class }}{% endif %}" style="--icon-url: url('{{ _icon_url }}')"{% if aria %} role="img" aria-label="{{ aria }}"{% else %} aria-hidden="true"{% endif %}></span>
 {%- endmacro icon %}
 
 {#
   Renders the page metadata line: date, reading time, and tags.
+
+  Renders as `{ date = …, read_time = …, tags = [a, b] }`. The braces, the ` = `
+  and the separating commas are drawn by CSS (.page-meta in sass/_components.scss),
+  so this macro only has to emit the pairs that exist — no separator bookkeeping.
+
   Parameters:
     page  — the page object (required)
 #}
-{% macro meta(page) %}
-{% if page.date or page.reading_time or page.taxonomies.tags %}
-<div class="page-meta">
-  <span class="meta-brace">{ </span>
-  {%- if page.date -%}
-    <span class="meta-key">date</span><span class="meta-sep"> = </span><span class="meta-value"><time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time></span>
-  {%- endif -%}
-  {%- if page.date and page.reading_time -%}<span class="meta-sep">, </span>{%- endif -%}
-  {%- if page.reading_time -%}
-    <span class="meta-key">read_time</span><span class="meta-sep"> = </span><span class="meta-value">{{ page.reading_time }} min</span>
-  {%- endif -%}
-  {%- if (page.date or page.reading_time) and page.taxonomies.tags -%}<span class="meta-sep">, </span>{%- endif -%}
-  {%- if page.taxonomies.tags -%}
-    <span class="meta-key">tags</span><span class="meta-sep"> = </span><span class="meta-value">[{%- for tag in page.taxonomies.tags -%}<a href="{{ get_taxonomy_url(kind='tags', name=tag) }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}{%- endfor -%}]</span>
-  {%- endif -%}
-  <span class="meta-brace"> }</span>
-</div>
-{% endif %}
-{% endmacro meta %}
+{% macro meta(page) -%}
+{%- if page.date or page.reading_time or page.taxonomies.tags -%}
+<dl class="page-meta">
+{%- if page.date %}<dt>date</dt><dd><time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time></dd>{% endif -%}
+{%- if page.reading_time %}<dt>read_time</dt><dd>{{ page.reading_time }} min</dd>{% endif -%}
+{%- if page.taxonomies.tags %}<dt>tags</dt><dd class="tags">
+{%- for tag in page.taxonomies.tags -%}
+<a href="{{ get_taxonomy_url(kind='tags', name=tag) }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
+{%- endfor -%}
+</dd>{% endif -%}
+</dl>
+{%- endif -%}
+{%- endmacro meta %}

@@ -1,0 +1,89 @@
+// The page frame: skip link, header bar and its two navs.
+
+// Visible only once focused, so keyboard users get past the header.
+.skip-link {
+  position: absolute;
+  left: -100vw;
+
+  &:focus {
+    position: static;
+    display: inline-block;
+    padding: 0.25rem 0;
+  }
+}
+
+.header-bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem 0;
+}
+
+// Trail of ancestors. The separator is presentation, so it lives here rather
+// than in the markup; the current page never gets a trailing slash.
+.breadcrumb {
+  flex: 1;
+  min-width: 0;
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    white-space: nowrap;
+
+    &:not([aria-current])::after {
+      content: "/";
+      color: var(--color-text-muted);
+      margin: 0 0.25rem;
+    }
+  }
+
+  a {
+    color: var(--color-link);
+    text-decoration: none;
+
+    &:hover { color: var(--color-secondary-accent); }
+  }
+}
+
+// Main menu. The [brackets] are decoration, not content.
+.site-nav {
+  flex-shrink: 0;
+  margin-right: 0.5rem;
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+
+    &::before { content: "["; }
+    &::after  { content: "]"; }
+
+    &:hover { color: var(--color-secondary-accent); }
+  }
+}
+
+.header-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .header-sep { color: var(--color-text-muted); }
+}

@@ -3,7 +3,9 @@
 {% block title %}{{ section.title }} | {{ config.title | default(value="Site") }}{% endblock title %}
 
 {% block content %}
-<h1 class="section-title">{{ section.title }} ({{ section.pages | length }})</h1>
-{% include "partials/content.html" %}
+<header>
+  <h1>{{ section.title }} ({{ section.pages | length }})</h1>
+</header>
+{%- include "partials/content.html" %}
 {{ list::by_year(pages=section.pages) }}
 {% endblock content %}

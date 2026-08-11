@@ -1,3 +1,9 @@
+{#
+  Root skeleton. Every other template extends this and fills {% block content %}.
+
+  The three macro namespaces below are imported once here; templates that extend
+  base.html and partials included by it can both use them without re-importing.
+#}
 {% import "macros/list.html" as list %}
 {% import "macros/widgets.html" as widgets %}
 {% import "macros/navigation.html" as navigation %}
@@ -5,22 +11,17 @@
 <html lang="{{ config.default_language | default(value="en") }}" dir="{{ config.extra.language_direction | default(value="ltr") }}">
 <head>
   <title>{% block title %}{{ config.title | default(value="Site") }}{% endblock title %}</title>
-  {% include "partials/head.html" %}
+  {%- include "partials/head.html" %}
 </head>
 <body>
-  <header>
-    {% include "partials/header.html" %}
-  </header>
-  <main>
-    {% block content %}{% endblock content %}
+  <a class="skip-link" href="#content">Skip to content</a>
+  {%- include "partials/header.html" %}
+  <main id="content">
+    {%- block content %}{% endblock content %}
   </main>
-  <footer>
-    {% include "partials/footer.html" %}
-  </footer>
-  {% if config.extra.enable_search %}
-  {% include "partials/search_modal.html" %}
-  <script src="{{ get_url(path="elasticlunr.min.js") }}"></script>
-  <script src="{{ get_url(path="search_index." ~ config.default_language ~ ".js") }}"></script>
-  {% endif %}
+  {%- include "partials/footer.html" %}
+  {%- if config.extra.enable_search %}
+  {%- include "partials/search.html" %}
+  {%- endif %}
 </body>
 </html>

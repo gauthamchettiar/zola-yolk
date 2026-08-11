@@ -1,57 +1,61 @@
 {#
-  Renders a flat list of pages without year grouping.
+  Renders the <li> for each page. Shared by every list macro below so they
+  cannot drift apart.
   Parameters:
-    pages  — list of page objects to render (required)
+    pages  — list of page objects (required)
 #}
-{% macro simple(pages) %}
-{% if pages | length > 0 %}
-  <ul>
-    {%- for page in pages -%}
-      <li>
-        <a href="{{ page.permalink }}">{{ page.title }}</a>
-        &nbsp;{%- if page.date -%}<time>{{ page.date | date(format="%Y-%m-%d") }}</time>{%- endif -%}
-      </li>
-    {%- endfor -%}
-  </ul>
-{% else %}
-  <p>No posts yet.</p>
-{% endif %}
-{% endmacro simple %}
+{% macro items(pages) -%}
+{%- for page in pages -%}
+<li><a href="{{ page.permalink }}">{{ page.title }}</a>
+{%- if page.date %}<time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time>{% endif -%}
+</li>
+{%- endfor -%}
+{%- endmacro items %}
 
 {#
-  Renders a year-grouped list of pages.
-  Pages without a date are rendered in an ungrouped list at their natural position.
+  Renders a flat list of pages, in the order given.
   Parameters:
     pages  — list of page objects to render (required)
 #}
-{% macro by_year(pages) %}
-{% if pages | length > 0 %}
-  {%- set_global current_year = "" -%}
-  {%- set_global ul_open = false -%}
-  {%- for page in pages -%}
-    {%- if page.date -%}
-      {%- set year = page.date | date(format="%Y") -%}
-      {%- if year != current_year -%}
-        {%- if ul_open -%}</ul>{%- endif -%}
-        {%- set_global current_year = year -%}
-        {%- set_global ul_open = true -%}
-        <h2 class="year-heading">{{ year }}</h2>
-        <ul>
-      {%- endif -%}
-    {%- elif not ul_open -%}
-      {%- set_global ul_open = true -%}
-      <ul>
-    {%- endif -%}
-    <li>
-      <a href="{{ page.permalink }}">{{ page.title }}</a>
-      &nbsp;{%- if page.date -%}<small>{{ page.date | date(format="%Y-%m-%d") }}</small>{%- endif -%}
-    </li>
-    {%- if loop.last and ul_open -%}</ul>{%- endif -%}
+{% macro simple(pages) -%}
+{%- if pages | length > 0 %}
+<ul class="post-list">{{ self::items(pages=pages) }}</ul>
+{%- else %}
+<p>No posts yet.</p>
+{%- endif -%}
+{%- endmacro simple %}
+
+{#
+  Renders pages grouped under a heading per year, newest year first and newest
+  page first within each year. Sorting is done here rather than relying on the
+  section's sort_by, so the output is the same however the caller orders them.
+
+  Pages without a date are listed together at the end.
+
+  Parameters:
+    pages  — list of page objects to render (required)
+#}
+{% macro by_year(pages) -%}
+{%- if pages | length > 0 -%}
+  {%- set dated = pages | filter(attribute="year") -%}
+  {%- for year in dated | map(attribute="year") | unique | sort | reverse %}
+<section>
+  <h2>{{ year }}</h2>
+  <ul class="post-list">{{ self::items(pages=dated | filter(attribute="year", value=year) | sort(attribute="date") | reverse) }}</ul>
+</section>
   {%- endfor -%}
-{% else %}
-  <p>No posts yet.</p>
-{% endif %}
-{% endmacro by_year %}
+
+  {%- set_global _undated = [] -%}
+  {%- for page in pages -%}
+    {%- if not page.year -%}{%- set_global _undated = _undated | concat(with=page) -%}{%- endif -%}
+  {%- endfor -%}
+  {%- if _undated | length > 0 %}
+<ul class="post-list">{{ self::items(pages=_undated) }}</ul>
+  {%- endif -%}
+{%- else %}
+<p>No posts yet.</p>
+{%- endif -%}
+{%- endmacro by_year %}
 
 {#
   Fetches pages from multiple sections, sorts them, and renders a flat list.
@@ -61,26 +65,22 @@
     sort_by    — page attribute to sort by (default: "date")
     sort_order — "asc" or "desc" (default: "desc")
 #}
-{% macro recents(sections, limit=0, sort_by="date", sort_order="desc") %}
-{%- if sections | length > 0 -%}
+{% macro recents(sections, limit=0, sort_by="date", sort_order="desc") -%}
+{%- if sections | length == 0 %}
+<p>No sections specified for displaying recents.</p>
+{%- else -%}
   {%- set_global _pages = [] -%}
   {%- for section_name in sections -%}
     {%- set sec = get_section(path=section_name ~ "/_index.md") -%}
     {%- set_global _pages = _pages | concat(with=sec.pages) -%}
   {%- endfor -%}
-  {%- set_global _pages = _pages | sort(attribute=sort_by) -%}
-  {%- if sort_order == "desc" -%}
-    {%- set_global _pages = _pages | reverse -%}
+  {#- Drop pages missing the sort key; sorting on a null would abort the build. -#}
+  {%- set_global _pages = _pages | filter(attribute=sort_by) | sort(attribute=sort_by) -%}
+  {%- if sort_order == "desc" -%}{%- set_global _pages = _pages | reverse -%}{%- endif -%}
+  {%- if limit > 0 -%}{%- set_global _pages = _pages | slice(start=0, length=limit) -%}{%- endif -%}
+  {%- if _pages | length > 0 -%}{{ self::simple(pages=_pages) }}
+  {%- else %}
+<p>No recent items to display.</p>
   {%- endif -%}
-  {%- if limit > 0 -%}
-    {%- set_global _pages = _pages | slice(start=0, length=limit) -%}
-  {%- endif -%}
-  {%- if _pages | length > 0 -%}
-    {{ self::simple(pages=_pages) }}
-  {%- else -%}
-    <p>No recent items to display.</p>
-  {%- endif -%}
-{%- else -%}
-  <p>No sections specified for displaying recents.</p>
 {%- endif -%}
-{% endmacro recents %}
+{%- endmacro recents %}

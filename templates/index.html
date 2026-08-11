@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}
-{{ config.title | default(value="Site") }}
-{% endblock title %}
+{% block title %}{{ config.title | default(value="Site") }}{% endblock title %}
 
 {% block content %}
+{#- The site title is already in the header, so the page's <h1> is here for the
+    document outline only — it gives screen readers a top-level heading without
+    repeating the title on screen. -#}
+<h1 class="visually-hidden">{{ section.title | default(value=config.title | default(value="Site")) }}</h1>
 {% include "partials/content.html" %}
 <h2>Recent posts</h2>
-{{ list::recents(sections=config.extra.content_sections | default(value=[])) }}
+{{ list::recents(sections=config.extra.content_sections | default(value=[]), limit=config.extra.recent_limit | default(value=10)) }}
 {% endblock content %}

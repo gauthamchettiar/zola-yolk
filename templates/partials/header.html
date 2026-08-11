@@ -1,20 +1,19 @@
-<div class="header-bar">
+{%- set show_search = config.extra.enable_search -%}
+{%- set show_theme = config.extra.enable_theme_switcher -%}
+<header class="header-bar">
   {{ navigation::breadcrumb() }}
   {{ navigation::menu() }}
-  {% if config.extra.enable_theme_switcher or config.extra.enable_search %}
+  {%- if show_search or show_theme %}
   <div class="header-actions">
-    {% if config.extra.enable_search %}
-    <button class="search-toggle" id="search-toggle" aria-label="Open search">
-      {{- widgets::icon(name="magnifying-glass") -}}
-    </button>
-    {% endif %}
-    {% if config.extra.enable_theme_switcher %}
-    <span class="header-sep">|</span>
-    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light mode">
-      {{- widgets::icon(name="moon", class="icon-light-mode") -}}
-      {{- widgets::icon(name="sun", class="icon-dark-mode") -}}
-    </button>
-    {% endif %}
+    {%- if show_search %}
+    <button type="button" id="search-toggle" aria-label="Open search">{{ widgets::icon(name="magnifying-glass") }}</button>
+    {%- endif %}
+    {%- if show_search and show_theme %}
+    <span class="header-sep" aria-hidden="true">|</span>
+    {%- endif %}
+    {%- if show_theme %}
+    <button type="button" id="theme-toggle" aria-label="Toggle dark/light mode">{{ widgets::icon(name="moon", class="icon-light-mode") }}{{ widgets::icon(name="sun", class="icon-dark-mode") }}</button>
+    {%- endif %}
   </div>
-  {% endif %}
-</div>
+  {%- endif %}
+</header>

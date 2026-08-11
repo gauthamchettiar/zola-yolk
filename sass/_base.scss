@@ -1,0 +1,170 @@
+// Bare element styles. Markup that uses the right tag needs no class.
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+body {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight);
+  line-height: 1.7;
+}
+
+main {
+  padding: 1rem 0;
+}
+
+// Headings are all one size; the markdown-style prefix carries the level.
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-primary-accent);
+  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.3;
+  margin: 1.2rem auto;
+
+  &::before { color: var(--color-text-muted); }
+}
+
+h1::before { content: "# "; }
+h2::before { content: "## "; }
+h3::before { content: "### "; }
+h4::before { content: "#### "; }
+h5::before { content: "##### "; }
+h6::before { content: "###### "; }
+
+// A <header> groups a title with its metadata, so close the gap between them.
+main header h1 { margin-bottom: 0; }
+
+p {
+  margin: 1rem auto;
+}
+
+a {
+  color: var(--color-link);
+
+  &:hover { color: var(--color-secondary-accent); }
+}
+
+// The theme has exactly one kind of button: a bare icon. Styling the element
+// rather than a class means new buttons need no CSS at all.
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+  color: var(--color-text-muted);
+
+  &:hover { color: var(--color-secondary-accent); }
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 2rem 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+mark {
+  background-color: var(--color-primary-accent);
+  color: var(--color-bg);
+  padding: 0.15rem 0.35rem;
+}
+
+pre {
+  padding: 1rem;
+  overflow-x: auto;
+
+  code { padding: 0; }
+}
+
+code {
+  padding: 0.15rem 0.35rem;
+  font-family: var(--font-family);
+}
+
+table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+
+  th, td {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-border);
+  }
+
+  th {
+    text-align: left;
+    color: var(--color-primary-accent);
+  }
+}
+
+blockquote {
+  margin: 1.5rem 0;
+  padding: 0.5rem 1rem;
+  border-left: 4px solid var(--color-secondary-accent);
+  color: var(--color-secondary-accent);
+
+  p { margin: 0; }
+}
+
+// Emitted by Zola's markdown renderer when bottom_footnotes = true.
+.footnote-reference {
+  margin-left: 0.25rem;
+
+  a {
+    text-decoration: none;
+
+    &::before { content: "("; }
+    &::after  { content: ")"; }
+  }
+}
+
+.footnotes {
+  margin-top: 2rem;
+  padding: 1rem 0;
+  border-block: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+
+  .footnotes-list {
+    margin: 0;
+    padding-left: 1.5rem;
+
+    li { margin: 0.3rem 0; }
+  }
+}
+
+// Emitted by Zola's giallo syntax highlighter (markdown.highlighting.style = "class").
+// Colours come from static/giallo-{light,dark}.css; only layout belongs here.
+.giallo-l {
+  display: inline-block;
+  min-height: 1lh;
+  width: 100%;
+}
+
+.giallo-ln {
+  display: inline-block;
+  user-select: none;
+  margin-right: 0.4em;
+  padding: 0.4em;
+  min-width: 3ch;
+  text-align: right;
+  opacity: 0.8;
+}

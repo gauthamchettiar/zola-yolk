@@ -1,0 +1,43 @@
+{#
+  Dark/light toggle. Must stay inline in <head> and run before first paint,
+  otherwise the page flashes the wrong theme on load.
+
+  Setting data-theme on <html> pins `color-scheme` (see sass/_tokens.scss),
+  which flips every colour token at once. The syntax-highlight stylesheets are
+  two separate files, so those are swapped by hand via their media attribute.
+#}
+<script>
+  (function () {
+    const STORAGE_KEY = "theme";
+    const root = document.documentElement;
+
+    function applyTheme(theme, persist) {
+      root.setAttribute("data-theme", theme);
+      if (persist) localStorage.setItem(STORAGE_KEY, theme);
+
+      const light = document.getElementById("giallo-light");
+      const dark = document.getElementById("giallo-dark");
+      if (light && dark) {
+        light.media = theme === "dark" ? "not all" : "all";
+        dark.media = theme === "dark" ? "all" : "not all";
+      }
+    }
+
+    // Stored choice wins; otherwise follow the OS and keep following it.
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const os = window.matchMedia("(prefers-color-scheme: dark)");
+    applyTheme(stored || (os.matches ? "dark" : "light"), false);
+    os.addEventListener("change", function (e) {
+      if (!localStorage.getItem(STORAGE_KEY)) applyTheme(e.matches ? "dark" : "light", false);
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const btn = document.getElementById("theme-toggle");
+      if (btn) {
+        btn.addEventListener("click", function () {
+          applyTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark", true);
+        });
+      }
+    });
+  })();
+</script>
