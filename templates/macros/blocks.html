@@ -16,9 +16,10 @@
     content — inner HTML (required)
     size    — sm | md | lg | xl        (default: "md")
     color   — white | yellow | pink | green | muted (default: "white")
+    style   — solid | dashed | dotted | double (default: "solid")
 #}
-{% macro border(content, size="md", color="white") -%}
-<div class="border" data-size="{{ size }}" data-color="{{ color }}">{{ content | safe }}</div>
+{% macro border(content, size="md", color="white", style="solid") -%}
+<div class="border" data-size="{{ size }}" data-color="{{ color }}" data-style="{{ style }}">{{ content | safe }}</div>
 {%- endmacro border %}
 
 {#

@@ -147,13 +147,23 @@ dialog {
   font-size: 0.85rem;
 }
 
+// One colour map for every decorated component, so adding a colour is a single
+// line here rather than one line per component.
+.border {
+  --accent: var(--color-text);
+
+  &[data-color="yellow"] { --accent: var(--color-primary-accent); }
+  &[data-color="pink"]   { --accent: var(--color-secondary-accent); }
+  &[data-color="green"]  { --accent: var(--color-link); }
+  &[data-color="muted"]  { --accent: var(--color-text-muted); }
+}
+
 // Framed content (the `border` shortcode). Variants are attribute selectors so
 // the template just passes the name through — adding one is a single line here.
 .border {
   --border-width: 2px;
-  --border-color: var(--color-text);
 
-  border: var(--border-width) solid var(--border-color);
+  border: var(--border-width) var(--border-style, solid) var(--accent);
   padding: 0.75rem;
   margin: 1.5rem 0;
 
@@ -162,10 +172,9 @@ dialog {
   &[data-size="lg"] { --border-width: 4px; }
   &[data-size="xl"] { --border-width: 8px; }
 
-  &[data-color="white"]  { --border-color: var(--color-text); }
-  &[data-color="yellow"] { --border-color: var(--color-primary-accent); }
-  &[data-color="pink"]   { --border-color: var(--color-secondary-accent); }
-  &[data-color="green"]  { --border-color: var(--color-link); }
+  &[data-style="dashed"] { --border-style: dashed; }
+  &[data-style="dotted"] { --border-style: dotted; }
+  &[data-style="double"] { --border-style: double; }
 
   // Don't let the body's first/last margin push away from the frame.
   > :first-child { margin-top: 0; }
