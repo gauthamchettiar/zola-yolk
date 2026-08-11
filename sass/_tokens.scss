@@ -14,13 +14,18 @@
   --max-width: 42rem;
   --page-gutter: 1.5rem; // breathing room at the screen edge, never crossed
 
+  // Light accents sit as high in lightness as WCAG AA (4.5:1) allows, with
+  // chroma pushed to the sRGB edge — any lighter and they stop being legible on
+  // the cream background, any darker and they turn muddy. Measured contrast is
+  // noted per line. Dark accents deliberately exceed sRGB: every engine clamps
+  // them identically to the gamut boundary, which is the most saturated result.
   --color-bg:               light-dark(#faf8f2, #1a1a1a);
   --color-text:             light-dark(#1a1a1a, #fff);
-  --color-text-muted:       light-dark(#7a7060, #999999);
+  --color-text-muted:       light-dark(oklch(.52 .045 70), #999999);   // 5.2:1
   --color-border:           light-dark(#e0d8c4, #444444);
-  --color-primary-accent:   light-dark(oklch(.42 .22 95),  oklch(.92 .15 95));
-  --color-secondary-accent: light-dark(oklch(.48 .30 345), oklch(.76 .25 345));
-  --color-link:             light-dark(oklch(.40 .30 166), oklch(.87 .24 166));
+  --color-primary-accent:   light-dark(oklch(.54 .114 75),  oklch(.92 .15 95));  // 4.9:1 amber
+  --color-secondary-accent: light-dark(oklch(.57 .243 345), oklch(.76 .25 345)); // 4.8:1 magenta
+  --color-link:             light-dark(oklch(.522 .129 155), oklch(.87 .24 166));// 4.9:1 green
 }
 
 // The theme toggle writes data-theme on <html>; pinning color-scheme here
