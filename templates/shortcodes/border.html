@@ -1,0 +1,20 @@
+{#
+  border shortcode — draws a themed border around a block of content.
+
+  Usage:
+    {% border() %}
+    ![screenshot](/images/example.png)
+    {% end %}
+
+    {% border(size="lg", color="pink") %}
+    Any markdown works here — text, lists, code blocks, images.
+    {% end %}
+
+  Parameters:
+    size   — sm | md | lg | xl        (default: "md")
+    color  — pink | green | yellow | white (default: "white")
+
+  The variants are resolved in CSS (.border in sass/_components.scss), so adding
+  a size or colour is a one-line CSS change and needs no edit to this file.
+#}
+<div class="border" data-size="{{ size | default(value="md") }}" data-color="{{ color | default(value="white") }}">{{ body | markdown | safe }}</div>
