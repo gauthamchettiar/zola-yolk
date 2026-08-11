@@ -51,6 +51,29 @@ p {
   margin: 1rem auto;
 }
 
+// Lists line up with body text; only nesting indents. Markers render `inside`
+// the box so the bullet or number starts on the same left edge as a paragraph,
+// instead of hanging out into the page gutter.
+ul, ol {
+  padding-inline-start: 0;
+  list-style-position: inside;
+
+  ul, ol { padding-inline-start: 2ch; }
+}
+
+// An `inside` marker gets pushed onto its own line when the item starts with a
+// block, which is every loose list and every footnote. Keeping that first
+// paragraph inline puts the marker back alongside its text.
+li > p:first-child {
+  display: inline;
+}
+
+// Match the nested-list indent so definition lists don't sit at the browser
+// default of 40px and read as an outlier next to the flush lists above.
+dd {
+  margin-inline-start: 2ch;
+}
+
 a {
   color: var(--color-link);
 
