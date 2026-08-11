@@ -197,12 +197,22 @@ dialog {
   flex-wrap: wrap;
   align-items: flex-start;
 
-  // Share the width evenly, but wrap to a stack once a column would be
-  // narrower than this — which is what makes it collapse on a phone.
+  // Columns share the width evenly until one is given a span. Both the basis
+  // and the grow factor scale with it, which is what makes the result an exact
+  // proportion — span="2" really is twice as wide as span="1". Scaling only
+  // flex-grow would hand out the *leftover* space 2:1, not the width itself.
   > * {
-    flex: 1 1 12rem;
+    flex: var(--span, 1) 1 calc(var(--span, 1) * 4rem);
     min-width: 0;
   }
+}
+
+// Proportions stop meaning much once there is no room for them, so below this
+// every column takes a full line. Handling the stack here rather than through
+// the flex basis lets that basis stay small, which is what keeps a wide span
+// from overflowing the reading column on a desktop.
+@media (max-width: 34rem) {
+  .row > * { flex-basis: 100%; }
 }
 
 .col {
