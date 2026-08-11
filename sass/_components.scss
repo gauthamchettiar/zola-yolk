@@ -172,6 +172,42 @@ dialog {
   > :last-child { margin-bottom: 0; }
 }
 
+// Side-by-side and stacked layout (the `row` and `col` shortcodes).
+//
+// Both are flex containers, so every top-level block the shortcode body
+// produces becomes an item — two images inside a `row` are two columns with no
+// extra markup. Spacing comes from `gap`, so the children's own margins are
+// cleared to stop the two compounding.
+.row, .col {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+
+  &[data-gap="sm"] { gap: 0.5rem; }
+  &[data-gap="md"] { gap: 1rem; }
+  &[data-gap="lg"] { gap: 2rem; }
+
+  // All of it, not just the block axis: `p` and the headings carry
+  // `margin: … auto`, and an auto inline margin on a flex item eats the free
+  // space and centres the box. Spacing here is `gap`'s job anyway.
+  > * { margin: 0; }
+}
+
+.row {
+  flex-wrap: wrap;
+  align-items: flex-start;
+
+  // Share the width evenly, but wrap to a stack once a column would be
+  // narrower than this — which is what makes it collapse on a phone.
+  > * {
+    flex: 1 1 12rem;
+    min-width: 0;
+  }
+}
+
+.col {
+  flex-direction: column;
+}
 // Content that breaks out of the reading column (the `wide` shortcode).
 //
 // `left: 50%` moves the box to the centre of whatever contains it, and

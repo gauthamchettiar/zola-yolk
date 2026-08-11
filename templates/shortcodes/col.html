@@ -1,0 +1,31 @@
+{#
+  col shortcode — stacks its contents vertically with even spacing.
+
+  Mostly used inside `row` to group several blocks into a single column:
+
+    {% row() %}
+    {% col() %}
+    ### Left
+    Text under the heading.
+    {% end %}
+    {% col() %}
+    ### Right
+    Text under the heading.
+    {% end %}
+    {% end %}
+
+  On its own it is a way to space a group of blocks evenly:
+
+    {% col(gap="lg") %}
+    First block.
+    Second block.
+    {% end %}
+
+  Parameters:
+    gap   — sm | md | lg (default: "md")
+    span  — how many shares of the row's width to take (default: 1). Works like
+            a table colspan: span="2" beside a default column is twice as wide.
+            Only has an effect inside a `row`.
+#}
+<div class="col" data-gap="{{ gap | default(value="md") }}"
+     {%- if span %} style="--span: {{ span }}"{% endif %}>{{ body | markdown | safe }}</div>

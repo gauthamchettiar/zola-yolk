@@ -1,0 +1,47 @@
+{#
+  row shortcode — lays its contents out side by side.
+
+  Every top-level block inside becomes a column, so two images or two
+  paragraphs need no extra markup:
+
+    {% row() %}
+    ![left](/images/a.png)
+    ![right](/images/b.png)
+    {% end %}
+
+  Group several blocks into one column by wrapping them in `col`:
+
+    {% row() %}
+    {% col() %}
+    ### Left
+    Text under the heading.
+    {% end %}
+    {% col() %}
+    ### Right
+    Text under the heading.
+    {% end %}
+    {% end %}
+
+  Give a column more of the width with `span`, which works like a table's
+  colspan — span="2" is twice as wide as a default column:
+
+    {% row() %}
+    {% col(span="2") %}
+    Twice the width.
+    {% end %}
+    {% col() %}
+    Half of that.
+    {% end %}
+    {% end %}
+
+  Parameters:
+    gap   — sm | md | lg (default: "md")
+    span  — shares of the parent row's width, when nested in another row
+            (default: 1)
+
+  Columns share the width evenly unless given a span, and collapse to a stack
+  on narrow screens. A span can only go on a `col` or a nested `row`, so a bare
+  paragraph needs wrapping in `col` before it can take one.
+#}
+<div class="row" data-gap="{{ gap | default(value="md") }}"
+     {%- if span %} style="--span: {{ span }}"{% endif %}>{{ body | markdown | safe }}</div>
