@@ -201,6 +201,23 @@ dialog {
   > :last-child { margin-bottom: 0; }
 }
 
+// Theme-conditional content (the `lmode` / `dmode` shortcodes). Same approach as the
+// syntax stylesheets: the OS preference is the default so this is still correct
+// without JS, and data-theme overrides it once the toggle has run.
+.only-dark { display: none; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .only-light { display: none; }
+    .only-dark { display: revert; }
+  }
+}
+
+[data-theme="dark"] {
+  .only-light { display: none; }
+  .only-dark { display: revert; }
+}
+
 // Visually hidden but still announced by screen readers.
 .visually-hidden {
   position: absolute;
