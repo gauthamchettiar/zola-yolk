@@ -11,7 +11,7 @@ html {
 body {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: var(--page-gutter);
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-family);
@@ -19,8 +19,11 @@ body {
   line-height: 1.7;
 }
 
+// Only the block padding lives here. Nothing constrains the inline size, so a
+// .wide descendant can grow past the reading column at any nesting depth
+// (see .wide in _components.scss) without needing to be a direct child.
 main {
-  padding: 1rem 0;
+  padding-block: 1rem;
 }
 
 // Headings are all one size; the markdown-style prefix carries the level.

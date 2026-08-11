@@ -172,6 +172,35 @@ dialog {
   > :last-child { margin-bottom: 0; }
 }
 
+// Content that breaks out of the reading column (the `wide` shortcode).
+//
+// `left: 50%` moves the box to the centre of whatever contains it, and
+// `translate: -50%` pulls it back by half its own width — so it ends up centred
+// on the page however deeply it is nested, with no cooperation needed from any
+// ancestor. That matters because markdown puts this inside <article>, and
+// sometimes inside another shortcode, where a grid breakout would not reach.
+//
+// Every size is capped at the viewport minus the page gutter, so on a narrow
+// screen they all collapse to the normal column width instead of overflowing.
+.wide {
+  --wide-width: 56rem;
+
+  position: relative;
+  left: 50%;
+  translate: -50%;
+  width: var(--wide-width);
+  max-width: calc(100vw - var(--page-gutter) * 2);
+  margin-block: 1.5rem;
+
+  &[data-size="sm"] { --wide-width: 48rem; }
+  &[data-size="md"] { --wide-width: 56rem; }
+  &[data-size="lg"] { --wide-width: 72rem; }
+  &[data-size="xl"] { --wide-width: 100vw; } // clamped by max-width above
+
+  > :first-child { margin-top: 0; }
+  > :last-child { margin-bottom: 0; }
+}
+
 // Visually hidden but still announced by screen readers.
 .visually-hidden {
   position: absolute;
