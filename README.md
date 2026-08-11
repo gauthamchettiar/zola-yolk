@@ -2,7 +2,7 @@
 
 A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
-Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink-shortcode), [`border`](#border-shortcode), [`wide`](#wide-shortcode), [`row` / `col`](#row--col-shortcodes), [`code`](#code-shortcode), [`lmode` / `dmode`](#lmode--dmode-shortcodes).
+Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`quote`](#quote), [`admonition`](#admonition), [`border`](#border), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode).
 
 **dark-theme**: 
 ![dark-theme-screenshot](/static/images/screenshots/home-dark.png)
@@ -181,126 +181,138 @@ uv run pst sync icons --source font-awesome --dest ../../static/icons/font-aweso
 {{ icon(name="star", style="regular", class="my-class", aria="favourite") }}
 ```
 
-Valid `style` values: `solid` (default), `regular`, `brands`.
-
-Icon names come from [Font Awesome 6 Free](https://fontawesome.com/search?o=r&m=free).
-
-To use the icon macro directly in templates:
+From a template:
 
 ```jinja2
 {% import "macros/widgets.html" as widgets %}
 {{ widgets::icon(name="star") }}
-{{ widgets::icon(name="github", style="brands", class="my-class", aria="GitHub") }}
 ```
 
-## Elink shortcode
+- `name` — Font Awesome icon name (required)
+- `style` — `solid` (default), `regular`, `brands`
+- `source` — icon pack subfolder (default: `font-awesome`)
+- `class` — extra CSS classes
+- `aria` — accessible label; omit to render the icon decorative
 
-Renders an external hyperlink. Opens in a new tab with `rel="noopener noreferrer"` and appends an external-link icon by default.
+Icon names come from [Font Awesome Free](https://fontawesome.com/search?o=r&m=free).
+
+## Shortcodes
+
+Every shortcode is a thin wrapper over a macro, so each one is callable from
+Markdown **and** from a template, with identical output. Content-inserting
+macros live in `macros/widgets.html`; the ones that arrange content live in
+`macros/blocks.html`.
+
+Block shortcodes take their content as the body; the matching macro takes it as
+a `content` argument of already-rendered HTML.
+
+### Elink
+
+An external hyperlink. Opens in a new tab with `rel="noopener noreferrer"`.
 
 ```
 {{ elink(text="Link text", href="https://example.com") }}
-{{ elink(text="Same tab", href="https://example.com", new_tab=false) }}
-{{ elink(text="No icon", href="https://example.com", show_icon=false) }}
+```
+```jinja2
+{{ widgets::elink(text="Link text", href="https://example.com") }}
 ```
 
-Parameters:
+- `text`, `href` — required
+- `new_tab` — default `true` · `show_icon` — default `true`
 
-- `text` — visible link text (required)
-- `href` — destination URL (required)
-- `new_tab` — open in a new tab (default: `true`)
-- `show_icon` — append an external-link icon (default: `true`)
+### Mark
 
-## Border shortcode
-
-Draws a themed frame around a block of content. The body is regular Markdown, so
-text, lists, images and code blocks all work inside it.
+Calls out a run of text.
 
 ```
-{% border() %}
-![screenshot](/images/example.png)
+{{ mark(text="highlighted") }}
+{{ mark(text="outlined", color="pink", decoration="border") }}
+```
+```jinja2
+{{ widgets::mark(text="highlighted", color="green") }}
+```
+
+- `text` — required
+- `color` — `white`, `yellow` (default), `pink`, `green`, `muted`
+- `decoration` — `highlight` (default), `border`
+
+### Quote
+
+An attributed quotation, rendered as `<figure>` / `<blockquote>` /
+`<figcaption>` — the attribution describes the quote, so HTML puts it outside
+the quote itself.
+
+```
+{% quote(author="Alan Kay", cite="1971") %}
+The best way to predict the future is to invent it.
 {% end %}
+```
+```jinja2
+{{ blocks::quote(content="<p>…</p>", author="Alan Kay", cite="1971") }}
+```
 
-{% border(size="lg", color="pink") %}
+- `author` — who said it · `cite` — the work, rendered in `<cite>`
+- `url` — source URL; sets the blockquote's `cite` attribute and links the citation
+- `color` — `white`, `yellow`, `pink` (default), `green`, `muted`
+
+### Admonition
+
+A callout set apart from the surrounding text, rendered as `<aside>`.
+
+```
+{% admonition(title="Careful", icon="triangle-exclamation", color="pink") %}
+This one bites.
+{% end %}
+```
+```jinja2
+{{ blocks::admonition(content="<p>Worth knowing.</p>", title="Note") }}
+```
+
+- `title` — optional heading · `icon` — Font Awesome name (default: `circle-info`)
+- `color` — `white`, `yellow` (default), `pink`, `green`, `muted`
+
+### Border
+
+Draws a themed frame around a block.
+
+```
+{% border(size="lg", color="pink", style="dashed") %}
 Anything Markdown can produce.
 {% end %}
 ```
-
-Parameters:
-
-- `size` — `sm` (1px), `md` (2px), `lg` (4px), `xl` (8px) — default: `md`
-- `color` — `white`, `yellow`, `pink`, `green` — default: `white`
-
-Colours are the theme's own tokens, so they follow dark/light mode automatically:
-`yellow` is the primary accent, `pink` the secondary accent, `green` the link
-colour, and `white` the body text colour.
-
-Variants are plain attribute selectors in `sass/_components.scss`, so adding a
-size or colour is a one-line CSS change — the shortcode needs no edit.
-
-## Wide shortcode
-
-Lets a block escape the reading column — useful for wide screenshots, big tables
-and diagrams that feel cramped at the default measure.
-
-```
-{% wide() %}
-![a wide screenshot](/images/wide.png)
-{% end %}
-
-{% wide(size="xl") %}
-Spans the whole screen.
-{% end %}
+```jinja2
+{{ blocks::border(content="<p>…</p>", size="lg", color="pink", style="dashed") }}
 ```
 
-Parameters:
+- `size` — `sm` (1px), `md` (2px, default), `lg` (4px), `xl` (8px)
+- `color` — `white` (default), `yellow`, `pink`, `green`, `muted`
+- `style` — `solid` (default), `dashed`, `dotted`, `double`
 
-- `size` — `sm`, `md` (default), `lg`, `xl`
+`double` needs at least 3px to separate into two lines, so it looks solid at
+`size="sm"`.
 
-Against the default 42rem column, the sizes are roughly 48rem, 56rem, 72rem, and
-"as wide as the screen allows". Every size is capped at the viewport minus
-`--page-gutter`, so on a narrow screen they all fall back to the normal column
-width rather than causing sideways scrolling.
+### Wide
 
-It works at any nesting depth — inside `<article>`, or inside another shortcode:
+Lets a block escape the reading column.
 
 ```
 {% wide(size="lg") %}
-{% border(color="pink") %}
-A bordered box at the wide width.
-{% end %}
+![a wide screenshot](/images/wide.png)
 {% end %}
 ```
+```jinja2
+{{ blocks::wide(content="<p>…</p>", size="lg") }}
+```
 
-## Row / Col shortcodes
+- `size` — `sm`, `md` (default), `lg`, `xl`
+
+Every size is capped at the viewport minus `--page-gutter`, so on a narrow
+screen they all fall back to the normal column width.
+
+### Row / Col
 
 `row` lays its contents out side by side, `col` stacks them. Every top-level
-block inside becomes an item, so two paragraphs are already two columns — no
-per-item markup needed:
-
-```
-{% row() %}
-![left](/images/a.png)
-![right](/images/b.png)
-{% end %}
-```
-
-Wrap blocks in `col` to group several of them into a single column:
-
-```
-{% row() %}
-{% col() %}
-### Left
-Text under the heading.
-{% end %}
-{% col() %}
-### Right
-Text under the heading.
-{% end %}
-{% end %}
-```
-
-Give a column more of the width with `span`, which works like a table's colspan
-— `span="2"` is exactly twice the width of a default column:
+block inside a row becomes a column, so two images need no per-item markup.
 
 ```
 {% row() %}
@@ -313,23 +325,25 @@ Half of that.
 {% end %}
 ```
 
-Parameters (both shortcodes):
+Tera cannot combine a macro call with `~` in one expression, so from a template
+build the columns with `set` first:
+
+```jinja2
+{% set a = blocks::col(content="<p>Left</p>", span="2") %}
+{% set b = blocks::col(content="<p>Right</p>") %}
+{{ blocks::row(content=a ~ b) }}
+```
 
 - `gap` — `sm`, `md` (default), `lg`
-- `span` — shares of the row's width (default: `1`)
+- `span` — shares of the row's width, like a table colspan (default: `1`)
 
-Columns share the width evenly unless given a span, and collapse to a single
-column on narrow screens with no media query of your own. A span only applies
-to a `col` or a nested `row`, so a bare paragraph needs wrapping in `col`
-before it can take one.
+Columns collapse to a single column on narrow screens with no media query of
+your own. For more room than the reading column allows, nest the row inside
+`wide`.
 
-Spacing between items comes from `gap`, and the items' own margins are cleared
-so the two don't compound. For more room than the reading column allows, nest
-the row inside [`wide`](#wide-shortcode).
+### Code
 
-## Code shortcode
-
-Shows several code blocks as tabs — the same example in more than one language.
+Shows several code blocks as tabs.
 
 ````
 {% code(titles=["Python", "Java"]) %}
@@ -341,24 +355,22 @@ System.out.println("hi");
 ```
 {% end %}
 ````
-
-Parameters:
+```jinja2
+{{ blocks::code(content=panels, titles=["Python", "Java"], id="api") }}
+```
 
 - `titles` — one label per code block, in order
 
 The body should hold nothing but fenced code blocks: each becomes one panel,
-and panels pair with titles by position.
+paired with a title by position. Switching is a radio group rather than a
+script, so it works with JavaScript disabled and the arrow keys move between
+tabs. The shortcode uses Zola's per-page `nth` to namespace each group; from a
+template, pass your own `id`. Up to 8 tabs are styled — raise the `@for` bound
+in `sass/_components.scss` for more.
 
-Switching is a radio group rather than a script, so it works with JavaScript
-disabled and the arrow keys move between tabs. Zola's per-page `nth` counter
-namespaces each group, so several `code` blocks on one page stay independent.
-Up to 8 tabs are styled; raise the `@for` bound in `sass/_components.scss` for
-more.
+### Lmode / Dmode
 
-## Lmode / Dmode shortcodes
-
-Show content in only one theme. Whatever you put inside `lmode` appears in light
-mode only, and inside `dmode` in dark mode only — handy for screenshot pairs.
+Show content in only one theme.
 
 ```
 {% lmode() %}
@@ -369,20 +381,17 @@ mode only, and inside `dmode` in dark mode only — handy for screenshot pairs.
 ![dark](/images/home-dark.png)
 {% end %}
 ```
+```jinja2
+{{ blocks::lmode(content="<p>Light only.</p>") }}
+{{ blocks::dmode(content="<p>Dark only.</p>") }}
+```
 
-Neither takes any parameters — the body is regular Markdown, so text, lists,
-images and code blocks all work inside.
-
-Both variants are emitted and CSS reveals the matching one, so this works
-without JavaScript (falling back to `prefers-color-scheme`). The hidden variant
-is `display: none`, so screen readers only announce the visible one — but note
-both images are still downloaded.
-
-The underlying classes work on any element, if you'd rather not use a shortcode:
+Neither takes parameters. Both variants are emitted and CSS reveals the
+matching one, so this works without JavaScript. The underlying classes work on
+any element if you would rather not use a shortcode:
 
 ```html
 <div class="only-dark">Shown only in dark mode.</div>
-<span class="only-light">Shown only in light mode.</span>
 ```
 
 ## License

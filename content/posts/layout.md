@@ -1,19 +1,19 @@
 +++
 title = "Supported Layouts"
 date = 2026-04-19
-description = "Shortcodes for arranging content: borders, wide blocks, and columns."
+description = "Shortcodes for arranging content: borders, wide blocks, columns and tabs."
 
 [taxonomies]
 tags = ["layout", "shortcode", "zola"]
 +++
 
-Shortcodes for *arranging* content — framing it, letting it break out of the
-reading column, and splitting it into columns. For the ones that insert content,
-see [Supported Shortcodes](@/posts/shortcode.md).
+Shortcodes for *arranging* content. For the ones that insert it, see
+[Supported Shortcodes](@/posts/shortcode.md).
+
+Each is a thin wrapper over a macro in `macros/blocks.html`, so the same thing
+is callable from Markdown and from a template. Both forms are shown throughout.
 
 ## Borders
-
-This is how you can draw a border around content in,
 
 <u>markdown content</u>:
 
@@ -22,33 +22,42 @@ This is how you can draw a border around content in,
 Any markdown goes inside.
 {​% end %​}
 
-{​% border(size="lg", color="pink") %​}
-With a size and a colour.
+{​% border(size="lg", color="pink", style="dashed") %​}
+With a size, a colour and a line style.
 {​% end %​}
 ```
 
-sizes&nbsp;&nbsp; : `sm`, `md` (default), `lg`, `xl`  
-colours : `white` (default), `yellow`, `pink`, `green`  
+<u>template files</u>:
+
+```jinja2
+{​% import "macros/blocks.html" as blocks %​}
+{​{ blocks::border(content="<p>Any HTML.</p>", size="lg", color="pink") }​}
+```
+
+sizes&nbsp; : `sm`, `md` (default), `lg`, `xl`  
+colours : `white` (default), `yellow`, `pink`, `green`, `muted`  
+styles&nbsp; : `solid` (default), `dashed`, `dotted`, `double`
 
 {% border(size="sm") %}
-`size="sm"` — defaults to `color="white"`
+`size="sm"` — defaults to `color="white"` and `style="solid"`
 {% end %}
 
-{% border(size="md", color="yellow") %}
-`size="md"`, `color="yellow"`
+{% border(size="md", color="yellow", style="dashed") %}
+`size="md"`, `color="yellow"`, `style="dashed"`
 {% end %}
 
-{% border(size="lg", color="pink") %}
-`size="lg"`, `color="pink"`
+{% border(size="lg", color="pink", style="dotted") %}
+`size="lg"`, `color="pink"`, `style="dotted"`
 {% end %}
 
-{% border(size="xl", color="green") %}
-`size="xl"`, `color="green"`
+{% border(size="xl", color="green", style="double") %}
+`size="xl"`, `color="green"`, `style="double"`
 {% end %}
+
+`double` needs at least 3px to separate into two lines, so it looks solid at
+`size="sm"`.
 
 ## Wide Content
-
-This is how you can let content break out of the reading column,
 
 <u>markdown content</u>:
 
@@ -62,10 +71,17 @@ Spans the whole screen.
 {​% end %​}
 ```
 
+<u>template files</u>:
+
+```jinja2
+{​% import "macros/blocks.html" as blocks %​}
+{​{ blocks::wide(content="<p>Wider than the column.</p>", size="lg") }​}
+```
+
 sizes : `sm`, `md` (default), `lg`, `xl` (as wide as the screen allows)
 
-Each size is capped at the screen width, so on a narrow screen they all fall back
-to the normal column. Widen this window to see them separate.
+Each size is capped at the screen width, so on a narrow screen they all fall
+back to the normal column. Widen this window to see them separate.
 
 {% wide(size="sm") %}
 {% border(color="yellow") %}
@@ -94,7 +110,7 @@ to the normal column. Widen this window to see them separate.
 ## Columns and Rows
 
 `row` lays its contents out side by side; `col` stacks them. Every top-level
-block inside becomes an item, so two paragraphs are already two columns —
+block inside becomes an item, so two paragraphs are already two columns.
 
 <u>markdown content</u>:
 
@@ -104,6 +120,16 @@ Left paragraph.
 
 Right paragraph.
 {​% end %​}
+```
+
+<u>template files</u> — Tera cannot combine a macro call with `~` in one
+expression, so build the columns with `set` first:
+
+```jinja2
+{​% import "macros/blocks.html" as blocks %​}
+{​% set a = blocks::col(content="<p>Left</p>", span="2") %​}
+{​% set b = blocks::col(content="<p>Right</p>") %​}
+{​{ blocks::row(content=a ~ b) }​}
 ```
 
 {% row() %}
@@ -137,6 +163,8 @@ Text under the heading.
 Text under the heading.
 {% end %}
 {% end %}
+
+gaps : `sm`, `md` (default), `lg` — on both `row` and `col`
 
 ### Proportions
 
@@ -184,23 +212,8 @@ Half of that.
 A span only applies to a `col` (or a `row` nested in another `row`), so a bare
 paragraph needs wrapping in `col` before it can take one.
 
-gaps : `sm`, `md` (default), `lg` — on both `row` and `col`
-
-Columns share the width evenly and wrap to a stack once there is no room, so
-this collapses to a single column on a phone. Three fit at the default gap;
+Columns collapse to a stack on narrow screens. Three fit at the default gap;
 for more room, nest a `row` inside [`wide`](#wide-content).
-
-{% row(gap="sm") %}
-{% border(size="sm", color="yellow") %}
-one
-{% end %}
-{% border(size="sm", color="pink") %}
-two
-{% end %}
-{% border(size="sm", color="green") %}
-three
-{% end %}
-{% end %}
 
 ## Tabbed Code Blocks
 
@@ -220,6 +233,15 @@ System.out.println("hi");
 {​% end %​}
 ````
 
+<u>template files</u>:
+
+```jinja2
+{​% import "macros/blocks.html" as blocks %​}
+{​{ blocks::code(content=panels, titles=["Python", "Java"], id="api") }​}
+```
+
+titles : one label per code block, in order
+
 {% code(titles=["Python", "Java"]) %}
 ```python
 print("hi")
@@ -229,9 +251,8 @@ System.out.println("hi");
 ```
 {% end %}
 
-titles : one label per code block, in order
-
 The body should hold nothing but fenced code blocks: each one becomes a panel,
 and panels pair with titles by position. Switching is a radio group rather than
 a script, so it works with JavaScript disabled and the arrow keys move between
-tabs.
+tabs. The shortcode uses Zola's per-page `nth` to keep groups apart; from a
+template, pass your own `id`.
