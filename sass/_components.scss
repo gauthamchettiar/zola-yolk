@@ -238,7 +238,7 @@ dialog {
   .admonition-title {
     display: flex;
     align-items: center;
-    gap: 0.5ch;
+    gap: 1ch;
     margin: 0 0 0.25rem;
     color: var(--accent);
     font-weight: var(--font-weight-bold);
@@ -250,9 +250,15 @@ dialog {
 
   // With no title there is nothing to sit above the content, so float the lone
   // icon and let the first line run alongside it instead of below.
+  //
+  // `display: block` deliberately undoes the flex above: centring the icon in
+  // the flex line puts it ~5px higher than the text it now sits beside, whereas
+  // as an inline box it takes the same baseline offset as an icon written into
+  // a paragraph.
   &[data-untitled] .admonition-title {
+    display: block;
     float: left;
-    margin: 0 0.75ch 0 0;
+    margin: 0 1ch 0 0;
   }
 
   > :first-child { margin-top: 0; }
