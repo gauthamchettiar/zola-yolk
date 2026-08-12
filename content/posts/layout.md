@@ -11,12 +11,12 @@ Shortcodes for *arranging* content. For the ones that insert it, see
 [Supported Shortcodes](@/posts/shortcode.md).
 
 Each is a thin wrapper over a macro in `macros/blocks.html`, so the same thing
-is callable from Markdown and from a template. Both forms are shown throughout.
+is callable from Markdown and from a template. Both forms are shown throughout —
+switch tabs on any example below and the rest of the page follows.
 
 ## Borders
 
-<u>markdown content</u>:
-
+{% code(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% border() %​}
 Any markdown goes inside.
@@ -26,13 +26,12 @@ Any markdown goes inside.
 With a size, a colour and a line style.
 {​% end %​}
 ```
-
-<u>template files</u>:
-
 ```jinja2
 {​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::border(content="<p>Any HTML.</p>", size="lg", color="pink") }​}
+{​{ blocks::border(content="<p>Any markdown goes inside.</p>") }​}
+{​{ blocks::border(content="<p>With a size, a colour and a line style.</p>", size="lg", color="pink", style="dashed") }​}
 ```
+{% end %}
 
 sizes&nbsp; : `sm`, `md` (default), `lg`, `xl`  
 colours : `white` (default), `yellow`, `pink`, `green`, `muted`  
@@ -59,8 +58,7 @@ styles&nbsp; : `solid` (default), `dashed`, `dotted`, `double`
 
 ## Wide Content
 
-<u>markdown content</u>:
-
+{% code(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% wide() %​}
 ![a wide screenshot](/images/wide.png)
@@ -70,13 +68,12 @@ styles&nbsp; : `solid` (default), `dashed`, `dotted`, `double`
 Spans the whole screen.
 {​% end %​}
 ```
-
-<u>template files</u>:
-
 ```jinja2
 {​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::wide(content="<p>Wider than the column.</p>", size="lg") }​}
+{​{ blocks::wide(content='<p><img src="/images/wide.png" alt="a wide screenshot" /></p>') }​}
+{​{ blocks::wide(content="<p>Spans the whole screen.</p>", size="xl") }​}
 ```
+{% end %}
 
 sizes : `sm`, `md` (default), `lg`, `xl` (as wide as the screen allows)
 
@@ -110,10 +107,11 @@ back to the normal column. Widen this window to see them separate.
 ## Columns and Rows
 
 `row` lays its contents out side by side; `col` stacks them. Every top-level
-block inside becomes an item, so two paragraphs are already two columns.
+block inside becomes an item, so two paragraphs are already two columns. In a
+template, Tera cannot combine a macro call with `~` in one expression, so the
+columns have to be built with `set` first.
 
-<u>markdown content</u>:
-
+{% code(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% row() %​}
 Left paragraph.
@@ -121,16 +119,13 @@ Left paragraph.
 Right paragraph.
 {​% end %​}
 ```
-
-<u>template files</u> — Tera cannot combine a macro call with `~` in one
-expression, so build the columns with `set` first:
-
 ```jinja2
 {​% import "macros/blocks.html" as blocks %​}
 {​% set a = blocks::col(content="<p>Left</p>", span="2") %​}
 {​% set b = blocks::col(content="<p>Right</p>") %​}
 {​{ blocks::row(content=a ~ b) }​}
 ```
+{% end %}
 
 {% row() %}
 Left paragraph.
@@ -220,8 +215,7 @@ for more room, nest a `row` inside [`wide`](#wide-content).
 `code` shows several code blocks as tabs — handy for the same example in more
 than one language.
 
-<u>markdown content</u>:
-
+{% code(titles=["markdown content", "template files"], group="usage") %}
 ````md
 {​% code(titles=["Python", "Java"]) %​}
 ```python
@@ -232,15 +226,14 @@ System.out.println("hi");
 ```
 {​% end %​}
 ````
-
-<u>template files</u>:
-
 ```jinja2
 {​% import "macros/blocks.html" as blocks %​}
 {​{ blocks::code(content=panels, titles=["Python", "Java"], id="api") }​}
 ```
+{% end %}
 
-titles : one label per code block, in order
+titles : one label per code block, in order  
+group&nbsp; : optional name; blocks sharing one switch together
 
 {% code(titles=["Python", "Java"]) %}
 ```python
@@ -254,5 +247,17 @@ System.out.println("hi");
 The body should hold nothing but fenced code blocks: each one becomes a panel,
 and panels pair with titles by position. Switching is a radio group rather than
 a script, so it works with JavaScript disabled and the arrow keys move between
-tabs. The shortcode uses Zola's per-page `nth` to keep groups apart; from a
+tabs. The shortcode uses Zola's per-page `nth` to keep blocks apart; from a
 template, pass your own `id`.
+
+Give several blocks the same `group` and they move as one — every
+markdown/template example on this page carries `group="usage"`, which is why
+picking one tab picks the same tab on all the rest. Each block keeps its own
+radios, so this is the one part that does need JavaScript; with it off, every
+block still switches on its own.
+
+A grouped block also holds its height: it reserves room for its tallest panel,
+so a short panel leaves some space below it. That is deliberate. A group switch
+changes blocks further up the page too, and without a fixed height those would
+resize and slide the tab you just clicked out from under the pointer. An
+ungrouped block has no such problem and so still shrinks to fit.
