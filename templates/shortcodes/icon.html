@@ -11,7 +11,13 @@
     name   — FA icon name (required)
     style  — solid | regular | brands (default: "solid")
     class  — extra CSS classes (default: "")
-    aria   — aria-label override (default: name)
+    aria   — aria-label; omit to render the icon decorative (default: "")
+
+  Tera needs every argument to exist, so the defaults are repeated here. They
+  must stay the literals the macro declares — substituting anything else makes
+  the shortcode and the macro render different HTML from the same call, which
+  is exactly what `aria` used to do (it defaulted to `name`, labelling every
+  icon that the macro would have left decorative).
 #}
 {%- import "macros/widgets.html" as widgets -%}
-{{- widgets::icon(source=source | default(value="font-awesome"), style=style | default(value="solid"), name=name, class=class | default(value=""), aria=aria | default(value=name)) -}}
+{{- widgets::icon(source=source | default(value="font-awesome"), style=style | default(value="solid"), name=name, class=class | default(value=""), aria=aria | default(value="")) -}}
