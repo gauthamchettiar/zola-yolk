@@ -201,20 +201,28 @@ dialog {
 // Attributed quotation (the `quote` shortcode). The attribution is about the
 // quote, so it lives in a <figcaption> beside the <blockquote>, not inside it.
 .quote {
+  --quote-rule: 4px;
+  --quote-indent: 1rem;
+
   margin: 1.5rem 0;
 
   blockquote {
     margin: 0;
     padding-block: 0.25rem;
-    border-left: 4px solid var(--accent);
+    padding-inline: var(--quote-indent);
+    border-left: var(--quote-rule) solid var(--accent);
     color: var(--accent);
   }
 
   // The attribution belongs to the quote above it, so keep them close: the
   // blockquote's own bottom padding is already the only gap needed.
+  //
+  // It lines up with the quoted text rather than with the rule, so it has to
+  // absorb the rule's width itself — the caption sits outside the blockquote
+  // and so carries no rule of its own.
   figcaption {
     margin-top: 0;
-    padding-left: 1rem;
+    padding-left: calc(var(--quote-rule) + var(--quote-indent));
     color: var(--color-text-muted);
     font-size: 0.9rem;
 
