@@ -116,7 +116,7 @@
     color   — white | yellow | pink | green | muted (default: "yellow")
 #}
 {% macro admonition(content, title="", icon="circle-info", color="yellow") -%}
-<aside class="admonition" data-color="{{ color }}">
+<aside class="admonition" data-color="{{ color }}"{% if not title %} data-untitled{% endif %}>
   {%- if icon or title %}
   <p class="admonition-title">
     {%- if icon %}{{ base::icon(name=icon) }}{% endif -%}
