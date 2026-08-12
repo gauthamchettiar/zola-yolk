@@ -1,0 +1,32 @@
+{#
+  Keeps tab blocks that share a `group` in step: picking "template files" in one
+  block picks it in every other block of the same group on the page.
+
+  This is an enhancement, not the mechanism. The tabs themselves are a radio
+  group in CSS (see sass/_components.scss), so without JavaScript every block
+  still switches — just on its own rather than together.
+#}
+<script>
+  (function () {
+    function radios(tabs) {
+      return tabs.querySelectorAll(":scope > input");
+    }
+
+    // Delegated from the document so blocks rendered at any depth are covered.
+    document.addEventListener("change", function (event) {
+      const input = event.target;
+      if (!input.matches || !input.matches('.tabs[data-group] > input')) return;
+
+      const tabs = input.parentElement;
+      const index = Array.prototype.indexOf.call(radios(tabs), input);
+
+      document.querySelectorAll(".tabs[data-group]").forEach(function (other) {
+        if (other === tabs || other.dataset.group !== tabs.dataset.group) return;
+        // Checking a radio in code fires no `change` event, so this cannot
+        // bounce back into the handler.
+        const peer = radios(other)[index];
+        if (peer) peer.checked = true;
+      });
+    });
+  })();
+</script>

@@ -73,9 +73,12 @@
     titles  — one label per panel, in order (required)
     id      — unique per group on a page. The shortcode passes Zola's `nth`;
               supply your own when calling from a template.
+    group   — blocks sharing a name switch together (default: unset). Each
+              block still owns its radios, so it works alone without
+              JavaScript; partials/tabs.html mirrors the choice across the rest.
 #}
-{% macro code(content, titles, id="1") -%}
-<div class="tabs">
+{% macro code(content, titles, id="1", group="") -%}
+<div class="tabs"{% if group %} data-group="{{ group }}"{% endif %}>
 {%- for title in titles %}
   <input type="radio" name="tabs-{{ id }}" id="tabs-{{ id }}-{{ loop.index0 }}"{% if loop.first %} checked{% endif %}>
   <label for="tabs-{{ id }}-{{ loop.index0 }}">{{ title }}</label>

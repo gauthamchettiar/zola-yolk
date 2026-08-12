@@ -17,6 +17,7 @@
 
   Parameters:
     titles — one label per code block, in order (required)
+    group  — blocks given the same name switch together (default: unset)
 
   The body should contain nothing but fenced code blocks: each becomes a panel,
   paired with a title by position. Switching is a radio group, so it needs no
@@ -24,4 +25,4 @@
   per-page `nth` as the group id; from a template, supply your own.
 #}
 {%- import "macros/blocks.html" as blocks -%}
-{{ blocks::code(content=body | markdown, titles=titles | default(value=[]), id=nth) }}
+{{ blocks::code(content=body | markdown, titles=titles | default(value=[]), id=nth, group=group | default(value="")) }}

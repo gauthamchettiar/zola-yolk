@@ -360,13 +360,25 @@ System.out.println("hi");
 ```
 
 - `titles` — one label per code block, in order
+- `group` — optional name; blocks sharing one switch together
 
 The body should hold nothing but fenced code blocks: each becomes one panel,
 paired with a title by position. Switching is a radio group rather than a
 script, so it works with JavaScript disabled and the arrow keys move between
-tabs. The shortcode uses Zola's per-page `nth` to namespace each group; from a
+tabs. The shortcode uses Zola's per-page `nth` to namespace each block; from a
 template, pass your own `id`. Up to 8 tabs are styled — raise the `@for` bound
 in `sass/_components.scss` for more.
+
+Blocks given the same `group` move as one: picking a tab in any of them picks
+the tab at the same position in all the others, which suits a page that shows
+the same example over and over in two forms. Each block still owns its radios,
+so this is the only part that needs JavaScript (`partials/tabs.html`); without
+it every block simply switches on its own.
+
+A grouped block also reserves the height of its tallest panel, so a short panel
+leaves space below it. A group switch resizes blocks further up the page as
+well, and without a fixed height those would slide the tab under the pointer
+away mid-click. Ungrouped blocks have no such problem and still shrink to fit.
 
 ### Lmode / Dmode
 
