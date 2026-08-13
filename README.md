@@ -80,6 +80,11 @@ Download and extract the repository into `themes/zola-yolk/` inside your site. U
 Below is a comprehensive set of config supported by theme, feel free to customize as per your requirements -
 
 ```toml
+# Set this to the URL you actually serve from, including the scheme. The icon
+# macro writes it into an inline `url(...)`, which no proxy will rewrite for you,
+# so an http base_url on an https site shows up as mixed content. The deploy
+# workflow builds with plain `zola build` for this reason — it does not pass
+# --base-url, so this value is the one that ships.
 base_url = "https://example.com/" 
 title = "" 
 description = ""      # used for <meta name="description"> and Open Graph
