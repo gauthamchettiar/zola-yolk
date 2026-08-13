@@ -39,6 +39,13 @@ jobs:
       # page is served over https. zola.toml's own base_url is the https one.
       - name: Build the site
         run: zola build
+      - name: Strip unused CSS
+        run: |
+          npx --yes purgecss \
+            --css public/main.css public/giallo-light.css public/giallo-dark.css \
+            --content 'public/**/*.html' \
+            --output public/ \
+            --safelist search-empty mermaid math-block math-inline
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
