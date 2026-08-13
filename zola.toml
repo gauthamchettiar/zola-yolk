@@ -5,9 +5,7 @@ compile_sass = true
 build_search_index = true
 # Emits atom.xml; the theme links to it from <head> when this is on.
 generate_feeds = true
-taxonomies = [
-    { name = "tags" },
-]
+taxonomies = [{ name = "tags" }]
 
 [markdown]
 definition_list = true
@@ -31,6 +29,8 @@ enable_search = true
 
 # Footer text (plain text or HTML).
 footer = "Made with ❤️ for [zola](https://www.getzola.org/)"
+
+insert_anchor_links = true
 
 # Self-hosted fonts to load. Each entry needs a source (subfolder under static/fonts/)
 # and a name matching the synced folder under that source.

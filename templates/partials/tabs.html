@@ -5,6 +5,13 @@
   This is an enhancement, not the mechanism. The tabs themselves are a radio
   group in CSS (see sass/_components.scss), so without JavaScript every block
   still switches — just on its own rather than together.
+
+  Panels keep their natural height, so a group switch can change the height of
+  every block on the page at once — including ones above the block the visitor
+  is looking at, which would otherwise shove their scroll position around. This
+  measures the clicked block's position before and after the sync and scrolls
+  by the difference in the same frame, so to the eye nothing above moves; only
+  the tab the visitor clicked visibly changes.
 #}
 <script>
   (function () {
@@ -18,8 +25,9 @@
       if (!input.matches || !input.matches('.tabs[data-group] > input')) return;
 
       const tabs = input.parentElement;
-      const index = Array.prototype.indexOf.call(radios(tabs), input);
+      const rectBefore = tabs.getBoundingClientRect();
 
+      const index = Array.prototype.indexOf.call(radios(tabs), input);
       document.querySelectorAll(".tabs[data-group]").forEach(function (other) {
         if (other === tabs || other.dataset.group !== tabs.dataset.group) return;
         // Checking a radio in code fires no `change` event, so this cannot
@@ -27,6 +35,12 @@
         const peer = radios(other)[index];
         if (peer) peer.checked = true;
       });
+
+      // Reading layout here forces the browser to apply the sync above before
+      // measuring, so the two rects are the before/after of the whole update.
+      const rectAfter = tabs.getBoundingClientRect();
+      const offset = rectAfter.top - rectBefore.top;
+      if (offset !== 0) window.scrollBy(0, offset);
     });
   })();
 </script>

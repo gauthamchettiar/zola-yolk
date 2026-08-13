@@ -2,7 +2,7 @@
 
 A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
-Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`quote`](#quote), [`admonition`](#admonition), [`border`](#border), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode).
+Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`border`](#border), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode).
 
 **dark-theme**: 
 ![dark-theme-screenshot](/static/images/screenshots/home-dark.png)
@@ -233,7 +233,7 @@ Calls out a run of text.
 ```
 
 - `text` — required
-- `color` — `white`, `yellow` (default), `pink`, `green`, `muted`
+- `color` — `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
 - `decoration` — `highlight` (default), `border`
 
 ### Quote
@@ -253,7 +253,7 @@ The best way to predict the future is to invent it.
 
 - `author` — who said it · `cite` — the work, rendered in `<cite>`
 - `url` — source URL; sets the blockquote's `cite` attribute and links the citation
-- `color` — `white`, `yellow`, `pink` (default), `green`, `muted`
+- `color` — `white`, `yellow`, `pink` (default), `green`, `red`, `blue`, `muted`
 
 ### Admonition
 
@@ -269,7 +269,31 @@ This one bites.
 ```
 
 - `title` — optional heading · `icon` — Font Awesome name (default: `circle-info`)
-- `color` — `white`, `yellow` (default), `pink`, `green`, `muted`
+- `color` — `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
+
+`note`, `warning`, `danger`, `info` and `tip` are presets of `admonition` with
+a fixed color and icon, and a title that defaults to their own name:
+
+```
+{% note() %}
+Worth knowing.
+{% end %}
+
+{% warning(title="Careful") %}
+This one bites.
+{% end %}
+```
+
+| shortcode | color   | icon                  |
+| --------- | ------- | --------------------- |
+| `note`    | yellow  | `note-sticky`         |
+| `warning` | pink    | `triangle-exclamation`|
+| `danger`  | red     | `circle-exclamation`  |
+| `info`    | green   | `circle-info`         |
+| `tip`     | blue    | `lightbulb`           |
+
+Each takes the same `title` parameter as `admonition`, defaulting to its own
+name (`"Note"`, `"Warning"`, …) instead of none.
 
 ### Border
 
@@ -285,7 +309,7 @@ Anything Markdown can produce.
 ```
 
 - `size` — `sm` (1px), `md` (2px, default), `lg` (4px), `xl` (8px)
-- `color` — `white` (default), `yellow`, `pink`, `green`, `muted`
+- `color` — `white` (default), `yellow`, `pink`, `green`, `red`, `blue`, `muted`
 - `style` — `solid` (default), `dashed`, `dotted`, `double`
 
 `double` needs at least 3px to separate into two lines, so it looks solid at
@@ -375,10 +399,11 @@ the same example over and over in two forms. Each block still owns its radios,
 so this is the only part that needs JavaScript (`partials/tabs.html`); without
 it every block simply switches on its own.
 
-A grouped block also reserves the height of its tallest panel, so a short panel
-leaves space below it. A group switch resizes blocks further up the page as
-well, and without a fixed height those would slide the tab under the pointer
-away mid-click. Ungrouped blocks have no such problem and still shrink to fit.
+A group switch resizes every block on the page at once, including ones above
+the one clicked — which would otherwise drag the scroll position along as they
+resize. `partials/tabs.html` measures the clicked block's position before and
+after the sync and scrolls by the difference in the same frame, so nothing
+above the click visibly moves.
 
 ### Lmode / Dmode
 

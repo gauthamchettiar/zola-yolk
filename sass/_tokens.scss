@@ -26,6 +26,8 @@
   --color-primary-accent:   light-dark(oklch(.54 .114 75),  oklch(.92 .15 95));  // 4.9:1 amber
   --color-secondary-accent: light-dark(oklch(.57 .243 345), oklch(.76 .25 345)); // 4.8:1 magenta
   --color-link:             light-dark(oklch(.522 .129 155), oklch(.87 .24 166));// 4.9:1 green
+  --color-red-accent:       light-dark(oklch(.56 .22 29),   oklch(.70 .22 29));  // 4.9:1 red
+  --color-blue-accent:      light-dark(oklch(.545 .25 264), oklch(.75 .2 264)); // 5.0:1 blue
 }
 
 // The theme toggle writes data-theme on <html>; pinning color-scheme here

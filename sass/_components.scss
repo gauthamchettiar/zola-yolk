@@ -155,6 +155,8 @@ dialog {
   &[data-color="yellow"] { --accent: var(--color-primary-accent); }
   &[data-color="pink"]   { --accent: var(--color-secondary-accent); }
   &[data-color="green"]  { --accent: var(--color-link); }
+  &[data-color="red"]    { --accent: var(--color-red-accent); }
+  &[data-color="blue"]   { --accent: var(--color-blue-accent); }
   &[data-color="muted"]  { --accent: var(--color-text-muted); }
 }
 
@@ -330,31 +332,6 @@ dialog {
   @for $i from 1 through 8 {
     > input:nth-of-type(#{$i}):checked ~ .tabs-panels > :nth-child(#{$i}) {
       display: block;
-    }
-  }
-
-  // Grouped blocks reserve the tallest panel's height. Every panel goes in the
-  // same grid cell and only its visibility changes, so the box never resizes.
-  //
-  // A lone block does not need this: its labels sit above its panel, so a
-  // shorter panel only pulls up what follows and whatever was clicked stays
-  // put. In a group the click also switches blocks further up the page, and
-  // those height changes push the pointer's target out from under it — hence
-  // the dead space under a short panel, which is the cost of holding it still.
-  &[data-group] .tabs-panels {
-    display: grid;
-
-    > * {
-      display: block;
-      grid-area: 1 / 1;
-      min-width: 0; // let a wide <pre> scroll rather than stretch the grid
-      visibility: hidden;
-    }
-  }
-
-  @for $i from 1 through 8 {
-    &[data-group] > input:nth-of-type(#{$i}):checked ~ .tabs-panels > :nth-child(#{$i}) {
-      visibility: visible;
     }
   }
 }

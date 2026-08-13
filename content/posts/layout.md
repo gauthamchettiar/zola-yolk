@@ -34,7 +34,7 @@ With a size, a colour and a line style.
 {% end %}
 
 sizes&nbsp; : `sm`, `md` (default), `lg`, `xl`  
-colours : `white` (default), `yellow`, `pink`, `green`, `muted`  
+colours : `white` (default), `yellow`, `pink`, `green`, `red`, `blue`, `muted`  
 styles&nbsp; : `solid` (default), `dashed`, `dotted`, `double`
 
 {% border(size="sm") %}
@@ -51,6 +51,14 @@ styles&nbsp; : `solid` (default), `dashed`, `dotted`, `double`
 
 {% border(size="xl", color="green", style="double") %}
 `size="xl"`, `color="green"`, `style="double"`
+{% end %}
+
+{% border(size="md", color="red", style="dashed") %}
+`size="md"`, `color="red"`, `style="dashed"`
+{% end %}
+
+{% border(size="md", color="blue", style="dotted") %}
+`size="md"`, `color="blue"`, `style="dotted"`
 {% end %}
 
 `double` needs at least 3px to separate into two lines, so it looks solid at
@@ -256,8 +264,9 @@ picking one tab picks the same tab on all the rest. Each block keeps its own
 radios, so this is the one part that does need JavaScript; with it off, every
 block still switches on its own.
 
-A grouped block also holds its height: it reserves room for its tallest panel,
-so a short panel leaves some space below it. That is deliberate. A group switch
-changes blocks further up the page too, and without a fixed height those would
-resize and slide the tab you just clicked out from under the pointer. An
-ungrouped block has no such problem and so still shrinks to fit.
+A group switch also changes the height of every block on the page at once,
+including ones above the tab you clicked — which would otherwise shove your
+scroll position around as they resize. `partials/tabs.html` measures the
+clicked block's position before and after the sync and scrolls by the
+difference in the same frame, so nothing above you visibly moves; only the tab
+you clicked changes.

@@ -50,21 +50,22 @@ Every heading gets an `id` derived from its text, which is what makes anchor
 links work. Override it with `{#custom-id}`:
 
 ```
-## My Heading            → id="my-heading"
-## My Heading {#custom}  → id="custom"
+#### My Heading                        → id="my-heading"
+#### Heading with custom id {#custom}  → id="custom"
 ```
 
-#### A heading with a custom id {#a-custom-anchor}
+#### My Heading                      
+#### Heading with custom id {#custom}
 
-That heading is reachable at [#a-custom-anchor](#a-custom-anchor).
+That heading is reachable at `[Custom Heading](#custom)` ->  [Custom Heading](#custom)
 
 ## Text Formatting
 
 | Syntax | Rendering |
 |---|---|
-| `**bold**` | **bold** |
-| `*italic*` | *italic* |
-| `***bold italic***` | ***bold italic*** |
+| `**bold**`, `__bold__` | **bold** |
+| `*italic*`, `__italic__` | *italic* |
+| `***bold italic***`, `___bold italic___` | ***bold italic*** |
 | `` `code` `` | `code` |
 | `~~strikethrough~~` | ~~strikethrough~~ |
 | `\*escaped\*` | \*escaped\* |
@@ -74,13 +75,15 @@ That heading is reachable at [#a-custom-anchor](#a-custom-anchor).
 | `<sub>sub</sub>script` | <sub>sub</sub>script |
 | `<sup>super</sup>script` | <sup>super</sup>script |
 
-Underscores work the same as asterisks: `_italic_`, `__bold__`, `___bold italic___`.
-
+{% tip() %}
 Backslash-escape any Markdown character to render it literally — `\*`, `\_`,
 `\#`, `\[`, `` \` ``. HTML entities such as `&copy;`, `&amp;` and `&#169;` pass
 straight through.
+{% end %}
 
-> `++inserted++`, `==mark==`, `~sub~`, `^sup^` are **not** supported by Zola's renderer — use inline HTML instead (shown above).
+{% warning() %}
+`++inserted++`, `==mark==`, `~sub~`, `^sup^` are **not** supported by Zola's renderer — use inline HTML instead (shown above).
+{% end %}
 
 ## Paragraphs and Line Breaks
 
@@ -99,12 +102,12 @@ because trailing whitespace is invisible.
 ```
 - First item
 - Second item
-  - Nested item
+  + Nested item
 ```
 
 - First item
 - Second item
-  - Nested item
+  + Nested item
 
 ### Ordered
 
@@ -177,19 +180,14 @@ Created with `---`, `***`, or `___`:
 > The best way to predict the future is to invent it.  
 > — Alan Kay
 
-Blockquotes nest, and can hold any other block — lists, code, headings:
+{% tip() %} 
+Blockquotes nest, and can hold any other block — lists, code, headings.
+{% end %}
 
-```
-> outer
-> > nested
->
-> - a list inside a quote
-```
+{% note(title="") %}
+There is an alternate [shortcode version](/posts/shortcode/#quotes) that supports author, cite and colours.  
 
-> outer
-> > nested
->
-> - a list inside a quote
+{% end %}
 
 ## Footnote
 
@@ -232,22 +230,11 @@ fn main() {
 }
 ```
 
-Tildes work as fences too, which is handy when the code itself contains
-backticks:
-
-````
-~~~python
-tilde_fence = True
-~~~
-````
-
-Indenting by four spaces also makes a code block, with no language:
-
-```
-    indented code block
-```
-
-    indented code block
+{% tip() %}
+- Tildes work as fences too, which is handy when the code itself contains
+backticks - just use `~~~` instead of ```.
+- Indenting by four spaces also makes a code block, with no language
+{% end %}
 
 ## Table
 
@@ -317,8 +304,9 @@ Read the [Zola docs][docs] and the [docs][] again.
 
 Look &nbsp; : &nbsp;[Supported Shortcodes](@/posts/shortcode.md)
 
-> A bare URL such as `https://example.com` is **not** auto-linked — wrap it in
-> angle brackets or use `[text](url)`.
+{% warning() %}
+A bare URL such as `https://example.com` is **not** auto-linked — wrap it in `<>` angle brackets or use `[text](url)`.
+{% end %}
 
 ## Images
 
@@ -351,19 +339,28 @@ is not parsed** — `**this**` stays literal:
   <strong>Use HTML tags, not Markdown, inside a block.</strong>
 </div>
 
-## Zola extras
+### Off by default
 
-Beyond CommonMark, Zola adds a few things of its own:
+These work, but only once enabled under `[markdown]` in `config.toml` 
 
-| Feature | Syntax |
-|---|---|
-| Internal link | `[text](@/posts/name.md)` |
-| Custom heading id | `## Title {#custom-id}` |
-| Summary cut-off | an HTML comment containing `more` |
-| Shortcodes | see [Supported Shortcodes](@/posts/shortcode.md) |
+{% wide() %}
+| Setting | Effect | Accepted values |
+|---|---|---|
+| `render_emoji` | `:smile:` renders as an emoji | `true`, `false` (default) |
+| `smart_punctuation` | straight quotes become curly, `--` becomes an en dash | `true`, `false` (default) |
+| `insert_anchor_links` | adds a clickable anchor beside every heading; `"heading"` wraps the heading text itself instead of adding a separate mark | `"left"`, `"right"`, `"heading"`, `"none"` (default) |
+| `github_alerts` | `> [!NOTE]` and friends render as styled callout blockquotes | `true`, `false` (default) |
+| `lazy_async_image` | adds `loading="lazy" decoding="async"` to every image | `true`, `false` (default) |
+| `external_links_target_blank` | external links open in a new tab with `rel="noopener"` | `true`, `false` (default) |
+| `external_links_no_follow` | adds `rel="nofollow"` to external links | `true`, `false` (default) |
+| `external_links_no_referrer` | adds `rel="noreferrer"` to external links | `true`, `false` (default) |
+| `external_links_class` | adds a class attribute to external links | any string, unset by default |
+{% end %}
 
-The summary marker splits a page into `page.summary` and the rest, and drops a
-`<span id="continue-reading">` at that point.
+Zola already tells external links apart from internal ones — every link whose
+host isn't the site's own gets `rel="external"` — so nothing above is needed
+just to detect them, only to change what happens once they're detected.
+
 
 ### Not supported
 
@@ -379,12 +376,4 @@ These are common elsewhere but do nothing here — use inline HTML instead:
 | `$E = mc^2$` (math) | — |
 | `[[Wikilink]]` | `[text](@/path.md)` |
 
-### Off by default
 
-These work, but only once enabled under `[markdown]` in `config.toml`:
-
-| Setting | Effect |
-|---|---|
-| `render_emoji` | `:smile:` renders as an emoji |
-| `smart_punctuation` | straight quotes become curly, `--` becomes an en dash |
-| `insert_anchor_links` | adds a clickable anchor beside every heading |

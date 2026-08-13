@@ -15,7 +15,7 @@
   A framed block.
     content — inner HTML (required)
     size    — sm | md | lg | xl        (default: "md")
-    color   — white | yellow | pink | green | muted (default: "white")
+    color   — white | yellow | pink | green | red | blue | muted (default: "white")
     style   — solid | dashed | dotted | double (default: "solid")
 #}
 {% macro border(content, size="md", color="white", style="solid") -%}
@@ -95,7 +95,7 @@
     author  — who said it (default: none)
     cite    — the work it came from, rendered in <cite> (default: none)
     url     — source URL, used for the blockquote's cite attribute (default: none)
-    color   — white | yellow | pink | green | muted (default: "pink")
+    color   — white | yellow | pink | green | red | blue | muted (default: "pink")
 #}
 {% macro quote(content, author="", cite="", url="", color="pink") -%}
 <figure class="quote" data-color="{{ color }}">
@@ -116,7 +116,7 @@
     content — inner HTML (required)
     title   — heading text beside the icon (default: none)
     icon    — Font Awesome name (default: "circle-info")
-    color   — white | yellow | pink | green | muted (default: "yellow")
+    color   — white | yellow | pink | green | red | blue | muted (default: "yellow")
 #}
 {% macro admonition(content, title="", icon="circle-info", color="yellow") -%}
 <aside class="admonition" data-color="{{ color }}"{% if not title %} data-untitled{% endif %}>

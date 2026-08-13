@@ -17,9 +17,14 @@
   Parameters:
     title  — heading text beside the icon (default: none)
     icon   — Font Awesome name (default: "circle-info")
-    color  — white | yellow | pink | green | muted (default: "yellow")
+    color  — white | yellow | pink | green | red | blue | muted (default: "yellow")
 
   Rendered as <aside>, the element for content tangential to what surrounds it.
+
+  `note`, `warning`, `danger`, `info` and `tip` are presets of this shortcode
+  with a fixed color and icon — reach for one of those first, and drop to
+  `admonition` directly only when you need a color/icon combination they don't
+  cover.
 #}
 {%- import "macros/blocks.html" as blocks -%}
 {{ blocks::admonition(content=body | markdown, title=title | default(value=""), icon=icon | default(value="circle-info"), color=color | default(value="yellow")) }}

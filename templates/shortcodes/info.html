@@ -1,0 +1,23 @@
+{#
+  info shortcode — admonition preset: color="green", icon="circle-info".
+
+  markdown:
+    {% info() %}
+    Good to know.
+    {% end %}
+
+    {% info(title="FYI") %}
+    Good to know.
+    {% end %}
+
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::admonition(content="<p>Good to know.</p>", title="Info", icon="circle-info", color="green") }}
+
+  Parameters:
+    title  — heading text beside the icon (default: "Info")
+
+  See templates/shortcodes/admonition.html for the shortcode this presets.
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::admonition(content=body | markdown, title=title | default(value="Info"), icon="circle-info", color="green") }}

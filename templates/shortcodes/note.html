@@ -1,0 +1,23 @@
+{#
+  note shortcode — admonition preset: color="yellow", icon="note-sticky".
+
+  markdown:
+    {% note() %}
+    Worth knowing.
+    {% end %}
+
+    {% note(title="Heads up") %}
+    Worth knowing.
+    {% end %}
+
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::admonition(content="<p>Worth knowing.</p>", title="Note", icon="note-sticky", color="yellow") }}
+
+  Parameters:
+    title  — heading text beside the icon (default: "Note")
+
+  See templates/shortcodes/admonition.html for the shortcode this presets.
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::admonition(content=body | markdown, title=title | default(value="Note"), icon="note-sticky", color="yellow") }}

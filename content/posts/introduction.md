@@ -7,8 +7,8 @@ description = "What Zola is, what this theme does, and where to find the rest of
 tags = ["zola", "theme"]
 +++
 
-The short version of what you are looking at: the generator underneath, the
-theme on top, and where the rest of the demo lives.
+The short version of what you are looking at: *the generator underneath, the
+theme on top, and where the rest of the demo lives*.
 
 ## What is Zola?
 

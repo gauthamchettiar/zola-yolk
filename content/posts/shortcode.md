@@ -30,8 +30,21 @@ switch tabs on any example below and the rest of the page follows.
 ```
 {% end %}
 
-name : Font Awesome icon name &nbsp;·&nbsp; style : `solid` (default), `regular`, `brands`  
-class : extra CSS classes &nbsp;·&nbsp; aria : label; omitted makes the icon decorative
+name
+: Font Awesome icon name. Required.
+
+style
+: `solid` (default), `regular`, `brands`
+
+source
+: icon pack, a subfolder of `static/icons/`. Default `font-awesome`.
+
+class
+: extra CSS classes. Default none.
+
+aria
+: accessible label. Omit it and the icon renders `aria-hidden`, which is what
+  you want whenever the surrounding text already names it.
 
 star&nbsp;&nbsp; : {{ icon(name="star") }}  
 github : {{ icon(name="github", style="brands") }}  
@@ -55,7 +68,17 @@ Opens in a new tab with `rel="noopener noreferrer"` and appends an indicator.
 ```
 {% end %}
 
-text, href : required &nbsp;·&nbsp; new_tab : default `true` &nbsp;·&nbsp; show_icon : default `true`
+text
+: visible link text. Required.
+
+href
+: destination URL. Required.
+
+new_tab
+: `true` (default), `false` — opens in a new tab with `rel="noopener noreferrer"`
+
+show_icon
+: `true` (default), `false` — appends the external-link indicator
 
 default&nbsp;&nbsp;&nbsp; : {{ elink(text="Example", href="https://example.com") }}  
 no new tab : {{ elink(text="Example", href="https://example.com", new_tab=false) }}  
@@ -77,11 +100,17 @@ Calls out a run of text, either filled or outlined.
 ```
 {% end %}
 
-colors : `white`, `yellow` (default), `pink`, `green`, `muted`  
-decoration : `highlight` (default), `border`
+text
+: the text to mark. Required.
 
-filled&nbsp;&nbsp; : {{ mark(text="yellow") }} {{ mark(text="pink", color="pink") }} {{ mark(text="green", color="green") }}  
-outlined : {{ mark(text="yellow", decoration="border") }} {{ mark(text="pink", color="pink", decoration="border") }} {{ mark(text="green", color="green", decoration="border") }}
+color
+: `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
+
+decoration
+: `highlight` (default, filled), `border` (outlined)
+
+filled&nbsp;&nbsp; : {{ mark(text="yellow") }} {{ mark(text="pink", color="pink") }} {{ mark(text="green", color="green") }} {{ mark(text="red", color="red") }} {{ mark(text="blue", color="blue") }}  
+outlined : {{ mark(text="yellow", decoration="border") }} {{ mark(text="pink", color="pink", decoration="border") }} {{ mark(text="green", color="green", decoration="border") }} {{ mark(text="red", color="red", decoration="border") }} {{ mark(text="blue", color="blue", decoration="border") }}
 
 ## Quotes
 
@@ -100,9 +129,22 @@ The best way to predict the future is to invent it.
 ```
 {% end %}
 
-author : who said it &nbsp;·&nbsp; cite : the work, rendered in `<cite>`  
-url : source URL, sets the blockquote's `cite` attribute and links the citation  
-colors : `white`, `yellow`, `pink` (default), `green`, `muted`
+body
+: the quotation itself. From a template this is the `content` parameter, and
+  it takes already-rendered HTML.
+
+author
+: who said it. Default none.
+
+cite
+: the work it came from, rendered in `<cite>`. Default none.
+
+url
+: source URL. Sets the blockquote's `cite` attribute and links the citation.
+  Default none.
+
+color
+: `white`, `yellow`, `pink` (default), `green`, `red`, `blue`, `muted`
 
 {% quote(author="Alan Kay", cite="1971") %}
 The best way to predict the future is to invent it.
@@ -133,8 +175,19 @@ This one bites.
 ```
 {% end %}
 
-title : optional heading &nbsp;·&nbsp; icon : Font Awesome name, default `circle-info`  
-colors : `white`, `yellow` (default), `pink`, `green`, `muted`
+body
+: the callout's content. From a template this is the `content` parameter, and
+  it takes already-rendered HTML.
+
+title
+: heading text beside the icon. Default none, which floats the lone icon
+  beside the first line instead of above it.
+
+icon
+: Font Awesome name. Default `circle-info`.
+
+color
+: `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
 
 {% admonition(title="Note") %}
 Worth knowing.
@@ -146,6 +199,48 @@ This one bites.
 
 {% admonition(icon="lightbulb", color="green") %}
 An icon with no title works too.
+{% end %}
+
+### Admonition Presets
+
+`note`, `warning`, `danger`, `info` and `tip` are `admonition` with a fixed
+color and icon, and a title that defaults to their own name.
+
+{% code(titles=["markdown content", "template files"], group="usage") %}
+```md
+{​% note() %​}
+Worth knowing.
+{​% end %​}
+
+{​% warning(title="Careful") %​}
+This one bites.
+{​% end %​}
+```
+```jinja2
+{​% import "macros/blocks.html" as blocks %​}
+{​{ blocks::admonition(content="<p>Worth knowing.</p>", title="Note", icon="note-sticky", color="yellow") }​}
+{​{ blocks::admonition(content="<p>This one bites.</p>", title="Careful", icon="triangle-exclamation", color="pink") }​}
+```
+{% end %}
+
+{% note() %}
+Worth knowing.
+{% end %}
+
+{% warning() %}
+This one bites.
+{% end %}
+
+{% danger() %}
+Don't do this in production.
+{% end %}
+
+{% info() %}
+Good to know.
+{% end %}
+
+{% tip(title="Shortcut") %}
+There's a faster way to do this.
 {% end %}
 
 ## Light and Dark Mode Content
