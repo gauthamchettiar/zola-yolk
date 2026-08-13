@@ -149,7 +149,7 @@ dialog {
 
 // One colour map for every decorated component, so adding a colour is a single
 // line here rather than one line per component.
-.border, .mark, .quote, .admonition {
+.border, .mark, .quote, .admonition, .color {
   --accent: var(--color-text);
 
   &[data-color="yellow"] { --accent: var(--color-primary-accent); }
@@ -197,6 +197,104 @@ dialog {
     background: none;
     border: 1px solid var(--accent);
     color: var(--accent);
+  }
+}
+
+// Coloured text (the `color` shortcode) — like `.mark`, but plain: no
+// background, no border, just colour.
+.color {
+  color: var(--accent);
+}
+
+// Fun, animated multi-colour text (the `shimmer` shortcode). Cycles through
+// the site's existing accent palette rather than an arbitrary rainbow, so it
+// stays part of the same colour system instead of clashing with it.
+//
+// `type="background"` fixes the text colour at --color-bg while the highlight
+// behind it cycles — the same trick `.mark`'s highlight decoration uses for
+// one colour, extended to five. Contrast is symmetric and every accent
+// already meets AA against --color-bg (see sass/_tokens.scss), so
+// --color-bg text stays readable against any of them.
+.shimmer {
+  --shimmer-1: var(--color-primary-accent);
+  --shimmer-2: var(--color-secondary-accent);
+  --shimmer-3: var(--color-link);
+  --shimmer-4: var(--color-red-accent);
+  --shimmer-5: var(--color-blue-accent);
+
+  font-weight: var(--font-weight-bold);
+
+  &[data-type="background"] {
+    padding: 0.15rem 0.35rem;
+    color: var(--color-bg);
+  }
+
+  &[data-type="text"][data-style="cycle"] {
+    animation: shimmer-cycle-text 5s linear infinite;
+  }
+
+  &[data-type="background"][data-style="cycle"] {
+    animation: shimmer-cycle-bg 5s linear infinite;
+  }
+
+  // A gradient sweeping across the text is the same technique either way —
+  // clipped to the glyphs for "text", left as a plain fill for "background".
+  //
+  // The gradient is 4x the element's own width, so only a fraction of it is
+  // ever in view and colours arrive gradually — the earlier version was the
+  // same width as the element, so a full loop put all five colours on
+  // screen in quick succession and read as flickering rather than a wave.
+  // `alternate` reverses smoothly at each end instead of snapping back, and
+  // the slower duration gives each transition room to actually be seen.
+  &[data-type="text"][data-style="wave"],
+  &[data-type="background"][data-style="wave"] {
+    background-image: linear-gradient(
+      90deg,
+      var(--shimmer-1), var(--shimmer-2), var(--shimmer-3),
+      var(--shimmer-4), var(--shimmer-5)
+    );
+    background-size: 400% 100%;
+    animation: shimmer-wave-position 8s ease-in-out infinite alternate;
+  }
+
+  &[data-type="text"][data-style="wave"] {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@keyframes shimmer-cycle-text {
+  0%   { color: var(--shimmer-1); }
+  20%  { color: var(--shimmer-2); }
+  40%  { color: var(--shimmer-3); }
+  60%  { color: var(--shimmer-4); }
+  80%  { color: var(--shimmer-5); }
+  100% { color: var(--shimmer-1); }
+}
+
+@keyframes shimmer-cycle-bg {
+  0%   { background-color: var(--shimmer-1); }
+  20%  { background-color: var(--shimmer-2); }
+  40%  { background-color: var(--shimmer-3); }
+  60%  { background-color: var(--shimmer-4); }
+  80%  { background-color: var(--shimmer-5); }
+  100% { background-color: var(--shimmer-1); }
+}
+
+@keyframes shimmer-wave-position {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 100% 0; }
+}
+
+// Purely decorative motion, so reduced-motion drops it entirely rather than
+// slowing it down. !important is deliberate: it needs to beat the
+// [data-type][data-style] animation rules above regardless of which combination
+// is in play, and this is the one rule whose job is to override them all.
+@media (prefers-reduced-motion: reduce) {
+  .shimmer {
+    animation: none !important;
+    background-position: 0% 0 !important;
   }
 }
 

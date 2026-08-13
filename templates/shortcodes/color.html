@@ -1,0 +1,21 @@
+{#
+  color shortcode — colours a run of text.
+
+  markdown:
+    {{ color(text="important") }}
+    {{ color(text="careful", color="red") }}
+
+  template:
+    {% import "macros/widgets.html" as widgets %}
+    {{ widgets::color(text="important", color="red") }}
+
+  Parameters:
+    text   — the text to colour (required)
+    color  — white | yellow | pink | green | red | blue | muted (default: "yellow")
+
+  Like `mark`, but plain: no background, no border, just colour. Reach for
+  `mark` when the text needs to be called out, this when it just needs to
+  not be the default colour.
+#}
+{%- import "macros/widgets.html" as widgets -%}
+{{ widgets::color(text=text, color=color | default(value="yellow")) }}

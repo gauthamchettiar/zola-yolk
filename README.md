@@ -2,7 +2,7 @@
 
 A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
-Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`border`](#border), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode).
+Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`border`](#border), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode).
 
 **dark-theme**: 
 ![dark-theme-screenshot](/static/images/screenshots/home-dark.png)
@@ -235,6 +235,43 @@ Calls out a run of text.
 - `text` — required
 - `color` — `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
 - `decoration` — `highlight` (default), `border`
+
+### Color
+
+Colours a run of text — like `mark`, but plain: no background, no border,
+just colour.
+
+```
+{{ color(text="important") }}
+{{ color(text="careful", color="red") }}
+```
+```jinja2
+{{ widgets::color(text="important", color="red") }}
+```
+
+- `text` — required
+- `color` — `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
+
+### Shimmer
+
+Fun, animated multi-colour text. Cycles through the site's existing accent
+palette (yellow, pink, green, red, blue) rather than an arbitrary rainbow, so
+it stays part of the same colour system instead of clashing with it. Pure
+CSS, no JavaScript, and disabled entirely under `prefers-reduced-motion`.
+
+```
+{{ shimmer(text="look at me") }}
+{{ shimmer(text="smooth", type="background", style="wave") }}
+```
+```jinja2
+{{ widgets::shimmer(text="look at me", type="background") }}
+```
+
+- `text` — required
+- `type` — `text` (default) — the text itself cycles colour; `background` —
+  the text stays `--color-bg` while a highlight behind it cycles instead
+- `style` — `cycle` (default) — jumps between accents in place; `wave` —
+  sweeps a moving gradient across the text
 
 ### Quote
 

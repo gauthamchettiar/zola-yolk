@@ -38,6 +38,32 @@
 {%- endmacro mark %}
 
 {#
+  Coloured run of text — like `mark`, but plain: no background, no border,
+  just colour. Reach for `mark` when the text needs to be called out, this
+  when it just needs to not be the default colour.
+    text   — the text to colour (required)
+    color  — white | yellow | pink | green | red | blue | muted (default: "yellow")
+#}
+{% macro color(text, color="yellow") -%}
+<span class="color" data-color="{{ color }}">{{ text | safe }}</span>
+{%- endmacro color %}
+
+{#
+  Fun, animated multi-colour text. Cycles through the site's existing accent
+  palette (yellow, pink, green, red, blue) rather than an arbitrary rainbow,
+  so it stays part of the same colour system instead of clashing with it.
+  Respects prefers-reduced-motion (see .shimmer in sass/_components.scss).
+    text   — the text to animate (required)
+    type   — text | background — which part of the element cycles colour
+             (default: "text")
+    style  — cycle | wave — cycle jumps between accents in place; wave sweeps
+             a moving gradient across the text (default: "cycle")
+#}
+{% macro shimmer(text, type="text", style="cycle") -%}
+<span class="shimmer" data-type="{{ type }}" data-style="{{ style }}">{{ text | safe }}</span>
+{%- endmacro shimmer %}
+
+{#
   Renders the page metadata line: date, reading time, and tags.
 
   Renders as `{ date = …, read_time = …, tags = [a, b] }`. The braces, the ` = `

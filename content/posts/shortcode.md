@@ -112,6 +112,66 @@ decoration
 filled&nbsp;&nbsp; : {{ mark(text="yellow") }} {{ mark(text="pink", color="pink") }} {{ mark(text="green", color="green") }} {{ mark(text="red", color="red") }} {{ mark(text="blue", color="blue") }}  
 outlined : {{ mark(text="yellow", decoration="border") }} {{ mark(text="pink", color="pink", decoration="border") }} {{ mark(text="green", color="green", decoration="border") }} {{ mark(text="red", color="red", decoration="border") }} {{ mark(text="blue", color="blue", decoration="border") }}
 
+## Color
+
+Colours a run of text — like `mark`, but plain: no background, no border,
+just colour.
+
+{% code(titles=["markdown content", "template files"], group="usage") %}
+```md
+{​{ color(text="important") }​}
+{​{ color(text="careful", color="red") }​}
+```
+```jinja2
+{​% import "macros/widgets.html" as widgets %​}
+{​{ widgets::color(text="important") }​}
+{​{ widgets::color(text="careful", color="red") }​}
+```
+{% end %}
+
+text
+: the text to colour. Required.
+
+color
+: `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
+
+{{ color(text="yellow") }} {{ color(text="pink", color="pink") }} {{ color(text="green", color="green") }} {{ color(text="red", color="red") }} {{ color(text="blue", color="blue") }}
+
+## Shimmer
+
+Fun, animated multi-colour text. Cycles through the site's existing accent
+palette (yellow, pink, green, red, blue) rather than an arbitrary rainbow, so
+it stays part of the same colour system instead of clashing with it. Pure
+CSS, no JavaScript, and disabled entirely under `prefers-reduced-motion`.
+
+{% code(titles=["markdown content", "template files"], group="usage") %}
+```md
+{​{ shimmer(text="look at me") }​}
+{​{ shimmer(text="smooth", type="background", style="wave") }​}
+```
+```jinja2
+{​% import "macros/widgets.html" as widgets %​}
+{​{ widgets::shimmer(text="look at me") }​}
+{​{ widgets::shimmer(text="smooth", type="background", style="wave") }​}
+```
+{% end %}
+
+text
+: the text to animate. Required.
+
+type
+: `text` (default) — the text itself cycles colour. `background` — the text
+  stays a fixed colour while a highlight behind it cycles instead.
+
+style
+: `cycle` (default) — jumps between accents in place. `wave` — sweeps a
+  moving gradient across the text.
+
+text, cycle&nbsp;&nbsp;&nbsp;&nbsp; : {{ shimmer(text="look at me") }}  
+text, wave&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ shimmer(text="look at me", style="wave") }}  
+background, cycle : {{ shimmer(text="look at me", type="background") }}  
+background, wave&nbsp; : {{ shimmer(text="look at me", type="background", style="wave") }}
+
 ## Quotes
 
 An attributed quotation, rendered as `<figure>` / `<blockquote>` / `<figcaption>`

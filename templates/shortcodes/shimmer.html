@@ -1,0 +1,25 @@
+{#
+  shimmer shortcode — fun, animated multi-colour text.
+
+  markdown:
+    {{ shimmer(text="look at me") }}
+    {{ shimmer(text="smooth", type="background", style="wave") }}
+
+  template:
+    {% import "macros/widgets.html" as widgets %}
+    {{ widgets::shimmer(text="look at me", type="background") }}
+
+  Parameters:
+    text   — the text to animate (required)
+    type   — text | background — which part of the element cycles colour
+             (default: "text")
+    style  — cycle | wave — cycle jumps between accents in place; wave sweeps
+             a moving gradient across the text (default: "cycle")
+
+  Cycles through the site's existing accent palette (yellow, pink, green,
+  red, blue) rather than an arbitrary rainbow, so it stays part of the same
+  colour system instead of clashing with it. Pure CSS — no JavaScript — and
+  disabled entirely for prefers-reduced-motion.
+#}
+{%- import "macros/widgets.html" as widgets -%}
+{{ widgets::shimmer(text=text, type=type | default(value="text"), style=style | default(value="cycle")) }}
