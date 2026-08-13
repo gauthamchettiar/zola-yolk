@@ -4,10 +4,13 @@
   math. Included at the end of <body> by base.html when either
   config.extra.enable_mermaid or config.extra.enable_math is set.
 
-  Both libraries are self-hosted, same as elasticlunr for search (see
-  partials/search.html) — this theme never pulls scripts from a CDN. Add the
-  matching files under static/ before turning a flag on; see
-  content/posts/externals.md for where to get them.
+  Both libraries ship inside this theme's own static/ (mermaid.min.js,
+  katex/katex.min.{js,css} + katex/fonts/*.woff2) rather than a CDN, same
+  spirit as the self-hosted fonts and icons — see content/posts/externals.md.
+  Zola serves a theme's static/ for any site that installs it, so nothing
+  extra needs downloading to turn a flag on. katex.min.css was trimmed to
+  woff2-only @font-face rules, which is fine given this theme's own browser
+  baseline (see README's Browser support section).
 
   Mermaid picks its theme once, from data-theme at load time — it does not
   redraw already-rendered diagrams if the visitor flips light/dark afterwards
@@ -25,8 +28,8 @@
 </script>
 {%- endif %}
 {%- if config.extra.enable_math %}
-<link rel="stylesheet" href="{{ get_url(path="katex.min.css") }}">
-<script src="{{ get_url(path="katex.min.js") }}"></script>
+<link rel="stylesheet" href="{{ get_url(path="katex/katex.min.css") }}">
+<script src="{{ get_url(path="katex/katex.min.js") }}"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     if (!window.katex) return;

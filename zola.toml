@@ -27,14 +27,13 @@ enable_theme_switcher = true
 # Set to true to show a search button in the header (requires build_search_index = true)
 enable_search = true
 
-# Set to true to enable the render() shortcode's ```mermaid blocks. Needs
-# static/mermaid.min.js self-hosted — see content/posts/externals.md.
-enable_mermaid = false
+# Set to true to enable the render() shortcode's ```mermaid blocks. The
+# library ships inside the theme's own static/ — see content/posts/externals.md.
+enable_mermaid = true
 
-# Set to true to enable the render() shortcode's ```math blocks. Needs
-# static/katex.min.js and static/katex.min.css self-hosted — see
-# content/posts/externals.md.
-enable_math = false
+# Set to true to enable the render() shortcode's ```math blocks. The
+# library ships inside the theme's own static/ — see content/posts/externals.md.
+enable_math = true
 
 # Set to true to add a collapsible table of contents to every post. Override
 # per post with `toc = false` under that post's own [extra].
