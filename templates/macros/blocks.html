@@ -23,6 +23,16 @@
 {%- endmacro border %}
 
 {#
+  Text alignment for a block. `center`, `left` and `right` are presets of
+  this with a fixed `align`.
+    content — inner HTML (required)
+    align   — left | center | right (default: "left")
+#}
+{% macro align(content, align="left") -%}
+<div class="align" data-align="{{ align }}">{{ content | safe }}</div>
+{%- endmacro align %}
+
+{#
   Content that breaks out of the reading column.
     content — inner HTML (required)
     size    — sm | md | lg | xl (default: "md")

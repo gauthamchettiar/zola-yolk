@@ -1,0 +1,16 @@
+{#
+  center shortcode — align preset: align="center".
+
+  markdown:
+    {% center() %}
+    Centered text.
+    {% end %}
+
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::align(content="<p>Centered text.</p>", align="center") }}
+
+  See templates/shortcodes/align.html for the shortcode this presets.
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::align(content=body | markdown, align="center") }}

@@ -1,0 +1,16 @@
+{#
+  right shortcode — align preset: align="right".
+
+  markdown:
+    {% right() %}
+    Right-aligned text.
+    {% end %}
+
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::align(content="<p>Right-aligned text.</p>", align="right") }}
+
+  See templates/shortcodes/align.html for the shortcode this presets.
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::align(content=body | markdown, align="right") }}

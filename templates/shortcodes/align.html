@@ -1,0 +1,20 @@
+{#
+  align shortcode — text alignment for a block.
+
+  markdown:
+    {% align(align="center") %}
+    Centered text.
+    {% end %}
+
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::align(content="<p>Centered text.</p>", align="center") }}
+
+  Parameters:
+    align — left | center | right (default: "left")
+
+  `center`, `left` and `right` are presets of this with a fixed `align` —
+  reach for one of those first.
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::align(content=body | markdown, align=align | default(value="left")) }}

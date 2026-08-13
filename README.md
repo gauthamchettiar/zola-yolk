@@ -2,7 +2,7 @@
 
 A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
-Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`border`](#border), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode).
+Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`border`](#border), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode).
 
 **dark-theme**: 
 ![dark-theme-screenshot](/static/images/screenshots/home-dark.png)
@@ -351,6 +351,32 @@ Anything Markdown can produce.
 
 `double` needs at least 3px to separate into two lines, so it looks solid at
 `size="sm"`.
+
+### Align
+
+Text alignment for a block.
+
+```
+{% align(align="center") %}
+Centered text.
+{% end %}
+```
+```jinja2
+{{ blocks::align(content="<p>Centered text.</p>", align="center") }}
+```
+
+- `align` — `left` (default), `center`, `right`
+
+`center`, `left` and `right` are presets of `align` with a fixed `align`:
+
+```
+{% center() %}
+Centered text.
+{% end %}
+```
+
+Each takes no parameters beyond `body`/`content` — the alignment is fixed by
+which one you call.
 
 ### Wide
 

@@ -1,0 +1,18 @@
+{#
+  left shortcode — align preset: align="left".
+
+  markdown:
+    {% left() %}
+    Left-aligned text.
+    {% end %}
+
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::align(content="<p>Left-aligned text.</p>", align="left") }}
+
+  See templates/shortcodes/align.html for the shortcode this presets. Left is
+  already the default alignment, so this is mostly useful to override a
+  `center`/`right` block an ancestor set, or to be explicit in place.
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::align(content=body | markdown, align="left") }}

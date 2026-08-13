@@ -64,6 +64,56 @@ styles&nbsp; : `solid` (default), `dashed`, `dotted`, `double`
 `double` needs at least 3px to separate into two lines, so it looks solid at
 `size="sm"`.
 
+## Alignment
+
+{% code(titles=["markdown content", "template files"], group="usage") %}
+```md
+{​% align(align="center") %​}
+Centered text.
+{​% end %​}
+```
+```jinja2
+{​% import "macros/blocks.html" as blocks %​}
+{​{ blocks::align(content="<p>Centered text.</p>", align="center") }​}
+```
+{% end %}
+
+align
+: `left` (default), `center`, `right`
+
+
+{% align(align="center") %}
+Centered text.
+{% end %}
+
+### Alignment Presets
+`center`, `left` and `right` are presets of `align` with a fixed `align`, and
+take no parameters of their own:
+
+{% code(titles=["markdown content", "template files"], group="usage") %}
+```md
+{​% center() %​}
+Centered text.
+{​% end %​}
+
+{​% right() %​}
+Right-aligned text.
+{​% end %​}
+```
+```jinja2
+{​{ blocks::align(content="<p>Centered text.</p>", align="center") }​}
+{​{ blocks::align(content="<p>Right-aligned text.</p>", align="right") }​}
+```
+{% end %}
+
+{% center() %}
+Centered text.
+{% end %}
+
+{% right() %}
+Right-aligned text.
+{% end %}
+
 ## Wide Content
 
 {% code(titles=["markdown content", "template files"], group="usage") %}

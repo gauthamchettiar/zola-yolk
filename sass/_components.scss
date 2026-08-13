@@ -498,6 +498,14 @@ dialog {
   flex-direction: column;
 }
 
+// Text alignment for a block (the `align` shortcode, and its `center` /
+// `left` / `right` presets).
+.align {
+  &[data-align="left"] { text-align: left; }
+  &[data-align="center"] { text-align: center; }
+  &[data-align="right"] { text-align: right; }
+}
+
 // Content that breaks out of the reading column (the `wide` shortcode).
 //
 // `left: 50%` moves the box to the centre of whatever contains it, and
