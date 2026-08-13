@@ -5,6 +5,13 @@ description = "A sample post covering common Markdown elements."
 
 [taxonomies]
 tags = ["markdown", "syntax", "zola"]
+
+[extra]
+# These headings exist only to show what each level looks like, not as real
+# sections — left out of the table of contents so they don't derail its
+# nesting (a real h1 or h6 appearing where a section boundary is expected
+# throws off every heading that follows it).
+toc_exclude = ["heading-1", "heading-2", "heading-3", "heading-4", "heading-5", "heading-6", "setext-headings","my-heading","heading-ids", "custom"]
 +++
 
 A comprehensive reference for Markdown syntax supported by Zola (pulldown-cmark).

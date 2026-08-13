@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros/blocks.html" as blocks %}
 
 {% block title %}{{ page.title }} | {{ config.title | default(value="Site") }}{% endblock title %}
 
@@ -8,6 +9,13 @@
     <h1>{{ page.title }}</h1>
     {{ widgets::meta(page=page) }}
   </header>
+  {%- if page.extra.toc | default(value=config.extra.enable_toc | default(value=true)) %}
+  {{ blocks::toc(
+    page=page,
+    max_level=page.extra.toc_max_level | default(value=config.extra.toc_max_level | default(value=6)),
+    exclude=page.extra.toc_exclude | default(value=config.extra.toc_exclude | default(value=[]))
+  ) }}
+  {%- endif %}
   {%- include "partials/content.html" %}
 </article>
 {% endblock content %}

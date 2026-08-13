@@ -171,3 +171,64 @@
   {{ content | safe }}
 </details>
 {%- endmacro expand %}
+
+{#
+  Recursive helper for `toc` — one <li> per heading, with a nested <ol> for
+  any children. Walks the shape Zola gives `page.toc`/`section.toc`: each
+  item has `id`, `permalink`, `title`, `level` and `children`. Not meant to
+  be called directly; renders bare <li>s with no enclosing <ol> so an
+  excluded heading can splice its children into its parent's list instead of
+  losing them.
+
+  `max_level` and `exclude` act differently on purpose. A heading past
+  `max_level` is dropped together with its children, since they're deeper
+  still and so also past it — there's nothing to rescue. An excluded heading
+  is dropped alone: its children move up to take its place, because the
+  usual reason to exclude one heading is that it isn't a real section
+  boundary (e.g. a heading written to demonstrate heading syntax, not to
+  divide the page) — its children are still real sections and would
+  otherwise vanish along with it.
+
+    items      — a `page.toc`-shaped array (required)
+    max_level  — drop headings deeper than this, and their children (required)
+    exclude    — heading ids to drop, promoting their children (required)
+#}
+{% macro toc_items(items, max_level, exclude) -%}
+  {%- for item in items %}
+    {%- if item.level <= max_level %}
+      {%- if item.id not in exclude -%}
+        {%- set child_html = "" -%}
+        {%- if item.children -%}
+          {%- set child_html = self::toc_items(items=item.children, max_level=max_level, exclude=exclude) -%}
+        {%- endif -%}
+<li><a href="{{ item.permalink }}">{{ item.title }}</a>{% if child_html | trim | length > 0 %}<ol>{{ child_html | safe }}</ol>{% endif %}</li>
+      {%- elif item.children -%}
+{{- self::toc_items(items=item.children, max_level=max_level, exclude=exclude) -}}
+      {%- endif %}
+    {%- endif %}
+  {%- endfor %}
+{%- endmacro toc_items %}
+
+{#
+  A table of contents built from `page.toc`, wrapped in `expand` so it can be
+  collapsed out of the way without leaving the page.
+
+  Headings are only known once the page's own markdown has been fully parsed,
+  so this has to run from a template, not a shortcode: a shortcode called
+  from inside a page's body runs before that page's headings are collected,
+  and would only ever see an empty `page.toc`. `page.html` renders it once
+  from the template instead, after the content — and so the headings —
+  already exist.
+
+    page       — the page (or section) object, for its `toc` field (required)
+    title      — summary text (default: "Table of Contents")
+    state      — expanded | collapsed (default: "expanded")
+    max_level  — drop headings deeper than this h1=1 .. h6=6 (default: 6, no cap)
+    exclude    — heading ids to leave out, wherever they occur (default: none)
+#}
+{% macro toc(page, title="Table of Contents", state="expanded", max_level=6, exclude) -%}
+{%- if page.toc %}
+{%- set items_html = self::toc_items(items=page.toc, max_level=max_level, exclude=exclude) %}
+{{- self::expand(content="<ol>" ~ items_html ~ "</ol>", title=title, state=state) }}
+{%- endif -%}
+{%- endmacro toc %}

@@ -3,6 +3,12 @@
 
   The three macro namespaces below are imported once here; templates that extend
   base.html and partials included by it can both use them without re-importing.
+
+  macros/blocks.html is deliberately not imported here: some of its macros
+  (`toc`) call each other via `self::` for recursion, and Tera cannot resolve
+  `self::` inside a macro that reaches a caller through this kind of shared,
+  cross-template import — only through a local `{% import %}` in the template
+  that actually calls it (see page.html).
 #}
 {% import "macros/list.html" as list %}
 {% import "macros/widgets.html" as widgets %}

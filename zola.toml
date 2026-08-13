@@ -27,6 +27,18 @@ enable_theme_switcher = true
 # Set to true to show a search button in the header (requires build_search_index = true)
 enable_search = true
 
+# Set to true to add a collapsible table of contents to every post. Override
+# per post with `toc = false` under that post's own [extra].
+enable_toc = true
+
+# Deepest heading level shown in the table of contents (h1 = 1 .. h6 = 6).
+# Override per post with `toc_max_level` under that post's own [extra].
+toc_max_level = 6
+
+# Heading ids left out of the table of contents, wherever they occur.
+# Override per post with `toc_exclude` under that post's own [extra].
+toc_exclude = []
+
 # Footer text (plain text or HTML).
 footer = "Made with ❤️ for [zola](https://www.getzola.org/)"
 

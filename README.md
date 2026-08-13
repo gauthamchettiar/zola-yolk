@@ -2,7 +2,7 @@
 
 A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
-Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`expand`](#expand), [`border`](#border), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop).
+Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`expand`](#expand), [`border`](#border), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop). Plus an auto-generated [table of contents](#table-of-contents) on every post.
 
 **dark-theme**: 
 ![dark-theme-screenshot](/static/images/screenshots/home-dark.png)
@@ -106,6 +106,18 @@ recent_limit = 10 # posts shown under "Recent posts" on the homepage; 0 = all
 
 enable_theme_switcher = true
 enable_search = true
+
+# Adds a collapsible table of contents to every post. Override per post with
+# `toc = false` under that post's own [extra].
+enable_toc = true
+
+# Deepest heading level shown in the table of contents (h1 = 1 .. h6 = 6).
+# Override per post with `toc_max_level` under that post's own [extra].
+toc_max_level = 6
+
+# Heading ids left out of the table of contents, wherever they occur. Override
+# per post with `toc_exclude` under that post's own [extra].
+toc_exclude = []
 
 footer = "Written with ❤️"
 
@@ -348,6 +360,53 @@ JavaScript needed to drive it.
 
 - `title` — summary text (default: `Details`)
 - `state` — `expanded`, `collapsed` (default)
+
+### Table of Contents
+
+Every post gets a collapsible table of contents (built from its own headings)
+inserted right after its title, unless `enable_toc` is turned off — see
+[Configuration](#configuration). Turn it off for one post without touching the
+site default:
+
+```toml
++++
+title = "..."
+
+[extra]
+toc = false
++++
+```
+
+There's no `{% toc() %}` shortcode to place inside a post's own body: Zola
+expands shortcodes before it parses that page's headings, so a shortcode
+inside the body can only ever see an empty table of contents for the page
+it's in. `page.html` renders it once from the template instead, after the
+headings are already known — see `blocks::toc` in `templates/macros/blocks.html`
+if you want to call it from a custom template.
+
+Two more `[extra]` keys shape what shows up, each overridable per post the
+same way as `toc`:
+
+- `toc_max_level` — deepest heading level shown (`1` = h1 .. `6` = h6, default
+  `6`, i.e. no cap). A heading past this is dropped along with its children,
+  since they're deeper still.
+- `toc_exclude` — a list of heading ids left out, wherever they occur (default
+  `[]`). An excluded heading's children move up to take its place instead of
+  disappearing with it, since the usual reason to exclude one is that it
+  isn't a real section boundary — e.g. `content/posts/markdown.md` excludes
+  the `# Heading 1` … `###### Heading 6` headings it uses to demonstrate
+  heading syntax, so they don't derail the nesting of the real sections
+  around them.
+
+```toml
++++
+title = "..."
+
+[extra]
+toc_max_level = 3
+toc_exclude = ["some-heading-id"]
++++
+```
 
 ### Border
 
