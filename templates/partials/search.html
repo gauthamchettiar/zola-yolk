@@ -4,6 +4,10 @@
 
   A native <dialog> supplies the backdrop, Escape-to-close, the focus trap and
   focus restoration, so none of that is reimplemented below.
+
+  elasticlunr and the search index are not loaded with the page. Nothing needs
+  them until the dialog opens, and the index grows with every post written, so
+  they are fetched the first time it does — see loadIndex() below.
 #}
 <dialog id="search-modal" aria-label="Search">
   <search>
@@ -17,8 +21,6 @@
   <ul class="search-results" id="search-results" role="list"></ul>
 </dialog>
 
-<script src="{{ get_url(path="elasticlunr.min.js") }}"></script>
-<script src="{{ get_url(path="search_index." ~ config.default_language ~ ".js") }}"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const dialog = document.getElementById("search-modal");
@@ -27,11 +29,47 @@
     if (!dialog) return;
 
     let index = null;
+    let loading = null;
+
+    function message(text) {
+      const li = document.createElement("li");
+      li.className = "search-empty";
+      li.textContent = text;
+      results.replaceChildren(li);
+    }
+
+    // Fetches elasticlunr and the index — independent of each other, so both go
+    // out at once — and builds the index. Resolves immediately on later calls.
+    function loadIndex() {
+      if (loading) return loading;
+      loading = new Promise(function (resolve) {
+        let pending = 2;
+        function done() {
+          if (--pending) return;
+          if (window.elasticlunr && window.searchIndex) {
+            index = elasticlunr.Index.load(window.searchIndex);
+          }
+          resolve();
+        }
+        for (const src of [
+          "{{ get_url(path='elasticlunr.min.js') }}",
+          "{{ get_url(path='search_index.' ~ config.default_language ~ '.js') }}"
+        ]) {
+          const s = document.createElement("script");
+          s.src = src;
+          s.onload = s.onerror = done;
+          document.head.appendChild(s);
+        }
+      });
+      return loading;
+    }
 
     function open() {
       input.value = "";
       results.replaceChildren();
       dialog.showModal();
+      // Warm the index while the visitor is still typing their first characters.
+      loadIndex();
     }
 
     const toggle = document.getElementById("search-toggle");
@@ -68,21 +106,27 @@
     input.addEventListener("input", function () {
       const query = input.value.trim();
       results.replaceChildren();
-      if (query.length < 2 || !window.searchIndex) return;
+      if (query.length < 2) return;
 
-      if (!index) index = elasticlunr.Index.load(window.searchIndex);
+      if (!index) message("Searching…");
+      loadIndex().then(function () {
+        // The index may have arrived several keystrokes late; answer only if
+        // this is still the query in the box.
+        if (input.value.trim() !== query) return;
+        show(query);
+      });
+    });
+
+    function show(query) {
+      results.replaceChildren();
+      if (!index) return message("Search is unavailable.");
+
       const hits = index.search(query, {
         fields: { title: { boost: 2 }, body: { boost: 1 } },
         expand: true
       });
 
-      if (!hits.length) {
-        const empty = document.createElement("li");
-        empty.className = "search-empty";
-        empty.textContent = 'No results for "' + query + '"';
-        results.append(empty);
-        return;
-      }
+      if (!hits.length) return message('No results for "' + query + '"');
 
       for (const hit of hits.slice(0, 8)) {
         const doc = index.documentStore.getDoc(hit.ref);
@@ -102,6 +146,6 @@
         item.append(link);
         results.append(item);
       }
-    });
+    }
   });
 </script>
