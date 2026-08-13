@@ -2,43 +2,103 @@
   Activates the render() shortcode (templates/shortcodes/render.html):
   turns a `.mermaid` block into a diagram and a `.math-block` /
   `.math-inline` into typeset math (display vs. inline mode, picked by the
-  shortcode's own `inline` parameter). Included at the end of <body> by
-  base.html when either config.extra.enable_mermaid or config.extra.enable_math
-  is set.
+  shortcode's own `inline` parameter).
+
+  base.html includes this only on pages whose rendered body actually contains
+  one of those markers, and sets `needs_mermaid` / `needs_math` to say which —
+  mermaid.min.js alone is 3.4 MB, far too much to hand to a page with no
+  diagram on it.
+
+  Neither library is in the markup below. Both are injected when the first
+  block that needs them comes near the viewport, so a page with a diagram
+  halfway down it still paints without waiting on the bundle. A block that is
+  already on screen loads immediately: IntersectionObserver reports the initial
+  intersection when you start observing, so no separate above-the-fold check is
+  needed.
 
   Both libraries ship inside this theme's own static/ (mermaid.min.js,
   katex/katex.min.{js,css} + katex/fonts/*.woff2) rather than a CDN, same
   spirit as the self-hosted fonts and icons — see content/posts/externals.md.
   Zola serves a theme's static/ for any site that installs it, so nothing
   extra needs downloading to turn a flag on. katex.min.css was trimmed to
-  woff2-only @font-face rules, which is fine given this theme's own browser
-  baseline (see README's Browser support section).
+  woff2-only @font-face rules and switched to font-display: swap, both fine
+  given this theme's own browser baseline (see README's Browser support).
 
   Mermaid picks its theme once, from data-theme at load time — it does not
   redraw already-rendered diagrams if the visitor flips light/dark afterwards
   (see partials/theme.html).
 #}
-{%- if config.extra.enable_mermaid %}
-<script src="{{ get_url(path="mermaid.min.js") }}"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    if (!window.mermaid) return;
-    var dark = document.documentElement.getAttribute("data-theme") === "dark";
-    mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default" });
-    mermaid.run({ querySelector: ".mermaid" });
-  });
-</script>
-{%- endif %}
-{%- if config.extra.enable_math %}
-<link rel="stylesheet" href="{{ get_url(path="katex/katex.min.css") }}">
-<script src="{{ get_url(path="katex/katex.min.js") }}"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    if (!window.katex) return;
-    document.querySelectorAll(".math-block, .math-inline").forEach(function (el) {
-      var displayMode = el.classList.contains("math-block");
-      katex.render(el.textContent, el, { throwOnError: false, displayMode: displayMode });
+  (function () {
+    // Calls `cb` once, the first time any of `nodes` comes within 200px of the
+    // viewport. Falls back to loading straight away where IntersectionObserver
+    // is missing, so the content still renders.
+    function whenNear(nodes, cb) {
+      if (!nodes.length) return;
+      if (!("IntersectionObserver" in window)) return cb();
+      var io = new IntersectionObserver(function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].isIntersecting) {
+            io.disconnect();
+            cb();
+            return;
+          }
+        }
+      }, { rootMargin: "200px" });
+      for (var i = 0; i < nodes.length; i++) io.observe(nodes[i]);
+    }
+
+    function loadScript(src, cb) {
+      var s = document.createElement("script");
+      s.src = src;
+      s.onload = s.onerror = cb;
+      document.head.appendChild(s);
+    }
+
+    function loadStyle(href, cb) {
+      var l = document.createElement("link");
+      l.rel = "stylesheet";
+      l.href = href;
+      l.onload = l.onerror = cb;
+      document.head.appendChild(l);
+    }
+{%- if needs_mermaid %}
+
+    whenNear(document.querySelectorAll(".mermaid"), function () {
+      loadScript("{{ get_url(path='mermaid.min.js') }}", function () {
+        if (!window.mermaid) return;
+        var dark = document.documentElement.getAttribute("data-theme") === "dark";
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: dark ? "dark" : "default",
+          // Mermaid's own defaults put #ccc edge labels on a #585858 backdrop,
+          // which is 4.43:1 — just under WCAG AA. These mirror --color-bg,
+          // --color-text and --color-text-muted from sass/_tokens.scss.
+          themeVariables: dark
+            ? { edgeLabelBackground: "#1a1a1a", textColor: "#ffffff", lineColor: "#999999" }
+            : { edgeLabelBackground: "#faf8f2", textColor: "#1a1a1a" }
+        });
+        mermaid.run({ querySelector: ".mermaid" });
+      });
     });
-  });
-</script>
 {%- endif %}
+{%- if needs_math %}
+
+    whenNear(document.querySelectorAll(".math-block, .math-inline"), function () {
+      // Stylesheet and script are fetched together and the math is typeset only
+      // once both have landed, so the blocks reflow once rather than twice.
+      var pending = 2;
+      function ready() {
+        if (--pending) return;
+        if (!window.katex) return;
+        document.querySelectorAll(".math-block, .math-inline").forEach(function (el) {
+          var displayMode = el.classList.contains("math-block");
+          katex.render(el.textContent, el, { throwOnError: false, displayMode: displayMode });
+        });
+      }
+      loadStyle("{{ get_url(path='katex/katex.min.css') }}", ready);
+      loadScript("{{ get_url(path='katex/katex.min.js') }}", ready);
+    });
+{%- endif %}
+  })();
+</script>

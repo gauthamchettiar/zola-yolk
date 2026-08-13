@@ -30,7 +30,18 @@
   {%- if config.extra.enable_search %}
   {%- include "partials/search.html" %}
   {%- endif %}
-  {%- if config.extra.enable_mermaid or config.extra.enable_math %}
+  {#- render() ships two large libraries, so they are pulled in per page rather
+      than site-wide: only partials/content.html ever renders page or section
+      content, and macros/blocks.html emits a fixed marker for each renderer, so
+      searching the rendered body for those markers tells us exactly which
+      library this page needs. Taxonomy pages render no content and so need
+      neither. -#}
+  {%- set render_body = "" %}
+  {%- if page is defined %}{% set render_body = page.content %}
+  {%- elif section is defined %}{% set render_body = section.content %}{% endif %}
+  {%- set needs_mermaid = config.extra.enable_mermaid and render_body is containing('class="mermaid"') %}
+  {%- set needs_math = config.extra.enable_math and render_body is containing('class="math-') %}
+  {%- if needs_mermaid or needs_math %}
   {%- include "partials/render.html" %}
   {%- endif %}
 </body>
