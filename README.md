@@ -129,6 +129,7 @@ footer = "Written with ❤️"
 [[extra.fonts]]
 source = "google"
 name = "IBM Plex Mono"
+preload = ["ibm-plex-mono-400-latin.woff2", "ibm-plex-mono-700-latin.woff2"] # optional, see Fonts
 
 [[extra.main_menu]]
 name = "Posts"
@@ -177,9 +178,17 @@ Declare each font in `zola.toml`:
 [[extra.fonts]]
 source = "google"
 name = "IBM Plex Mono"
+preload = ["ibm-plex-mono-400-latin.woff2", "ibm-plex-mono-700-latin.woff2"]
 ```
 
 The `source` matches the subfolder under `static/fonts/` and `name` matches the synced folder inside it.
+
+`preload` is optional and lists files inside that folder. Without it the browser only
+discovers a font after it has parsed the font stylesheet, which is itself a second
+request — on a text-heavy page that delay lands squarely on the largest contentful
+paint. List only the subsets your visible text actually renders with: body copy at 400
+and headings at 700 covers a Latin-script site. Preloading the rest just competes for
+bandwidth with the page itself.
 
 ## Icons
 

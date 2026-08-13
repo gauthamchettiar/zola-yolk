@@ -53,10 +53,14 @@ footer = "Made with ❤️ for [zola](https://www.getzola.org/)"
 insert_anchor_links = true
 
 # Self-hosted fonts to load. Each entry needs a source (subfolder under static/fonts/)
-# and a name matching the synced folder under that source.
+# and a name matching the synced folder under that source. `preload` is optional:
+# list the subset files the site renders text with and they are fetched alongside
+# the font stylesheet instead of two requests deep behind it. Body copy is 400 and
+# every heading is 700, so both earn their place; the other subsets do not.
 [[extra.fonts]]
 source = "google"
 name = "IBM Plex Mono"
+preload = ["ibm-plex-mono-400-latin.woff2", "ibm-plex-mono-700-latin.woff2"]
 
 [[extra.main_menu]]
 name = "Posts"

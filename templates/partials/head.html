@@ -43,9 +43,18 @@
 <link rel="alternate" type="{% if feed == "rss.xml" %}application/rss+xml{% else %}application/atom+xml{% endif %}" title="{{ config.title | default(value="Site") }}" href="{{ get_url(path=feed) }}">
 {%- endfor %}{% endif %}
 
+{#- Text is the largest-contentful element on most pages here, and the fonts it
+    needs sit two requests deep: this document, then the font stylesheet, then
+    the woff2. Preloading the subsets that actually get used collapses that
+    chain. Subset filenames can't be derived from the font name, so each entry
+    lists its own under `preload`; entries without one just skip it. -#}
 {%- for font in config.extra.fonts | default(value=[]) %}
 {%- set font_dir = font.name | replace(from=" ", to="_") %}
-<link rel="stylesheet" href="{{ get_url(path="fonts/" ~ font.source ~ "/" ~ font_dir ~ "/" ~ font_dir ~ ".css") }}">
+{%- set font_base = "fonts/" ~ font.source ~ "/" ~ font_dir ~ "/" %}
+{%- for subset in font.preload | default(value=[]) %}
+<link rel="preload" as="font" type="font/woff2" crossorigin href="{{ get_url(path=font_base ~ subset) }}">
+{%- endfor %}
+<link rel="stylesheet" href="{{ get_url(path=font_base ~ font_dir ~ ".css") }}">
 {%- endfor %}
 <link rel="stylesheet" href="{{ get_url(path="main.css") }}">
 <link id="giallo-light" rel="stylesheet" href="{{ get_url(path="giallo-light.css") }}" media="(prefers-color-scheme: light)">
