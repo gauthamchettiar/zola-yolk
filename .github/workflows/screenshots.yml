@@ -1,0 +1,57 @@
+name: Refresh screenshots
+# Manual: the captures are of the deployed site, so this is worth running after a
+# visual change has actually shipped, not on every push.
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Site to capture
+        default: https://zola-yolk.gauthamchettiar.com
+        required: false
+permissions:
+  contents: write
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: true
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          cache-dependency-glob: scripts/py-ssg-tools/pyproject.toml
+      - name: Install Playwright browser
+        run: uv run --project scripts/py-ssg-tools playwright install --with-deps chromium
+      # The page set lives here rather than in the py-ssg-tools submodule because
+      # it is a property of this site, not of the tool.
+      - name: Capture screenshots
+        run: |
+          uv run --project scripts/py-ssg-tools pst screenshots \
+            --url "${{ inputs.url || 'https://zola-yolk.gauthamchettiar.com' }}" \
+            --dest static/images/screenshots \
+            --page home:/ \
+            --page intro:/posts/introduction/ \
+            --page posts:/posts/ \
+            --page tags:/tags/
+      # Full-page captures at 2x run to megabytes as PNG. WebP at q80 holds up
+      # fine for flat UI screenshots and costs about a fifth of the bytes.
+      - name: Convert to WebP
+        run: |
+          npx --yes sharp-cli \
+            --input 'static/images/screenshots/*.png' \
+            --output static/images/screenshots \
+            --format webp --quality 80
+          rm -f static/images/screenshots/*.png
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add static/images/screenshots/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: refresh screenshots"
+            git push
+          fi

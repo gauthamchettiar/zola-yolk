@@ -14,28 +14,58 @@ A simple showcase of how different elements look like in the theme.
 Demo : [/](/)
 {% dmode() %}
 {% border() %}
-![dark theme screenshot of home page](/images/screenshots/home-dark.png)
+{{ img(src="/images/screenshots/home-dark.webp", alt="dark theme screenshot of home page", eager=true) }}
 {% end %}
 {% end %}
 
 {% lmode() %}
 {% border() %}
-![light theme screenshot of home page](/images/screenshots/home-light.png)
+{{ img(src="/images/screenshots/home-light.webp", alt="light theme screenshot of home page", eager=true) }}
 {% end %}
 {% end %}
 
 ## Post page
 
-Demo : [/posts/markdown/](/posts/markdown/)
+Demo : [/posts/introduction/](/posts/introduction/)
 {% dmode() %}
 {% border() %}
-![dark theme screenshot of post page](/images/screenshots/post-dark.png)
+{{ img(src="/images/screenshots/intro-dark.webp", alt="dark theme screenshot of a post page") }}
 {% end %}
 {% end %}
 
 {% lmode() %}
 {% border() %}
-![light theme screenshot of post page](/images/screenshots/post-light.png)
+{{ img(src="/images/screenshots/intro-light.webp", alt="light theme screenshot of a post page") }}
+{% end %}
+{% end %}
+
+## Posts listing
+
+Demo : [/posts/](/posts/)
+{% dmode() %}
+{% border() %}
+{{ img(src="/images/screenshots/posts-dark.webp", alt="dark theme screenshot of the posts listing") }}
+{% end %}
+{% end %}
+
+{% lmode() %}
+{% border() %}
+{{ img(src="/images/screenshots/posts-light.webp", alt="light theme screenshot of the posts listing") }}
+{% end %}
+{% end %}
+
+## Tags listing
+
+Demo : [/tags/](/tags/)
+{% dmode() %}
+{% border() %}
+{{ img(src="/images/screenshots/tags-dark.webp", alt="dark theme screenshot of the tags listing") }}
+{% end %}
+{% end %}
+
+{% lmode() %}
+{% border() %}
+{{ img(src="/images/screenshots/tags-light.webp", alt="light theme screenshot of the tags listing") }}
 {% end %}
 {% end %}
 

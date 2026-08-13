@@ -5,10 +5,10 @@ A minimal, monospace Zola theme with dark/light mode, full-text search, and mult
 Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`expand`](#expand), [`border`](#border), [`img`](#img), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`render`](#render) (Mermaid / KaTeX math), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop). Plus an auto-generated [table of contents](#table-of-contents) on every post.
 
 **dark-theme**: 
-![dark-theme-screenshot](/static/images/screenshots/home-dark.png)
+![dark-theme-screenshot](/static/images/screenshots/home-dark.webp)
 
 **light-theme**: 
-![light-theme-screenshot](/static/images/screenshots/home-light.png)
+![light-theme-screenshot](/static/images/screenshots/home-light.webp)
 
 ## Features
 
