@@ -75,10 +75,10 @@ is a few hundred lines split across four files.
 [Markdown Showcase](@/posts/markdown.md)
 : Every element the renderer supports, rendered live — plus what it deliberately does *not* support, and which features are off by default.
 
-[Supported Shortcodes](@/posts/shortcode.md)
+[Shortcode: Elements](@/posts/shortcode.md)
 : Shortcodes that insert content — `icon`, `elink` and the theme-conditional `lmode` / `dmode`.
 
-[Supported Layouts](@/posts/layout.md)
+[Shortcode: Layouts](@/posts/layout.md)
 : Shortcodes that arrange it — `border`, `wide`, and `row` / `col` with table-style proportional spans.
 
 [UI Showcase](@/posts/showcase.md)

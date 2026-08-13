@@ -306,10 +306,10 @@ Read the [Zola docs][docs] and the [docs][] again.
 `zola check` fails the build if the target does not exist, so these cannot rot:
 
 ```
-[Supported Shortcodes](@/posts/shortcode.md)
+[Shortcode: Elements](@/posts/shortcode.md)
 ```
 
-Look &nbsp; : &nbsp;[Supported Shortcodes](@/posts/shortcode.md)
+Look &nbsp; : &nbsp;[Shortcode: Elements](@/posts/shortcode.md)
 
 {% warning() %}
 A bare URL such as `https://example.com` is **not** auto-linked — wrap it in `<>` angle brackets or use `[text](url)`.

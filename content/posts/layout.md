@@ -1,5 +1,5 @@
 +++
-title = "Supported Layouts"
+title = "Shortcode: Layouts"
 date = 2026-04-19
 description = "Shortcodes for arranging content: borders, wide blocks, columns and tabs."
 
@@ -8,7 +8,7 @@ tags = ["layout", "shortcode", "zola"]
 +++
 
 Shortcodes for *arranging* content. For the ones that insert it, see
-[Supported Shortcodes](@/posts/shortcode.md).
+[Shortcode: Elements](@/posts/shortcode.md).
 
 Each is a thin wrapper over a macro in `macros/blocks.html`, so the same thing
 is callable from Markdown and from a template. Both forms are shown throughout —

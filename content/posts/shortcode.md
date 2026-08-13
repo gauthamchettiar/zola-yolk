@@ -1,5 +1,5 @@
 +++
-title = "Supported Shortcodes"
+title = "Shortcode: Elements"
 date = 2026-04-20
 description = "Shortcodes that insert content: icons, links, marks, quotes, callouts and theme-conditional blocks."
 
@@ -8,11 +8,7 @@ tags = ["shortcode", "syntax", "zola"]
 +++
 
 Shortcodes for *inserting* content. For the ones that arrange it — borders,
-wide blocks, columns and tabs — see [Supported Layouts](@/posts/layout.md).
-
-Every shortcode here is a thin wrapper over a macro, so the same thing is
-callable from Markdown and from a template. Both forms are shown throughout —
-switch tabs on any example below and the rest of the page follows.
+wide blocks, columns and tabs — see [Shortcode: Layouts](@/posts/layout.md).
 
 ## Icons
 
