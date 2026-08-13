@@ -81,6 +81,9 @@ is a few hundred lines split across four files.
 [Shortcode: Layouts](@/posts/layout.md)
 : Shortcodes that arrange it — `border`, `wide`, and `row` / `col` with table-style proportional spans.
 
+[Shortcode: Externals](@/posts/externals.md)
+: Shortcodes that lean on a bundled external library — Mermaid diagrams and KaTeX math, both on by default.
+
 [UI Showcase](@/posts/showcase.md)
 : Screenshots of the theme in both modes.
 

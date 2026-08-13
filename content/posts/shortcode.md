@@ -9,6 +9,8 @@ tags = ["shortcode", "syntax", "zola"]
 
 Shortcodes for *inserting* content. For the ones that arrange it — borders,
 wide blocks, columns and tabs — see [Shortcode: Layouts](@/posts/layout.md).
+For the ones that lean on a bundled external library — Mermaid diagrams,
+KaTeX math — see [Shortcode: Externals](@/posts/externals.md).
 
 ## Icons
 

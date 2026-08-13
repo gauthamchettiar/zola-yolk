@@ -2,7 +2,7 @@
 
 A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
-Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`expand`](#expand), [`border`](#border), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop). Plus an auto-generated [table of contents](#table-of-contents) on every post.
+Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`expand`](#expand), [`border`](#border), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`render`](#render) (Mermaid / KaTeX math), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop). Plus an auto-generated [table of contents](#table-of-contents) on every post.
 
 **dark-theme**: 
 ![dark-theme-screenshot](/static/images/screenshots/home-dark.png)
@@ -543,6 +543,54 @@ the one clicked — which would otherwise drag the scroll position along as they
 resize. `partials/tabs.html` measures the clicked block's position before and
 after the sync and scrolls by the difference in the same frame, so nothing
 above the click visibly moves.
+
+### Render
+
+Renders a fenced `mermaid` or `math` code block as an actual diagram or
+formula, instead of a syntax-highlighted code block. Which one runs is
+decided by the block's own language — the body must hold exactly one fenced
+block, either language.
+
+```
+{% render() %}
+```mermaid
+graph TD
+  A --> B
+```
+{% end %}
+```
+```jinja2
+{{ blocks::render(content="graph TD\n  A --> B", lang="mermaid") }}
+```
+
+- `body`/`content` — exactly one fenced code block, language `mermaid` or `math` (required)
+- `inline` — math only, ignored for mermaid. Renders as a `<span>` in running
+  text instead of a centred `<div>` (default: `false`)
+
+```
+{% render(inline=true) %}
+```math
+E = mc^2
+```
+{% end %}
+```
+```jinja2
+{{ blocks::render(content="E = mc^2", lang="math", inline=true) }}
+```
+
+Needs the matching flag on (`enable_mermaid` / `enable_math`, both `true` by
+default — see [Configuration](#configuration)). Unlike the other libraries
+this theme uses, [Mermaid](https://mermaid.js.org/) and
+[KaTeX](https://katex.org/) ship *inside* the theme itself
+(`static/mermaid.min.js`, `static/katex/katex.min.{js,css}` +
+`static/katex/fonts/`) rather than needing a separate download — Zola serves
+a theme's `static/` for any site that installs it, so both flags work with
+nothing extra to fetch. They're still gated behind a flag each so a site
+using neither pays no byte cost for them.
+
+With a flag off, mermaid falls back to a plain code block and math to its
+raw, untypeset source — nothing errors, only stays unrendered. See
+[Shortcode: Externals](/posts/externals) for a live walkthrough.
 
 ### Lmode / Dmode
 

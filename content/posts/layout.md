@@ -8,7 +8,8 @@ tags = ["layout", "shortcode", "zola"]
 +++
 
 Shortcodes for *arranging* content. For the ones that insert it, see
-[Shortcode: Elements](@/posts/shortcode.md).
+[Shortcode: Elements](@/posts/shortcode.md). For the ones that lean on a
+bundled external library, see [Shortcode: Externals](@/posts/externals.md).
 
 Each is a thin wrapper over a macro in `macros/blocks.html`, so the same thing
 is callable from Markdown and from a template. Both forms are shown throughout —
