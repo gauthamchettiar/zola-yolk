@@ -1,0 +1,26 @@
+{#
+  img shortcode — an image that reserves its own space before it loads.
+
+  Markdown's ![alt](src) can't carry width and height, so the text around it
+  shifts once the file arrives. This reads the dimensions off the file at build
+  time and writes them into the tag. Reach for it whenever the image is large
+  enough that the shift would be noticeable; plain ![alt](src) is still fine for
+  small inline images.
+
+  markdown:
+    {{/* img(src="/images/screenshots/home-dark.webp", alt="the home page") */}}
+
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::img(src="/images/screenshots/home-dark.webp", alt="the home page") }}
+
+  Parameters:
+    src    — path under static/, with or without the leading slash (required)
+    alt    — alternative text; empty only if the image is decorative (default: "")
+    eager  — fetch straight away rather than on approach. Set it for an image
+             that is on screen when the page opens (default: false)
+
+  Rendering lives in macros/blocks.html so both forms produce the same HTML.
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::img(src=src, alt=alt | default(value=""), eager=eager | default(value=false)) }}

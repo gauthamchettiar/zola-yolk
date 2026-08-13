@@ -2,7 +2,7 @@
 
 A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
-Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`expand`](#expand), [`border`](#border), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`render`](#render) (Mermaid / KaTeX math), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop). Plus an auto-generated [table of contents](#table-of-contents) on every post.
+Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`expand`](#expand), [`border`](#border), [`img`](#img), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`render`](#render) (Mermaid / KaTeX math), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop). Plus an auto-generated [table of contents](#table-of-contents) on every post.
 
 **dark-theme**: 
 ![dark-theme-screenshot](/static/images/screenshots/home-dark.png)
@@ -99,6 +99,11 @@ taxonomies = [
 [markdown]
 definition_list = true
 bottom_footnotes = true
+# Leave lazy_async_image off. On Zola 0.22.1 it empties the generated slug of
+# every heading after a markdown image, breaking heading anchors and the table
+# of contents. Use the img shortcode instead — it lazy-loads and, unlike
+# markdown's ![](), can carry width and height.
+lazy_async_image = false
 
 [markdown.highlighting]
 style = "class"
@@ -441,6 +446,42 @@ Anything Markdown can produce.
 
 `double` needs at least 3px to separate into two lines, so it looks solid at
 `size="sm"`.
+
+### Img
+
+An image that reserves its own space and ships a size proportionate to the screen.
+
+```
+{{/* img(src="/images/screenshots/home-dark.webp", alt="the home page") */}}
+```
+```jinja2
+{{ blocks::img(src="/images/screenshots/home-dark.webp", alt="the home page") }}
+```
+
+- `src` — path under `static/`, with or without the leading slash (required)
+- `alt` — alternative text; leave empty only if the image is decorative (default: `""`)
+- `eager` — fetch straight away rather than on approach (default: `false`)
+- `sizes` — the `sizes` attribute (default: `(max-width: 42rem) 100vw, 42rem`, matching `--max-width`)
+
+Markdown's own `![alt](src)` has nowhere to put `width` and `height`, so the browser
+can't reserve space and everything below the image jumps once it loads. It also hands a
+phone the same file it hands a desktop. This reads the real dimensions off the file at
+build time, and has Zola generate 480w / 720w / 1080w copies for a `srcset`. Variants
+are only ever smaller than the source, so a narrow image just contributes fewer of them.
+
+Use it for anything large enough that the jump or the bytes would be noticeable;
+`![alt](src)` is still fine for small inline images.
+
+Set `eager` for an image that is on screen when the page opens — the one image above
+the fold is the page's likely largest contentful paint, and deferring it works against
+you there.
+
+Override `sizes` when the image isn't in the normal reading column — inside a `wide`
+block, say. Getting it wrong doesn't break anything, it just makes the browser pick a
+variant larger or blurrier than it needed.
+
+The generated copies land in `static/processed_images/`, which is a build artifact and
+is gitignored; each build recreates whatever it needs.
 
 ### Align
 

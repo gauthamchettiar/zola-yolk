@@ -11,6 +11,12 @@ taxonomies = [{ name = "tags" }]
 [markdown]
 definition_list = true
 bottom_footnotes = true
+# lazy_async_image stays off. On Zola 0.22.1 it empties the generated slug of
+# every heading that follows a markdown image, so ids collapse to "", "-1", "-2"
+# and the table of contents links to nothing. The img() shortcode sets
+# loading="lazy" itself and adds the width and height Zola cannot infer here,
+# so nothing is lost by leaving this alone.
+lazy_async_image = false
 
 [markdown.highlighting]
 style = "class"

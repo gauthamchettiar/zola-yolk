@@ -127,6 +127,42 @@
     inline  — math only: a <span> in running text instead of a centred <div>
               (default: false)
 #}
+{#
+  An image that carries its own intrinsic size and a set of smaller variants.
+
+  Markdown's own ![alt](src) has nowhere to put width and height, so the page
+  can't reserve space and the surrounding text jumps once the file lands. It also
+  hands a phone the same file it hands a desktop. This reads the real dimensions
+  off the file at build time, and has Zola generate downscaled copies so a narrow
+  screen fetches a proportionate one.
+
+  Variants are only ever smaller than the original — upscaling a screenshot would
+  cost bytes to add nothing — so a source narrower than a breakpoint simply
+  contributes no entry at it.
+
+    src    — path under static/, with or without the leading slash (required)
+    alt    — alternative text; empty only if the image is decorative (default: "")
+    eager  — fetch straight away rather than on approach. Set it for an image
+             that is on screen when the page opens (default: false)
+    sizes  — the `sizes` attribute. The default matches --max-width in
+             sass/_tokens.scss: full width on a phone, 42rem once there is room
+#}
+{% macro img(src, alt="", eager=false, sizes="(max-width: 42rem) 100vw, 42rem") -%}
+{%- set path = src | trim_start_matches(pat="/") -%}
+{%- set meta = get_image_metadata(path="static/" ~ path) -%}
+{%- set_global srcset = [] -%}
+{%- for w in [480, 720, 1080] -%}
+{%- if meta.width > w -%}
+{#- quality matters: left unset, Zola encodes WebP losslessly, which here came
+    out several times larger than the full-size original it was downscaled from. -#}
+{%- set variant = resize_image(path="static/" ~ path, width=w, op="fit_width", format="webp", quality=80) -%}
+{%- set_global srcset = srcset | concat(with=variant.url ~ " " ~ w ~ "w") -%}
+{%- endif -%}
+{%- endfor -%}
+{%- set_global srcset = srcset | concat(with=get_url(path=path) ~ " " ~ meta.width ~ "w") -%}
+<img src="{{ get_url(path=path) }}" srcset="{{ srcset | join(sep=", ") | safe }}" sizes="{{ sizes }}" alt="{{ alt }}" width="{{ meta.width }}" height="{{ meta.height }}"{% if eager %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">
+{%- endmacro img %}
+
 {% macro render(content, lang, inline=false) -%}
 {%- if lang == "mermaid" -%}
 <pre class="mermaid">{{ content }}</pre>
