@@ -3,6 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 {#- Page identity, resolved once and reused by the tags below. -#}
+{%- set site_name = config.title | default(value="this site") -%}
 {%- if page is defined -%}
   {%- set meta_title = page.title -%}
   {%- set meta_desc = page.description | default(value=config.description | default(value="")) -%}
@@ -13,15 +14,18 @@
   {%- set meta_desc = section.description | default(value=config.description | default(value="")) -%}
   {%- set meta_url = section.permalink -%}
   {%- set meta_type = "website" -%}
+{#- Taxonomy pages have no prose of their own to describe them, and repeating the
+    site description on every one of them is what search engines read as a
+    duplicate. Say what the page actually lists instead. -#}
 {%- elif term is defined -%}
   {%- set _tax = taxonomy.name | capitalize -%}
   {%- set meta_title = _tax ~ ": " ~ term.name -%}
-  {%- set meta_desc = config.description | default(value="") -%}
+  {%- set meta_desc = "Every post tagged “" ~ term.name ~ "” on " ~ site_name ~ "." -%}
   {%- set meta_url = term.permalink -%}
   {%- set meta_type = "website" -%}
 {%- elif terms is defined -%}
   {%- set meta_title = taxonomy.name | capitalize -%}
-  {%- set meta_desc = config.description | default(value="") -%}
+  {%- set meta_desc = "Browse all " ~ taxonomy.name ~ " on " ~ site_name ~ "." -%}
   {%- set meta_url = get_url(path=taxonomy.name) -%}
   {%- set meta_type = "website" -%}
 {%- else -%}

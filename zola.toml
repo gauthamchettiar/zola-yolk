@@ -1,6 +1,7 @@
 # The URL the site will be built for
 base_url = "https://zola-yolk.gauthamchettiar.com"
 title = "zola-yolk"
+description = "A minimal monospace Zola theme with dark/light mode, search, Font Awesome icons, and a component-based template architecture."
 compile_sass = true
 build_search_index = true
 # Emits atom.xml; the theme links to it from <head> when this is on.
