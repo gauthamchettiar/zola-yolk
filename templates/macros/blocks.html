@@ -124,12 +124,18 @@
   shows as a plain code block and math as its raw source, so nothing is lost.
     content — raw block source, unprocessed and unescaped (required)
     lang    — mermaid | math — anything else falls back to a plain <pre> (required)
+    inline  — math only: a <span> in running text instead of a centred <div>
+              (default: false)
 #}
-{% macro render(content, lang) -%}
+{% macro render(content, lang, inline=false) -%}
 {%- if lang == "mermaid" -%}
 <pre class="mermaid">{{ content }}</pre>
 {%- elif lang == "math" -%}
+{%- if inline -%}
+<span class="math-inline">{{ content }}</span>
+{%- else -%}
 <div class="math-block">{{ content }}</div>
+{%- endif -%}
 {%- else -%}
 <pre>{{ content }}</pre>
 {%- endif -%}

@@ -1,8 +1,10 @@
 {#
   Activates the render() shortcode (templates/shortcodes/render.html):
-  turns a `.mermaid` block into a diagram and a `.math-block` into typeset
-  math. Included at the end of <body> by base.html when either
-  config.extra.enable_mermaid or config.extra.enable_math is set.
+  turns a `.mermaid` block into a diagram and a `.math-block` /
+  `.math-inline` into typeset math (display vs. inline mode, picked by the
+  shortcode's own `inline` parameter). Included at the end of <body> by
+  base.html when either config.extra.enable_mermaid or config.extra.enable_math
+  is set.
 
   Both libraries ship inside this theme's own static/ (mermaid.min.js,
   katex/katex.min.{js,css} + katex/fonts/*.woff2) rather than a CDN, same
@@ -33,8 +35,9 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     if (!window.katex) return;
-    document.querySelectorAll(".math-block").forEach(function (el) {
-      katex.render(el.textContent, el, { throwOnError: false, displayMode: true });
+    document.querySelectorAll(".math-block, .math-inline").forEach(function (el) {
+      var displayMode = el.classList.contains("math-block");
+      katex.render(el.textContent, el, { throwOnError: false, displayMode: displayMode });
     });
   });
 </script>

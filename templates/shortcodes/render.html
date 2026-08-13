@@ -16,19 +16,31 @@
     ```
     {% end %}
 
+    {% render(inline=true) %}
+    ```math
+    E = mc^2
+    ```
+    {% end %}
+
   Template:
     {% import "macros/blocks.html" as blocks %}
     {{ blocks::render(content="E = mc^2", lang="math") }}
+    {{ blocks::render(content="E = mc^2", lang="math", inline=true) }}
 
   The body must hold exactly one fenced code block, language `mermaid` or
   `math` — that language is what picks which renderer runs on it, there is no
   separate parameter for it. Needs the matching config.extra flag
-  (enable_mermaid / enable_math — see zola.toml) and its library self-hosted
-  under static/ — see content/posts/externals.md.
+  (enable_mermaid / enable_math — see zola.toml); both libraries ship inside
+  this theme's own static/, nothing to add yourself — see
+  content/posts/externals.md.
+
+  Parameters:
+    inline — math only, ignored for mermaid. Renders as a <span> in the flow
+             of a sentence instead of a centred <div> (default: false)
 #}
 {%- import "macros/blocks.html" as blocks -%}
 {%- set lines = body | trim | split(pat="\n") -%}
 {%- set count = lines | length -%}
 {%- set lang = lines | first | trim | replace(from="```", to="") | replace(from="~~~", to="") | trim -%}
 {%- set inner = lines | slice(start=1, end=count - 1) | join(sep="\n") -%}
-{{ blocks::render(content=inner, lang=lang) }}
+{{- blocks::render(content=inner, lang=lang, inline=inline | default(value=false)) -}}
