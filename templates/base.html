@@ -30,5 +30,8 @@
   {%- if config.extra.enable_search %}
   {%- include "partials/search.html" %}
   {%- endif %}
+  {%- if config.extra.enable_mermaid or config.extra.enable_math %}
+  {%- include "partials/render.html" %}
+  {%- endif %}
 </body>
 </html>

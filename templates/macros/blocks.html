@@ -116,6 +116,26 @@
 {%- endmacro code %}
 
 {#
+  Renders a ```mermaid or ```math block as an actual diagram / math notation
+  rather than syntax-highlighted code. This only prepares the markup —
+  partials/render.html carries the library that turns it into a diagram or
+  formula client-side, loaded when config.extra.enable_mermaid /
+  enable_math is on. With the flag off, or the library missing, mermaid still
+  shows as a plain code block and math as its raw source, so nothing is lost.
+    content — raw block source, unprocessed and unescaped (required)
+    lang    — mermaid | math — anything else falls back to a plain <pre> (required)
+#}
+{% macro render(content, lang) -%}
+{%- if lang == "mermaid" -%}
+<pre class="mermaid">{{ content }}</pre>
+{%- elif lang == "math" -%}
+<div class="math-block">{{ content }}</div>
+{%- else -%}
+<pre>{{ content }}</pre>
+{%- endif -%}
+{%- endmacro render %}
+
+{#
   An attributed quotation. Rendered as <figure>/<blockquote>/<figcaption>,
   which is the pattern HTML defines for a quote with its attribution — the
   attribution is about the quote, so it must sit outside the <blockquote>.

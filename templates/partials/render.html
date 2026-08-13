@@ -1,0 +1,38 @@
+{#
+  Activates the render() shortcode (templates/shortcodes/render.html):
+  turns a `.mermaid` block into a diagram and a `.math-block` into typeset
+  math. Included at the end of <body> by base.html when either
+  config.extra.enable_mermaid or config.extra.enable_math is set.
+
+  Both libraries are self-hosted, same as elasticlunr for search (see
+  partials/search.html) — this theme never pulls scripts from a CDN. Add the
+  matching files under static/ before turning a flag on; see
+  content/posts/externals.md for where to get them.
+
+  Mermaid picks its theme once, from data-theme at load time — it does not
+  redraw already-rendered diagrams if the visitor flips light/dark afterwards
+  (see partials/theme.html).
+#}
+{%- if config.extra.enable_mermaid %}
+<script src="{{ get_url(path="mermaid.min.js") }}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (!window.mermaid) return;
+    var dark = document.documentElement.getAttribute("data-theme") === "dark";
+    mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default" });
+    mermaid.run({ querySelector: ".mermaid" });
+  });
+</script>
+{%- endif %}
+{%- if config.extra.enable_math %}
+<link rel="stylesheet" href="{{ get_url(path="katex.min.css") }}">
+<script src="{{ get_url(path="katex.min.js") }}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (!window.katex) return;
+    document.querySelectorAll(".math-block").forEach(function (el) {
+      katex.render(el.textContent, el, { throwOnError: false, displayMode: true });
+    });
+  });
+</script>
+{%- endif %}

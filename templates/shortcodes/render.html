@@ -1,0 +1,34 @@
+{#
+  render shortcode — renders a fenced ```mermaid or ```math code block as an
+  actual diagram or math notation, instead of a syntax-highlighted block.
+
+  Usage:
+    {% render() %}
+    ```mermaid
+    graph TD
+      A --> B
+    ```
+    {% end %}
+
+    {% render() %}
+    ```math
+    E = mc^2
+    ```
+    {% end %}
+
+  Template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::render(content="E = mc^2", lang="math") }}
+
+  The body must hold exactly one fenced code block, language `mermaid` or
+  `math` — that language is what picks which renderer runs on it, there is no
+  separate parameter for it. Needs the matching config.extra flag
+  (enable_mermaid / enable_math — see zola.toml) and its library self-hosted
+  under static/ — see content/posts/externals.md.
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{%- set lines = body | trim | split(pat="\n") -%}
+{%- set count = lines | length -%}
+{%- set lang = lines | first | trim | replace(from="```", to="") | replace(from="~~~", to="") | trim -%}
+{%- set inner = lines | slice(start=1, end=count - 1) | join(sep="\n") -%}
+{{ blocks::render(content=inner, lang=lang) }}
