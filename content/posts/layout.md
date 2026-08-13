@@ -5,6 +5,12 @@ description = "Shortcodes for arranging content: borders, wide blocks, columns a
 
 [taxonomies]
 tags = ["layout", "shortcode", "zola"]
+
+[extra]
+# "Left" and "Right" are sample content inside a row/col demo, not sections of
+# this post — listing them in the contents implies a structure the page doesn't
+# have. They stay h3 so the heading order runs h2 -> h3 without a gap.
+toc_exclude = ["left", "right"]
 +++
 
 Shortcodes for *arranging* content. For the ones that insert it, see
@@ -209,11 +215,11 @@ Text under the heading.
 
 {% row() %}
 {% col() %}
-#### Left
+### Left
 Text under the heading.
 {% end %}
 {% col() %}
-#### Right
+### Right
 Text under the heading.
 {% end %}
 {% end %}
