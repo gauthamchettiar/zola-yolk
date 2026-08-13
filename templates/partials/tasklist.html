@@ -1,0 +1,21 @@
+{#
+  Names the checkboxes in a markdown task list.
+
+  Zola renders `- [x] item` as a bare <li><input type="checkbox" disabled>item</li>.
+  The text is right there, but nothing associates it with the input, so a screen
+  reader announces an unlabelled checkbox and axe fails the page on `label`.
+  Wrapping the item's contents in a <label> is the association HTML already has
+  for this — the text becomes the checkbox's accessible name, no aria needed.
+
+  base.html includes this only on pages that actually contain a task list.
+#}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("li > input[type=checkbox]").forEach(function (box) {
+      var item = box.parentNode;
+      var label = document.createElement("label");
+      while (item.firstChild) label.appendChild(item.firstChild);
+      item.appendChild(label);
+    });
+  });
+</script>

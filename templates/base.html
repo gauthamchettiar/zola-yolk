@@ -44,5 +44,8 @@
   {%- if needs_mermaid or needs_math %}
   {%- include "partials/render.html" %}
   {%- endif %}
+  {%- if render_body is containing('type="checkbox"') %}
+  {%- include "partials/tasklist.html" %}
+  {%- endif %}
 </body>
 </html>
