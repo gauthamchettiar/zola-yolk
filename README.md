@@ -2,7 +2,7 @@
 
 A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
-Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`border`](#border), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop).
+Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`expand`](#expand), [`border`](#border), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop).
 
 **dark-theme**: 
 ![dark-theme-screenshot](/static/images/screenshots/home-dark.png)
@@ -331,6 +331,23 @@ This one bites.
 
 Each takes the same `title` parameter as `admonition`, defaulting to its own
 name (`"Note"`, `"Warning"`, …) instead of none.
+
+### Expand
+
+A collapsible section, rendered as native `<details>`/`<summary>` — no class or
+JavaScript needed to drive it.
+
+```
+{% expand(title="Show the answer", state="expanded") %}
+42.
+{% end %}
+```
+```jinja2
+{{ blocks::expand(content="<p>Hidden until opened.</p>", title="Show the answer") }}
+```
+
+- `title` — summary text (default: `Details`)
+- `state` — `expanded`, `collapsed` (default)
 
 ### Border
 

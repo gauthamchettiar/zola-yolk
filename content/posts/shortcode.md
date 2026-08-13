@@ -303,6 +303,37 @@ Good to know.
 There's a faster way to do this.
 {% end %}
 
+## Expand
+
+A collapsible section, rendered as native `<details>`/`<summary>` — no class or
+JavaScript needed to drive it.
+
+{% code(titles=["markdown content", "template files"], group="usage") %}
+```md
+{​% expand(title="Show the answer", state="expanded") %​}
+42.
+{​% end %​}
+```
+```jinja2
+{​% import "macros/blocks.html" as blocks %​}
+{​{ blocks::expand(content="<p>Hidden until opened.</p>", title="Show the answer") }​}
+```
+{% end %}
+
+title
+: summary text. Default `Details`.
+
+state
+: `expanded`, `collapsed` (default)
+
+{% expand() %}
+Hidden until opened.
+{% end %}
+
+{% expand(title="Show the answer", state="expanded") %}
+The answer is forty-two.
+{% end %}
+
 ## Light and Dark Mode Content
 
 Whatever is inside `lmode` shows only in light mode, and `dmode` only in dark.

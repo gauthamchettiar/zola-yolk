@@ -159,6 +159,44 @@ blockquote {
   p { margin: 0; }
 }
 
+details {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+
+  // The content's own top/bottom margins would otherwise widen the box past
+  // its padding — summary keeps its own spacing below since it isn't a
+  // paragraph.
+  > summary + * { margin-top: 0; }
+  > :last-child { margin-bottom: 0; }
+}
+
+// The native marker sits flush against the text with no room to add a gap, so
+// it's replaced with the same pattern headings use: draw the marker in
+// ::before with the space baked into its content, same as "# " before a
+// heading, and hide the browser's own marker.
+summary {
+  cursor: pointer;
+  color: var(--color-primary-accent);
+  font-weight: var(--font-weight-bold);
+  list-style: none;
+
+  &::-webkit-details-marker { display: none; }
+
+  &::before {
+    content: "+ ";
+    color: var(--color-text-muted);
+  }
+
+  &:hover { color: var(--color-secondary-accent); }
+}
+
+details[open] > summary {
+  margin-bottom: 0.5rem;
+
+  &::before { content: "- "; }
+}
+
 // Emitted by Zola's markdown renderer when bottom_footnotes = true.
 .footnote-reference {
   margin-left: 0.25rem;

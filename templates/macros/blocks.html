@@ -157,3 +157,17 @@
   {{ content | safe }}
 </aside>
 {%- endmacro admonition %}
+
+{#
+  A collapsible section. <details>/<summary> is the native element for this,
+  so it needs no class and no JS to drive it.
+    content — inner HTML (required)
+    title   — summary text (default: "Details")
+    state   — expanded | collapsed (default: "collapsed")
+#}
+{% macro expand(content, title="Details", state="collapsed") -%}
+<details{% if state == "expanded" %} open{% endif %}>
+  <summary>{{ title }}</summary>
+  {{ content | safe }}
+</details>
+{%- endmacro expand %}

@@ -1,0 +1,22 @@
+{#
+  expand shortcode — wraps content in a collapsible <details>/<summary>.
+
+  markdown:
+    {% expand() %}
+    Hidden until opened.
+    {% end %}
+
+    {% expand(title="Show the answer", state="expanded") %}
+    42.
+    {% end %}
+
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::expand(content="<p>Hidden until opened.</p>", title="Show the answer") }}
+
+  Parameters:
+    title  — summary text (default: "Details")
+    state  — expanded | collapsed (default: "collapsed")
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::expand(content=body | markdown, title=title | default(value="Details"), state=state | default(value="collapsed")) }}
