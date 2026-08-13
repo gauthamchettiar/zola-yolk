@@ -2,7 +2,7 @@
 
 A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
-Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`border`](#border), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode).
+Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`border`](#border), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop).
 
 **dark-theme**: 
 ![dark-theme-screenshot](/static/images/screenshots/home-dark.png)
@@ -493,6 +493,29 @@ any element if you would rather not use a shortcode:
 ```html
 <div class="only-dark">Shown only in dark mode.</div>
 ```
+
+### Mobile / Desktop
+
+Show content only below or above the mobile breakpoint (`48rem`) — the same
+idea as `lmode` / `dmode`, but for viewport width instead of theme.
+
+```
+{% mobile() %}
+Shown on small screens only.
+{% end %}
+
+{% desktop() %}
+Shown on larger screens only.
+{% end %}
+```
+```jinja2
+{{ blocks::mobile(content="<p>Shown on small screens only.</p>") }}
+{{ blocks::desktop(content="<p>Shown on larger screens only.</p>") }}
+```
+
+Neither takes parameters. Unlike `lmode` / `dmode`, this needs no data-theme
+override or OS-preference fallback — viewport width is always known to CSS, so
+a single media query does the whole job, still with no JavaScript.
 
 ## License
 

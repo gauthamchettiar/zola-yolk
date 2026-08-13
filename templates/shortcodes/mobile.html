@@ -1,0 +1,18 @@
+{#
+  mobile shortcode — its contents appear only below the mobile breakpoint.
+
+  markdown:
+    {% mobile() %}
+    ![mobile screenshot](/images/app-mobile.png)
+    {% end %}
+
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::mobile(content="<p>Mobile only.</p>") }}
+
+  See desktop for the counterpart. Both variants are always in the HTML and
+  a media query reveals the matching one — no JavaScript involved, since
+  (unlike lmode/dmode) viewport width needs no toggle or no-JS fallback.
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::mobile(content=body | markdown) }}

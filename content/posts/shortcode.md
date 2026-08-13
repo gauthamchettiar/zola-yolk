@@ -334,3 +334,39 @@ You are in **light mode** {{ icon(name="sun", aria="sun") }} — this line is hi
 {% dmode() %}
 You are in **dark mode** {{ icon(name="moon", aria="moon") }} — this line is hidden in light mode.
 {% end %}
+
+## Mobile and Desktop Content
+
+Same idea as `lmode` / `dmode`, but for viewport width instead of theme —
+`mobile` shows only below the mobile breakpoint (`48rem`), `desktop` only
+above it.
+
+{% code(titles=["markdown content", "template files"], group="usage") %}
+```md
+{​% mobile() %​}
+Only visible on small screens.
+{​% end %​}
+
+{​% desktop() %​}
+Only visible on larger screens.
+{​% end %​}
+```
+```jinja2
+{​% import "macros/blocks.html" as blocks %​}
+{​{ blocks::mobile(content="<p>Only visible on small screens.</p>") }​}
+{​{ blocks::desktop(content="<p>Only visible on larger screens.</p>") }​}
+```
+{% end %}
+
+Neither takes parameters. Unlike `lmode` / `dmode` this needs no data-theme
+override or OS-preference fallback — viewport width is always known to CSS,
+so a single media query does the whole job, still with no JavaScript. Resize
+the window to see these switch:
+
+{% mobile() %}
+Your screen is **narrow**!
+{% end %}
+
+{% desktop() %}
+Your screen is **wide**!
+{% end %}

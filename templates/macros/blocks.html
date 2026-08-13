@@ -78,6 +78,24 @@
 {%- endmacro dmode %}
 
 {#
+  Content shown only below the mobile breakpoint (see .only-mobile in
+  sass/_components.scss). Pure media query, unlike lmode/dmode: viewport
+  width needs no JS toggle or no-JS fallback the way color-scheme does.
+    content — inner HTML (required)
+#}
+{% macro mobile(content) -%}
+<div class="only-mobile">{{ content | safe }}</div>
+{%- endmacro mobile %}
+
+{#
+  Content shown only above the mobile breakpoint.
+    content — inner HTML (required)
+#}
+{% macro desktop(content) -%}
+<div class="only-desktop">{{ content | safe }}</div>
+{%- endmacro desktop %}
+
+{#
   Tabbed panels; each top-level block of `content` becomes one panel.
     content — inner HTML (required)
     titles  — one label per panel, in order (required)

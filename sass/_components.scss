@@ -552,6 +552,16 @@ dialog {
   .only-dark { display: revert; }
 }
 
+// Viewport-conditional content (the `mobile` / `desktop` shortcodes). Unlike
+// lmode/dmode this needs no OS-preference fallback or data-theme override —
+// viewport width is always known to CSS, so a single media query is enough.
+.only-mobile { display: none; }
+
+@media (max-width: 48rem) {
+  .only-mobile { display: revert; }
+  .only-desktop { display: none; }
+}
+
 // Visually hidden but still announced by screen readers.
 .visually-hidden {
   position: absolute;

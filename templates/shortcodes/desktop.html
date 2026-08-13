@@ -1,0 +1,16 @@
+{#
+  desktop shortcode — its contents appear only above the mobile breakpoint.
+
+  markdown:
+    {% desktop() %}
+    ![desktop screenshot](/images/app-desktop.png)
+    {% end %}
+
+  template:
+    {% import "macros/blocks.html" as blocks %}
+    {{ blocks::desktop(content="<p>Desktop only.</p>") }}
+
+  See mobile for the counterpart.
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::desktop(content=body | markdown) }}
