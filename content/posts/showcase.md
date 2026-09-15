@@ -5,6 +5,10 @@ description = "A showcase of how different elements look like in zola-yolk theme
 
 [taxonomies]
 tags = ["ui", "zola"]
+
+[extra]
+series = "Showcases"
+series_part = 2
 +++
 
 A simple showcase of how different elements look like in the theme.

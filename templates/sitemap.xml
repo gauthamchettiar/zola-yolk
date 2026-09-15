@@ -1,0 +1,48 @@
+{#
+  Zola's built-in sitemap.xml, with one change: a post that keeps itself out of
+  every listing with `list = "never"` is left out of here too. A sitemap is how
+  a crawler finds pages nobody linked to, which is exactly what such a post is
+  asking not to be. `list = "local"` stays — it is linked from its own section,
+  and is a normal page of the site. See the note at the top of macros/list.html.
+
+  Unlike the feed, a sitemap entry is not a page object and carries no `extra`,
+  so the pages to leave out are gathered first and matched by permalink. They
+  come from config.extra.content_sections, or from every root-level section
+  when that is unset — the same places macros/series.html looks. A post outside
+  those sections is not found, and stays in the sitemap.
+
+  Everything below the filter is Zola 0.22.1's own sitemap.xml verbatim — when
+  upgrading, diff it against components/templates/src/builtins/sitemap.xml in
+  the Zola repo and re-apply the filter rather than editing around it.
+#}
+{%- set_global _paths = [] -%}
+{%- if config.extra.content_sections -%}
+  {%- for section_name in config.extra.content_sections -%}
+    {%- set_global _paths = _paths | concat(with=section_name ~ "/_index.md") -%}
+  {%- endfor -%}
+{%- else -%}
+  {%- set root = get_section(path="_index.md") -%}
+  {%- set_global _paths = root.subsections -%}
+{%- endif -%}
+{%- set_global _unlisted = [] -%}
+{%- for path in _paths -%}
+  {%- set sec = get_section(path=path) -%}
+  {%- for candidate in sec.pages -%}
+    {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) == "never" -%}
+      {%- set_global _unlisted = _unlisted | concat(with=candidate.permalink) -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endfor -%}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    {%- for sitemap_entry in entries %}
+    {%- if sitemap_entry.permalink not in _unlisted %}
+    <url>
+        <loc>{{ sitemap_entry.permalink | escape_xml | safe }}</loc>
+        {%- if sitemap_entry.updated %}
+        <lastmod>{{ sitemap_entry.updated }}</lastmod>
+        {%- endif %}
+    </url>
+    {%- endif %}
+    {%- endfor %}
+</urlset>

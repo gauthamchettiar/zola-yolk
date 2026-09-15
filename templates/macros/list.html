@@ -1,4 +1,29 @@
 {#
+  Where a post is listed is its own to decide, with `list` under its [extra]:
+
+      always   every listing (the default)
+      local    its own section's listing, and its series — nowhere else
+      never    no listing at all
+
+  A post is rendered at its permalink whichever it picks: `list` governs where
+  it is advertised, not whether it exists. `never` is how a page stays reachable
+  by anyone holding the link while staying out of the section list, the home
+  page, tag pages, related posts, the feed and the sitemap.
+
+  Every listing on the site therefore has to ask the same question of a page
+  before showing it, and a Tera macro returns a string rather than a list, so
+  the question cannot be factored into one macro that hands back the pages that
+  pass. It is instead written where each listing gathers its pages — here, in
+  section.html, in the taxonomy templates, in macros/series.html, and in the
+  atom.xml and sitemap.xml overrides. It reads the same in all of them:
+
+      page.extra.list | default(value=config.extra.list | default(value="always"))
+
+  A site-wide listing keeps only "always". A section's own listing, and a
+  series, keep "local" too and drop only "never".
+#}
+
+{#
   Renders the <li> for each page. Shared by every list macro below so they
   cannot drift apart.
   Parameters:
@@ -58,6 +83,94 @@
 {%- endmacro by_year %}
 
 {#
+  Posts worth reading next to this one, listed under the post itself.
+
+  `source` decides where they come from. A list of paths is used as written —
+  the author's own picks, in their own order. `true` finds them by tag instead:
+  every post sharing at least one tag with this one, most tags in common first
+  and, at equal footing, newest first.
+
+  There is no way to attach a score to a page and sort on it — Tera has no map
+  literal and cannot add a field to an existing object — so the ranking is done
+  by making one pass per possible score, from every tag in common down to one.
+  That is a handful of passes over a list of candidates, all of it at build time.
+
+  Other parts of this post's own series are left out: they are already listed,
+  in reading order, by the series panel at the top of the page. So are posts
+  that keep themselves out of site-wide listings with `list` — but only when
+  they are being found by tag. A path named in `source` was chosen by hand for
+  this post, and a hand-picked link is not a listing, so it is honoured as
+  written.
+
+    page   — the page object (required)
+    source — true to match by tag, or a list of paths relative to content/,
+             e.g. ["posts/markdown.md"] (default: true)
+    limit  — number of posts to show; 0 means no limit (default: 0)
+    title  — heading above the list (default: "Related")
+#}
+{% macro related(page, source=true, limit=0, title="Related") -%}
+{%- set_global _related = [] -%}
+
+{%- if source is iterable -%}
+  {%- for path in source -%}
+    {%- set_global _related = _related | concat(with=get_page(path=path)) -%}
+  {%- endfor -%}
+
+{%- elif page.taxonomies.tags -%}
+  {%- set tags = page.taxonomies.tags -%}
+  {%- set series = page.extra.series | default(value="") -%}
+  {%- set tag_count = tags | length -%}
+  {%- set taxonomy = get_taxonomy(kind="tags") -%}
+  {%- set_global _pool = [] -%}
+  {%- for term in taxonomy.items -%}
+    {%- if term.name in tags -%}
+      {%- set_global _pool = _pool | concat(with=term.pages) -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {#- Sorting on a missing date would abort the build, so an undated post is
+      dropped here rather than listed out of order. -#}
+  {%- set_global _pool = _pool | filter(attribute="date") | sort(attribute="date") | reverse -%}
+
+  {#- Permalinks of the posts already taken: a post sharing three tags turns up
+      three times in the pool, and would turn up again at each lower score. -#}
+  {%- set_global _seen = [] -%}
+  {%- for step in range(end=tag_count) -%}
+    {%- set score = tag_count - step -%}
+    {%- for candidate in _pool -%}
+      {%- if candidate.permalink != page.permalink and candidate.permalink not in _seen -%}
+        {%- set candidate_series = candidate.extra.series | default(value="") -%}
+        {%- set candidate_list = candidate.extra.list | default(value=config.extra.list | default(value="always")) -%}
+        {%- if candidate_list == "always" and (not series or candidate_series != series) -%}
+          {%- set_global _shared = 0 -%}
+          {%- for tag in candidate.taxonomies.tags -%}
+            {%- if tag in tags -%}{%- set_global _shared = _shared + 1 -%}{%- endif -%}
+          {%- endfor -%}
+          {%- if _shared == score -%}
+            {%- set_global _seen = _seen | concat(with=candidate.permalink) -%}
+            {%- set_global _related = _related | concat(with=candidate) -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endfor -%}
+{%- endif -%}
+
+{%- if limit > 0 -%}
+  {%- set_global _related = _related | slice(end=limit) -%}
+{%- endif -%}
+{%- if _related | length > 0 %}
+<section class="related">
+  <h2>{{ title }}</h2>
+  {#- `list::items`, not `self::items`: Tera resolves a macro namespace against
+      the template the call is written in, and page.html — the only caller —
+      imports macros/blocks.html as well, which takes the `self` slot there.
+      The `list` alias is base.html's, so every template of the theme has it. -#}
+  <ul class="post-list">{{ list::items(pages=_related) }}</ul>
+</section>
+{%- endif -%}
+{%- endmacro related %}
+
+{#
   Fetches pages from multiple sections, sorts them, and renders a flat list.
   Parameters:
     sections   — list of section folder names, e.g. ["posts", "notes"] (required)
@@ -74,10 +187,19 @@
     {%- set sec = get_section(path=section_name ~ "/_index.md") -%}
     {%- set_global _pages = _pages | concat(with=sec.pages) -%}
   {%- endfor -%}
+  {#- A site-wide listing, so a post that asked to be listed only in its own
+      section is not one of these. -#}
+  {%- set_global _listed = [] -%}
+  {%- for candidate in _pages -%}
+    {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) == "always" -%}
+      {%- set_global _listed = _listed | concat(with=candidate) -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- set_global _pages = _listed -%}
   {#- Drop pages missing the sort key; sorting on a null would abort the build. -#}
   {%- set_global _pages = _pages | filter(attribute=sort_by) | sort(attribute=sort_by) -%}
   {%- if sort_order == "desc" -%}{%- set_global _pages = _pages | reverse -%}{%- endif -%}
-  {%- if limit > 0 -%}{%- set_global _pages = _pages | slice(start=0, length=limit) -%}{%- endif -%}
+  {%- if limit > 0 -%}{%- set_global _pages = _pages | slice(end=limit) -%}{%- endif -%}
   {%- if _pages | length > 0 -%}{{ self::simple(pages=_pages) }}
   {%- else %}
 <p>No recent items to display.</p>

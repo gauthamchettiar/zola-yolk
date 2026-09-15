@@ -1,0 +1,193 @@
+{#
+  Series: several posts that are meant to be read in order. A post joins one by
+  naming it under its own [extra], along with where it sits in the order:
+
+      [extra]
+      series = "Shortcodes"
+      series_part = 2   # 0 marks the series' overview page
+
+  Part 0 is the page that introduces the series rather than continuing it, so
+  it sorts first, is numbered 0 in the list, and its `description` is what the
+  panel uses to explain what the series is about.
+
+  A series has three views, and one macro renders all of them:
+
+    panel  — the collapsible naming the series and listing its parts, which
+             goes above a post's table of contents
+    nav    — the previous/next links that go under a post
+    index  — every series on the site, each with its parts, for a listing page
+             (see templates/series.html)
+
+  They are one macro because they all need the same thing first: the pages of a
+  series, in order. A Tera macro returns a string and nothing else, so that
+  list cannot be gathered once and handed to a second macro — splitting the
+  views up would mean gathering it two or three times, in as many places, which
+  is how they would end up disagreeing about what a series contains.
+#}
+
+{#
+  Renders one of the three views of a series. Nothing is rendered for a page
+  that names no series, or for a series with only one page in it.
+
+    view   — panel | nav | index (default: "panel")
+    page   — the page object, for the views that are about a post: it supplies
+             the series, the position in it, and which part to mark as current.
+             `index` needs none of that and takes no page (default: false)
+    name   — the series to render, when it isn't `page`'s own. `index` ignores
+             it and renders every series there is (default: "")
+    state  — panel only: expanded | collapsed (default: "expanded")
+#}
+{% macro show(view="panel", page=false, name="", state="expanded") -%}
+{#- What the caller is: a post knows its own series and where it sits in it; a
+    listing page knows neither, and renders every series instead. -#}
+{%- set_global _name = name -%}
+{%- set_global _current = "" -%}
+{%- set_global _part = -1 -%}
+{%- if page -%}
+  {%- if not _name -%}{%- set_global _name = page.extra.series | default(value="") -%}{%- endif -%}
+  {%- set_global _current = page.permalink -%}
+  {%- set_global _part = page.extra.series_part | default(value=-1) -%}
+{%- endif -%}
+
+{#- Where to look for the pages of a series. config.extra.content_sections is
+    the site's list of post sections; with none set, a post's series is assumed
+    not to leave the section the post itself is in, and a listing page — which
+    has no section to start from — falls back to every section at the root.
+    Only a section's own pages are searched, not its subsections'. -#}
+{%- set_global _paths = [] -%}
+{%- if config.extra.content_sections -%}
+  {%- for section_name in config.extra.content_sections -%}
+    {%- set_global _paths = _paths | concat(with=section_name ~ "/_index.md") -%}
+  {%- endfor -%}
+{%- elif page -%}
+  {%- set_global _paths = [page.ancestors | last] -%}
+{%- else -%}
+  {%- set root = get_section(path="_index.md") -%}
+  {%- set_global _paths = root.subsections -%}
+{%- endif -%}
+
+{#- A series is a local grouping, so `list = "local"` is still part of one and
+    only `never` is held back. Dropping a part renumbers nothing: the numbers
+    come from each part's own series_part, so a withheld part leaves a gap in
+    the list rather than shifting the parts after it. See macros/list.html. -#}
+{%- set_global _pool = [] -%}
+{%- for path in _paths -%}
+  {%- set sec = get_section(path=path) -%}
+  {%- for candidate in sec.pages -%}
+    {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) != "never" -%}
+      {%- set_global _pool = _pool | concat(with=candidate) -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endfor -%}
+
+{#- Which series to render: the one the post is in, or all of them, in name
+    order. Everything below runs per series either way, so the three views
+    share one definition of what a series is and how its parts are ordered. -#}
+{%- if view == "index" -%}
+  {%- set _names = _pool | filter(attribute="extra.series") | map(attribute="extra.series") | unique | sort -%}
+{%- else -%}
+  {%- set _names = [_name] -%}
+{%- endif -%}
+
+{%- for series_name in _names -%}
+{%- set _members = _pool | filter(attribute="extra.series", value=series_name) -%}
+{#- Sorting on a missing key would abort the build, so the numbered parts are
+    sorted on their own and anything left unnumbered keeps its section order at
+    the end — a part waiting to be given a number still belongs to the series. -#}
+{%- set_global _ordered = _members | filter(attribute="extra.series_part") | sort(attribute="extra.series_part") -%}
+{%- for member in _members -%}
+  {%- if member.extra.series_part is not defined -%}
+    {%- set_global _ordered = _ordered | concat(with=member) -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- set _length = _ordered | length -%}
+{%- set _overview = _ordered | filter(attribute="extra.series_part", value=0) -%}
+{#- The overview introduces the series rather than being an instalment of it,
+    so it doesn't count towards the number of parts. -#}
+{%- set _overviews = _overview | length -%}
+{%- set _count = _length - _overviews -%}
+{%- set _parts = _count ~ " part" -%}
+{%- if _count != 1 -%}{%- set _parts = _parts ~ "s" -%}{%- endif -%}
+
+{%- set_global _index = -1 -%}
+{%- for member in _ordered -%}
+  {%- if member.permalink == _current -%}{%- set_global _index = loop.index0 -%}{%- endif -%}
+{%- endfor -%}
+
+{#- A series of one is just a post: nothing to introduce, nowhere to go next. -#}
+{%- if series_name and _length > 1 -%}
+
+{%- if view == "nav" -%}
+{%- set _before = _index - 1 -%}
+{%- set _after = _index + 1 -%}
+{%- if _index > -1 and (_before > -1 or _after < _length) %}
+<nav class="series-nav" aria-label="Series">
+  {%- if _before > -1 %}
+  {%- set prev_page = _ordered[_before] %}
+  <a rel="prev" href="{{ prev_page.permalink }}">{{ prev_page.title }}</a>
+  {%- endif %}
+  {%- if _after < _length %}
+  {%- set next_page = _ordered[_after] %}
+  <a rel="next" href="{{ next_page.permalink }}">{{ next_page.title }}</a>
+  {%- endif %}
+</nav>
+{%- endif -%}
+
+{%- else -%}
+{#- What the series is about is the overview page's job to say, so its own
+    description is the explanation whenever there is one. On a post without an
+    overview there is only the position to go on, which is still worth stating:
+    the panel is the first thing on the page and should say why it is there. A
+    listing page needs no such line — the heading above it already names the
+    series, and a page of fallback sentences would say nothing. -#}
+{%- set_global _blurb = "" -%}
+{%- if _overviews > 0 -%}
+  {%- set intro = _overview | first -%}
+  {%- if intro.description -%}{%- set_global _blurb = intro.description -%}{%- endif -%}
+{%- endif -%}
+{%- if view == "panel" and not _blurb -%}
+  {%- if _part == 0 -%}
+    {%- set_global _blurb = "This page introduces a series of " ~ _parts ~ ", listed below." -%}
+  {%- elif _part > 0 -%}
+    {%- set_global _blurb = "This is part " ~ _part ~ " of a series of " ~ _parts ~ ", listed below." -%}
+  {%- else -%}
+    {%- set_global _blurb = "This page belongs to a series of " ~ _parts ~ ", listed below." -%}
+  {%- endif -%}
+{%- endif -%}
+{#- Two frames around one body. The panel collapses, and says where in the
+    series the reader currently is; the index entry is a plain section headed
+    by the series' name. What goes inside is identical, so it is written once,
+    between the two of them. -#}
+{%- if view == "index" %}
+<section class="series">
+  <h2>{{ series_name }}<span class="series-position">{{ _parts }}</span></h2>
+{%- else %}
+<details class="series"{% if state == "expanded" %} open{% endif %}>
+  <summary>{{ series_name }}
+    {%- if _part == 0 %}<span class="series-position">overview</span>
+    {%- elif _part > 0 %}<span class="series-position">part {{ _part }} of {{ _count }}</span>
+    {%- endif -%}
+  </summary>
+{%- endif %}
+  {%- if _blurb %}
+  <p>{{ _blurb }}</p>
+  {%- endif %}
+  {#- `value` numbers each item by its own series_part, so the overview reads
+      as 0 and a series that starts at 1 is numbered as written. -#}
+  <ol class="series-parts">
+  {%- for member in _ordered %}
+    <li{% if member.extra.series_part is defined %} value="{{ member.extra.series_part }}"{% endif %}><a href="{{ member.permalink }}"
+      {%- if member.permalink == _current %} aria-current="page"{% endif %}>{{ member.title }}</a></li>
+  {%- endfor %}
+  </ol>
+{%- if view == "index" %}
+</section>
+{%- else %}
+</details>
+{%- endif -%}
+
+{%- endif -%}
+{%- endif -%}
+{%- endfor -%}
+{%- endmacro show %}

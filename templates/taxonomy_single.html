@@ -3,6 +3,14 @@
 {% block title %}{{ term.name }} | {{ config.title | default(value="Site") }}{% endblock title %}
 
 {% block content %}
-<h1>{{ taxonomy.name | capitalize }} :: {{ term.name | capitalize }} ({{ term.pages | length }})</h1>
-{{ list::by_year(pages=term.pages) }}
+{#- A tag page gathers from the whole site, so it shows only the posts that
+    asked to be listed site-wide. See macros/list.html. -#}
+{%- set_global _pages = [] -%}
+{%- for candidate in term.pages -%}
+  {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) == "always" -%}
+    {%- set_global _pages = _pages | concat(with=candidate) -%}
+  {%- endif -%}
+{%- endfor %}
+<h1>{{ taxonomy.name | capitalize }} :: {{ term.name | capitalize }} ({{ _pages | length }})</h1>
+{{ list::by_year(pages=_pages) }}
 {% endblock content %}

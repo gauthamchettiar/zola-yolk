@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import "macros/blocks.html" as blocks %}
+{% import "macros/series.html" as series %}
 
 {% block title %}{{ page.title }} | {{ config.title | default(value="Site") }}{% endblock title %}
 
@@ -9,7 +10,16 @@
     <h1>{{ page.title }}</h1>
     {{ widgets::meta(page=page) }}
   </header>
-  {%- if page.extra.toc | default(value=config.extra.enable_toc | default(value=true)) %}
+  {%- if page.extra.series %}
+  {%- if page.extra.series_panel | default(value=config.extra.series_panel | default(value=true)) %}
+  {{ series::show(
+    view="panel",
+    page=page,
+    state=page.extra.series_state | default(value=config.extra.series_state | default(value="expanded"))
+  ) }}
+  {%- endif %}
+  {%- endif %}
+  {%- if page.extra.toc | default(value=config.extra.toc | default(value=true)) %}
   {{ blocks::toc(
     page=page,
     max_level=page.extra.toc_max_level | default(value=config.extra.toc_max_level | default(value=6)),
@@ -18,4 +28,22 @@
   {%- endif %}
   {%- include "partials/content.html" %}
 </article>
+{#- Both of these point away from the post, so they sit outside <article>:
+    where to go next is not part of what was written. -#}
+{%- if page.extra.series %}
+{%- if page.extra.series_nav | default(value=config.extra.series_nav | default(value=true)) %}
+{{ series::show(view="nav", page=page) }}
+{%- endif %}
+{%- endif %}
+{#- `related` is one key doing two jobs: a list of paths picks the posts by
+    hand, and `false` turns the section off for this page. Anything else falls
+    through to the site default, which finds them by tag. -#}
+{%- set related = page.extra.related | default(value=config.extra.related | default(value=true)) %}
+{%- if related %}
+{{ list::related(
+  page=page,
+  source=related,
+  limit=page.extra.related_limit | default(value=config.extra.related_limit | default(value=0))
+) }}
+{%- endif %}
 {% endblock content %}

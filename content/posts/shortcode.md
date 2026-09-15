@@ -5,6 +5,10 @@ description = "Shortcodes that insert content: icons, links, marks, quotes, call
 
 [taxonomies]
 tags = ["shortcode", "syntax", "zola"]
+
+[extra]
+series = "Shortcodes"
+series_part = 1
 +++
 
 Shortcodes for *inserting* content. For the ones that arrange it — borders,

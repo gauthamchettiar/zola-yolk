@@ -1,0 +1,70 @@
+{#
+  Zola's built-in atom.xml, with one change: the feed is a site-wide listing,
+  so it carries only the posts that asked to be listed site-wide. See the note
+  at the top of macros/list.html for what `list` does.
+
+  Zola offers no per-page key for staying out of the feed, so holding one back
+  means owning the template. Everything below the filter is Zola 0.22.1's own
+  atom.xml verbatim — when upgrading, diff it against
+  components/templates/src/builtins/atom.xml in the Zola repo and re-apply the
+  filter rather than editing around it.
+#}
+{%- set_global _pages = [] -%}
+{%- for candidate in pages -%}
+  {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) == "always" -%}
+    {%- set_global _pages = _pages | concat(with=candidate) -%}
+  {%- endif -%}
+{%- endfor -%}
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="{{ lang }}">
+    <title>{{ config.title }}
+    {%- if term %} - {{ term.name }}
+    {%- elif section.title %} - {{ section.title }}
+    {%- endif -%}
+    </title>
+    {%- if config.description %}
+    <subtitle>{{ config.description }}</subtitle>
+    {%- endif %}
+    <link rel="self" type="application/atom+xml" href="{{ feed_url | safe }}"/>
+    <link rel="alternate" type="text/html" href="
+      {%- if section -%}
+        {{ section.permalink | escape_xml | safe }}
+      {%- else -%}
+        {{ config.base_url | escape_xml | safe }}
+      {%- endif -%}
+    "/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    {% if last_updated is defined %}<updated>{{ last_updated | date(format="%+") }}</updated>{% endif %}
+    <id>{{ feed_url | safe }}</id>
+    {%- for page in _pages %}
+    <entry xml:lang="{{ page.lang }}">
+        <title>{{ page.title }}</title>
+        <published>{{ page.date | date(format="%+") }}</published>
+        <updated>{{ page.updated | default(value=page.date) | date(format="%+") }}</updated>
+        {% for author in page.authors %}
+        <author>
+          <name>
+            {{ author }}
+          </name>
+        </author>
+        {% else %}
+        <author>
+          <name>
+            {%- if config.author -%}
+              {{ config.author }}
+            {%- else -%}
+              Unknown
+            {%- endif -%}
+          </name>
+        </author>
+        {% endfor %}
+        <link rel="alternate" type="text/html" href="{{ page.permalink | safe }}"/>
+        <id>{{ page.permalink | safe }}</id>
+        {% if page.summary %}
+        <summary type="html">{{ page.summary }}</summary>
+        {% else %}
+        <content type="html" xml:base="{{ page.permalink | escape_xml | safe }}">{{ page.content }}</content>
+        {% endif %}
+    </entry>
+    {%- endfor %}
+</feed>

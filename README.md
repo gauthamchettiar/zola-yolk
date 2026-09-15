@@ -2,7 +2,7 @@
 
 A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
-Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`expand`](#expand), [`border`](#border), [`img`](#img), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`render`](#render) (Mermaid / KaTeX math), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop). Plus an auto-generated [table of contents](#table-of-contents) on every post.
+Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`expand`](#expand), [`border`](#border), [`img`](#img), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`render`](#render) (Mermaid / KaTeX math), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop). Plus an auto-generated [table of contents](#table-of-contents) on every post, [series](#series) for posts meant to be read in order, and [related posts](#related-posts) under each one.
 
 **dark-theme**: 
 ![dark-theme-screenshot](/static/images/screenshots/home-dark.webp)
@@ -16,6 +16,8 @@ Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`col
 - Dark / light mode toggle with `localStorage` persistence, respects `prefers-color-scheme`
 - Full-text search modal powered by elasticlunr (Ctrl/Cmd+K or click icon)
 - Self-hosted fonts and SVG icons (via `scripts/py-ssg-tools`)
+- [Series](#series) — order a run of posts, with a panel listing every part, previous / next links, and a [listing page](#the-series-listing-page) for every series
+- [Related posts](#related-posts) — found by tag, or named by hand
 - Component-based template architecture (`partials/`, `macros/`, `shortcodes/`)
 - Semantic HTML throughout — recolour the whole theme by editing one file
 
@@ -77,7 +79,7 @@ Download and extract the repository into `themes/zola-yolk/` inside your site. U
 
 ## Configuration
 
-Below is a comprehensive set of config supported by theme, feel free to customize as per your requirements -
+Below is a comprehensive set of config supported by theme, feel free to customize as per your requirements. Every key here, and every per-post key that overrides one, is documented option by option in the demo site's [Configuration](content/posts/configuration.md) page.
 
 ```toml
 # Set this to the URL you actually serve from, including the scheme. The icon
@@ -111,23 +113,59 @@ light_theme = "catppuccin-latte"
 dark_theme = "catppuccin-mocha"
 
 [extra]
+# The sections posts live in. The homepage's recent posts list is built from
+# these, and so is the pool the series panel draws its parts from. Left unset,
+# the series pool falls back to every root-level section but the homepage has
+# no fallback and shows a placeholder instead — so set it.
 content_sections = ["posts"]
 recent_limit = 10 # posts shown under "Recent posts" on the homepage; 0 = all
+language_direction = "ltr" # written to <html dir="…">; "ltr" or "rtl"
+
+# Where a post appears in the site's listings: "always" every listing, "local"
+# its own section's listing and its series only, "never" none of them. A post
+# renders at its permalink whichever it is — this governs where it is
+# advertised, not whether it exists. Override per post with `list`. To keep one
+# out of the search box too, add Zola's own `in_search_index = false` to it.
+list = "always"
 
 enable_theme_switcher = true
-enable_search = true
+enable_search = true # also needs build_search_index above
 
-# Adds a collapsible table of contents to every post. Override per post with
-# `toc = false` under that post's own [extra].
-enable_toc = true
+# The render() shortcode's ```mermaid and ```math blocks. Both libraries ship
+# inside the theme's own static/, so neither costs a third-party request.
+enable_mermaid = true
+enable_math = true
+
+# Every key from here down is a default a post overrides by writing the same
+# key under its own [extra] — `toc` here is `toc` there. Only the `enable_`
+# keys above are the site's alone.
+
+# Adds a collapsible table of contents to every post.
+toc = true
 
 # Deepest heading level shown in the table of contents (h1 = 1 .. h6 = 6).
-# Override per post with `toc_max_level` under that post's own [extra].
 toc_max_level = 6
 
-# Heading ids left out of the table of contents, wherever they occur. Override
-# per post with `toc_exclude` under that post's own [extra].
+# Heading ids left out of the table of contents, wherever they occur.
 toc_exclude = []
+
+# Shows the series panel above the table of contents on any post that names a
+# series.
+series_panel = true
+
+# Whether that panel starts open: "expanded" or "collapsed".
+series_state = "expanded"
+
+# Previous / next links under a post that is part of a series.
+series_nav = true
+
+# Lists related posts under every post, found by tag. A post can name its own
+# instead, by giving `related` a list of paths, or turn the section off with
+# false.
+related = true
+
+# How many related posts to list; 0 shows every match.
+related_limit = 0
 
 footer = "Written with ❤️"
 
@@ -139,6 +177,10 @@ preload = ["ibm-plex-mono-400-latin.woff2", "ibm-plex-mono-700-latin.woff2"] # o
 [[extra.main_menu]]
 name = "Posts"
 url = "/posts"
+
+[[extra.main_menu]]
+name = "Series"
+url = "/series" # needs content/series/_index.md, see Series
 
 [[extra.main_menu]]
 name = "Tags"
@@ -153,6 +195,8 @@ content/
   posts/
     _index.md        # Posts section (title shown on /posts)
     my-post.md
+  series/
+    _index.md        # Series listing page (optional, see Series)
 ```
 
 Each post supports front matter:
@@ -165,8 +209,125 @@ description = "A short description."
 
 [taxonomies]
 tags = ["zola", "example"] # requires taxonomies to be defined in config
+
+[extra]
+series = "My Series"  # optional, see Series
+series_part = 1
 +++
 ```
+
+## Series
+
+Posts meant to be read in order. A post joins a series by naming it, and says
+where it sits in the reading order:
+
+```toml
++++
+title = "Shortcode: Layouts"
+
+[extra]
+series = "Shortcodes"
+series_part = 2
++++
+```
+
+That gets the post two things. Above its table of contents, a collapsible
+panel names the series, says which part this is, and links every part in
+order — the current one marked, so the panel doubles as a map of where you
+are. Under the post, previous / next links move to the parts on either side.
+
+`series_part = 0` marks the page that *introduces* the series rather than
+continuing it. It sorts first, is numbered 0 rather than counted as a part,
+and its `description` is what the panel uses to say what the series is
+about — so the overview page is the one place that explanation has to be
+written. Without one, the panel falls back to stating the position itself
+("This is part 2 of a series of 3 parts, listed below."). A part left without
+a `series_part` still belongs to the series and is listed after the numbered
+ones.
+
+Parts are found in the sections listed in `content_sections` (see
+[Configuration](#configuration)), or — with none set — in the section the post
+itself is in. Only a section's own pages are searched, not its subsections'.
+
+Both pieces are on by default and controlled by `series_panel`,
+`series_state` and `series_nav` — each written the same way in `zola.toml` as
+in a post, and overridable per post:
+
+```toml
+[extra]
+series = "Shortcodes"
+series_part = 3
+series_panel = false  # this part gets no panel
+series_state = "collapsed"  # or: a panel that starts closed
+series_nav = false  # no previous / next links under this one
+```
+
+A series of one page renders neither piece: there is nothing to introduce and
+nowhere to go next.
+
+### The series listing page
+
+A page that lists every series on the site, each with its parts in reading
+order — the counterpart to `/posts`, grouped by series instead of by year. Add
+it by creating a section that points at the theme's `series.html` template:
+
+```toml
+# content/series/_index.md
++++
+title = "Series"
+description = "Every series on the site, with its parts in reading order."
+template = "series.html"
++++
+
+Any Markdown here appears above the list.
+```
+
+The section holds no pages of its own — the series are gathered from the posts
+in `content_sections`, so the page works at any path and stays in step with
+the posts by itself. Series are listed by name; a series with an overview page
+shows that page's `description` under its heading, and lists it as part 0.
+
+Link it from the menu like any other page:
+
+```toml
+[[extra.main_menu]]
+name = "Series"
+url = "/series"
+```
+
+See [Shortcodes](/posts/shortcodes) for a live example of a series — four
+pages with an overview — and [Series](/series) for the listing page.
+
+## Related posts
+
+Under every post, a list of others worth reading next. By default they are
+found by tag: every post sharing at least one tag with this one, the posts
+with the most tags in common first and, between equals, the newest first.
+
+Other parts of the post's own series are left out — the series panel already
+lists them, in a better order than relatedness could.
+
+`related` in a post's own front matter overrides that. A list of paths picks
+the posts by hand, in the order given; `false` drops the section from this
+post entirely:
+
+```toml
+[extra]
+related = ["posts/markdown.md", "posts/introduction.md"]
+```
+
+```toml
+[extra]
+related = false
+```
+
+Site-wide, `related = false` turns the section off everywhere and
+`related_limit` caps how many are listed — `0`, the default, lists every
+match, which is worth capping on a site where one tag covers a lot of posts.
+`related_limit` is overridable per post too.
+
+Related posts need a `tags` taxonomy to match on. Posts without a date are
+skipped, since the list is ordered by date; naming them explicitly still works.
 
 ## Fonts
 
@@ -383,7 +544,7 @@ JavaScript needed to drive it.
 ### Table of Contents
 
 Every post gets a collapsible table of contents (built from its own headings)
-inserted right after its title, unless `enable_toc` is turned off — see
+inserted right after its title, unless `toc` is turned off — see
 [Configuration](#configuration). Turn it off for one post without touching the
 site default:
 

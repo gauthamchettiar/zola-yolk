@@ -5,6 +5,10 @@ description = "Shortcodes that lean on a bundled external library: Mermaid diagr
 
 [taxonomies]
 tags = ["shortcode", "syntax", "zola"]
+
+[extra]
+series = "Shortcodes"
+series_part = 3
 +++
 
 Shortcodes for content that needs a library beyond Zola itself. For the ones

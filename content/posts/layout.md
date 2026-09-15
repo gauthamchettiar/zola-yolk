@@ -11,6 +11,8 @@ tags = ["layout", "shortcode", "zola"]
 # this post — listing them in the contents implies a structure the page doesn't
 # have. They stay h3 so the heading order runs h2 -> h3 without a gap.
 toc_exclude = ["left", "right"]
+series = "Shortcodes"
+series_part = 2
 +++
 
 Shortcodes for *arranging* content. For the ones that insert it, see
@@ -93,7 +95,7 @@ align
 Centered text.
 {% end %}
 
-### Alignment Presets
+### Center, Left, & Right
 `center`, `left` and `right` are presets of `align` with a fixed `align`, and
 take no parameters of their own:
 
@@ -226,7 +228,7 @@ Text under the heading.
 
 gaps : `sm`, `md` (default), `lg` — on both `row` and `col`
 
-### Proportions
+### Col/Row Proportions
 
 `span` works like a table's colspan: a column with `span="2"` is exactly twice
 the width of a default one. Both the flex basis and the grow factor scale with

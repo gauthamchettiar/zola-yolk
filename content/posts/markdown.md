@@ -7,6 +7,8 @@ description = "A sample post covering common Markdown elements."
 tags = ["markdown", "syntax", "zola"]
 
 [extra]
+series = "Showcases"
+series_part = 1
 # These headings exist only to show what each level looks like, not as real
 # sections — left out of the table of contents so they don't derail its
 # nesting (a real h1 or h6 appearing where a section boundary is expected

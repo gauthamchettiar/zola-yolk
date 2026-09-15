@@ -87,6 +87,9 @@ is a few hundred lines split across four files.
 [UI Showcase](@/posts/showcase.md)
 : Screenshots of the theme in both modes.
 
+[Configuration](@/posts/configuration.md)
+: Every option the theme reads — the site-wide defaults and the per-post overrides that beat them.
+
 [All posts](@/posts/_index.md) · [Tags](/tags)
 : The archive, grouped by year, and the tag index.
 

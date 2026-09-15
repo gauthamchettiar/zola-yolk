@@ -66,6 +66,87 @@
   }
 }
 
+// The panel naming the series a post belongs to (macros/series.html). It's a
+// <details>, so the frame, the padding and the +/- marker are already the ones
+// every collapsible gets from _base.scss; only the summary line is new.
+//
+// The name carries that line and needs nothing of its own — it is the summary,
+// and is coloured as one. Where the reader is in the series follows it, muted
+// and in [brackets]: punctuation rather than content, so — like the
+// `{ key = value }` post metadata above — the brackets are drawn here and the
+// macro emits nothing but the name and the position. The listing page heads
+// each series the same way, with the number of parts inside the brackets.
+.series {
+  .series-position {
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight);
+
+    &::before { content: " ["; }
+    &::after  { content: "]"; }
+  }
+
+  p { margin-top: 0.5rem; }
+}
+
+// Each item is numbered by its own `value`, so the overview reads as 0 and the
+// parts as their series_part — see macros/series.html.
+.series-parts {
+  margin-bottom: 0;
+
+  a[aria-current="page"] {
+    color: var(--color-primary-accent);
+    font-weight: var(--font-weight-bold);
+  }
+}
+
+// Previous / next within a series. The arrows point at the links, so they are
+// punctuation too; which side each one takes comes from its own rel.
+.series-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 2rem 0;
+  font-size: 0.9rem;
+
+  [rel="prev"]::before { content: "<- "; }
+  [rel="next"]::after  { content: " ->"; }
+
+  [rel="prev"]::before,
+  [rel="next"]::after { color: var(--color-text-muted); }
+
+  // Keeps a lone next link on the right, where a next link belongs.
+  [rel="next"] {
+    margin-left: auto;
+    text-align: right;
+  }
+}
+
+// Two post titles side by side stop fitting well before the page does, and a
+// pair of two-line links reads as four lines of interleaved text. Below the
+// same width the columns give up at, they stack instead — the arrows still say
+// which is which. Same breakpoint as .row above.
+@media (max-width: 34rem) {
+  .series-nav {
+    flex-direction: column;
+    gap: 0.5rem;
+
+    [rel="next"] {
+      margin-left: 0;
+      text-align: left;
+    }
+  }
+}
+
+// Posts to read next (macros/list.html). The rule separates it from the post
+// above, which has ended by this point.
+.related {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+
+  > h2 { margin-top: 0; }
+}
+
 // Search dialog. The theme has one <dialog>, so it needs no class.
 dialog {
   width: min(90vw, 36rem);
