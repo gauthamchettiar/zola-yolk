@@ -1,0 +1,45 @@
+{#
+  Turning a name from config.extra.content_sections into a section path that is
+  safe to ask for.
+
+  get_section aborts the whole build when its path is missing, so a name with no
+  matching folder under content/ — a typo, or a config copied into a site before
+  the content it names — takes the site down with "Section `posts/_index.md` not
+  found" rather than being ignored. content_sections is hand-written config and
+  the sections it names may legitimately not exist yet, so every listing that
+  reads it resolves each name here first and skips the ones that come back
+  empty.
+#}
+
+{#
+  The section path for `name`, or an empty string when no such section exists.
+  Walks the name a segment at a time, checking each against the subsections of
+  the one above it, so nesting ("blog/notes") resolves as readily as a root-level
+  name and nothing is ever handed to get_section unchecked.
+
+  Returns a string because a Tera macro cannot return anything else; the caller
+  trims it and treats empty as "not there":
+
+      {%- set _path = sections::resolve(name=section_name) | trim -%}
+      {%- if _path -%}{%- set sec = get_section(path=_path) -%}{%- endif -%}
+
+  The globals are prefixed `_rs_` because set_global inside a macro writes into
+  the caller's context, and these must not collide with the caller's own names.
+
+    name — a section folder name, e.g. "posts" or "blog/notes" (required)
+#}
+{% macro resolve(name) -%}
+{%- set_global _rs_sec = get_section(path="_index.md") -%}
+{%- set_global _rs_prefix = "" -%}
+{%- set_global _rs_found = true -%}
+{%- for part in name | split(pat="/") -%}
+  {%- set_global _rs_prefix = _rs_prefix ~ part ~ "/" -%}
+  {%- set _rs_path = _rs_prefix ~ "_index.md" -%}
+  {%- if _rs_found and _rs_path in _rs_sec.subsections -%}
+    {%- set_global _rs_sec = get_section(path=_rs_path) -%}
+  {%- else -%}
+    {%- set_global _rs_found = false -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if _rs_found %}{{ name | safe }}/_index.md{% endif -%}
+{%- endmacro resolve %}

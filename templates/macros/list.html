@@ -1,3 +1,4 @@
+{% import "macros/sections.html" as paths %}
 {#
   Where a post is listed is its own to decide, with `list` under its [extra]:
 
@@ -182,10 +183,15 @@
 {%- if sections | length == 0 %}
 <p>No sections specified for displaying recents.</p>
 {%- else -%}
+  {#- A name whose section does not exist is skipped rather than aborting the
+      build — see macros/sections.html. -#}
   {%- set_global _pages = [] -%}
   {%- for section_name in sections -%}
-    {%- set sec = get_section(path=section_name ~ "/_index.md") -%}
-    {%- set_global _pages = _pages | concat(with=sec.pages) -%}
+    {%- set _path = paths::resolve(name=section_name) | trim -%}
+    {%- if _path -%}
+      {%- set sec = get_section(path=_path) -%}
+      {%- set_global _pages = _pages | concat(with=sec.pages) -%}
+    {%- endif -%}
   {%- endfor -%}
   {#- A site-wide listing, so a post that asked to be listed only in its own
       section is not one of these. -#}

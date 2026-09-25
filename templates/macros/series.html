@@ -1,3 +1,4 @@
+{% import "macros/sections.html" as paths %}
 {#
   Series: several posts that are meant to be read in order. A post joins one by
   naming it under its own [extra], along with where it sits in the order:
@@ -56,8 +57,13 @@
     Only a section's own pages are searched, not its subsections'. -#}
 {%- set_global _paths = [] -%}
 {%- if config.extra.content_sections -%}
+  {#- A name whose section does not exist is skipped rather than aborting the
+      build — see macros/sections.html. -#}
   {%- for section_name in config.extra.content_sections -%}
-    {%- set_global _paths = _paths | concat(with=section_name ~ "/_index.md") -%}
+    {%- set _path = paths::resolve(name=section_name) | trim -%}
+    {%- if _path -%}
+      {%- set_global _paths = _paths | concat(with=_path) -%}
+    {%- endif -%}
   {%- endfor -%}
 {%- elif page -%}
   {%- set_global _paths = [page.ancestors | last] -%}
