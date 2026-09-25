@@ -51,11 +51,13 @@ p {
   margin: 1rem auto;
 }
 
-// Lists line up with body text; only nesting indents. Markers render `inside`
-// the box so the bullet or number starts on the same left edge as a paragraph,
-// instead of hanging out into the page gutter.
+// Lists step in from body text by one indent, and nesting steps in again by
+// the same amount. Markers render `inside` the box so the bullet or number
+// shares that edge with the item's text instead of hanging out into the page
+// gutter. Lists that are navigation rather than prose — the breadcrumb, the
+// main menu, the search results — reset this to 0 where they are styled.
 ul, ol {
-  padding-inline-start: 0;
+  padding-inline-start: 2ch;
   list-style-position: inside;
 
   ul, ol { padding-inline-start: 2ch; }
@@ -76,8 +78,8 @@ li:has(> input[type="checkbox"]) {
   > input[type="checkbox"] { margin-inline-end: 0.5ch; }
 }
 
-// Match the nested-list indent so definition lists don't sit at the browser
-// default of 40px and read as an outlier next to the flush lists above.
+// Match the list indent above so a definition sits where a list item does,
+// rather than at the browser default of 40px.
 dd {
   margin-inline-start: 2ch;
 }
@@ -111,6 +113,16 @@ hr {
 img {
   max-width: 100%;
   height: auto;
+}
+
+// Against #fff body text in dark mode, weight alone barely registers — bold
+// reads as a faint thickening rather than emphasis. The magenta accent (the
+// theme's "pink") marks it unmistakably and clears AA at 4.8:1. Light mode
+// keeps the inherited colour, where 700 on the cream background is already
+// distinct; `currentColor` on `color` means inherit, so bold inside coloured
+// text still follows its parent there.
+strong, b {
+  color: light-dark(currentColor, var(--color-secondary-accent));
 }
 
 mark {
