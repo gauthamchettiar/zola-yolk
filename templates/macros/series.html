@@ -95,6 +95,12 @@
   {%- set _names = [_name] -%}
 {%- endif -%}
 
+{#- A listing page with nothing to list still needs to say so: the heading
+    alone, above nothing, reads as a page that failed to render. -#}
+{%- if view == "index" and _names | length == 0 %}
+<p>No series yet.</p>
+{%- endif -%}
+
 {%- for series_name in _names -%}
 {%- set _members = _pool | filter(attribute="extra.series", value=series_name) -%}
 {#- Sorting on a missing key would abort the build, so the numbered parts are

@@ -4,6 +4,10 @@
 # marked CHANGE ME. Everything else is a working default: delete a key to
 # accept it, or keep it to see it at a glance.
 #
+# Copy example_content/ to content/ alongside it. Those files are what the
+# menu links below point at: a section has no page unless its _index.md
+# exists, so without them Posts, Series and Tags all 404 on a new site.
+#
 # Every option here, and every per-post key that overrides one, is documented
 # in the theme's Configuration page:
 #   themes/zola-yolk/content/posts/configuration.md
@@ -121,25 +125,18 @@ preload = ["ibm-plex-mono-400-latin.woff2", "ibm-plex-mono-700-latin.woff2"]
 
 
 # --- Header menu --------------------------------------------------------
-# CHANGE ME — one table per link, in the order they appear. Each url must
-# resolve to a page you actually have, or the link 404s.
+# CHANGE ME — one table per link, in the order they appear. Each url has to
+# resolve to a page you actually have, or the link 404s; the three below are
+# the ones example_content/ provides.
 
 [[extra.main_menu]]
 name = "Posts"
 url = "/posts"
 
 [[extra.main_menu]]
+name = "Series"
+url = "/series"
+
+[[extra.main_menu]]
 name = "Tags"
 url = "/tags"
-
-# A series index needs content/series/_index.md to exist, rendered by the
-# theme's series template. Create it, then uncomment this:
-#
-#   +++
-#   title = "Series"
-#   template = "series.html"
-#   +++
-#
-# [[extra.main_menu]]
-# name = "Series"
-# url = "/series"
