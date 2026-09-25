@@ -46,6 +46,21 @@ jobs:
             --content 'public/**/*.html' \
             --output public/ \
             --safelist search-empty mermaid math-block math-inline
+      # The custom domain is derived from base_url so it lives in exactly one
+      # place. It is written here rather than kept in static/ because Zola
+      # serves a theme's static/ to every site that installs it: a CNAME there
+      # follows the theme into other people's builds and points them at this
+      # domain. A base_url on github.io is the default Pages domain and needs
+      # no CNAME, so forks deploy unchanged.
+      - name: Write custom domain
+        run: |
+          url=$(sed -n 's/^[[:space:]]*base_url[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' zola.toml | head -n1)
+          host=${url#*://}
+          host=${host%%/*}
+          case "$host" in
+            ""|*.github.io) echo "No custom domain in base_url ('$url') - skipping CNAME" ;;
+            *)              echo "$host" > public/CNAME && echo "CNAME -> $host" ;;
+          esac
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
