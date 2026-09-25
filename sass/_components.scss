@@ -76,6 +76,18 @@
 // `{ key = value }` post metadata above — the brackets are drawn here and the
 // macro emits nothing but the name and the position. The listing page heads
 // each series the same way, with the number of parts inside the brackets.
+// The panel and the table of contents are both collapsible boxes stacked at the
+// top of a post, so a bare <details> frame makes them read as the same thing.
+// The panel takes a left rule — the same idiom blockquote uses — and names
+// itself in the marker. The contents box keeps the plain frame every other
+// <details> gets, since its summary already says what it is.
+details.series {
+  border-left: 4px solid var(--color-secondary-accent);
+
+  > summary::before { content: "+ series: "; }
+  &[open] > summary::before { content: "- series: "; }
+}
+
 .series {
   .series-position {
     color: var(--color-text-muted);
@@ -93,8 +105,10 @@
 .series-parts {
   margin-bottom: 0;
 
+  // The part you are already reading is not somewhere to go, so it drops the
+  // link colour and reads as plain text; the weight alone marks it.
   a[aria-current="page"] {
-    color: var(--color-primary-accent);
+    color: var(--color-text);
     font-weight: var(--font-weight-bold);
   }
 }
