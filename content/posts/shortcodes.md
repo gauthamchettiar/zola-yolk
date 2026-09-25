@@ -7,6 +7,9 @@ description = "Everything the theme's shortcodes can do, across three posts: the
 tags = ["shortcode", "zola"]
 
 [extra]
+# The overview of a series is a way in to the three parts, not a post that
+# stands on its own — it belongs in the series, not in the site's recents.
+list = "local"
 series = "Shortcodes"
 series_part = 0
 +++
