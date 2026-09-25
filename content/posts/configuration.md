@@ -1,7 +1,7 @@
 +++
 title = "Configuration"
-date = 2026-04-24
-description = "Every option the theme reads, where it goes, and what it does — the site-wide defaults in zola.toml and the per-post overrides that beat them."
+date = 2026-04-16
+description = "Every option the theme reads: the site-wide defaults in zola.toml and the per-post keys that override them."
 
 [taxonomies]
 tags = ["config", "theme", "zola"]
@@ -10,14 +10,12 @@ tags = ["config", "theme", "zola"]
 toc_max_level = 3
 +++
 
-Every option the theme reads, in one place: *what it does, where it goes, and
-what it falls back to.*
+Every option the theme reads, what it does, and what it falls back to.
 
-## Two places, one name
+## How options work
 
-Theme options live under `[extra]`, and almost every one of them exists twice —
-once in `zola.toml` as the site's default, and once in a post's own front
-matter as an override for that post alone.
+Theme options live under `[extra]` — in `zola.toml` for the site, in a post's
+front matter for that post alone. A post wins, using the same key name.
 
 {% row(gap="sm") %}
 {% col() %}
@@ -45,46 +43,35 @@ toc = false
 {% end %}
 {% end %}
 
-**The two names are always the same.** A post overrides `toc` by writing `toc`,
-`series_panel` by writing `series_panel`, `list` by writing `list` — so what you
-read in a post's front matter is what you look up in `zola.toml`, with nothing
-to translate between them.
-
-The one prefix in the file marks the exception. A key beginning `enable_` is a
-whole feature of the theme, switched on or off for the site, and no post
-overrides it — there is no per-post `enable_search`, because a single post
-cannot put a button in the header. Everything without the prefix is either a
-site setting with no per-post meaning at all (`content_sections`, `footer`) or a
-default a post may override under its own name.
+Keys prefixed `enable_` are the exception: they switch a feature on for the
+whole site, and no post overrides them.
 
 {% admonition(title="Anything under [extra] is yours", color="blue") %}
-Zola never validates `[extra]`. A misspelled key is not an error — it is simply
-a key nothing reads, and the theme quietly uses its default. If an option looks
-like it is being ignored, check the spelling and the table it belongs to before
-anything else.
+Zola never validates `[extra]`. A misspelled key is not an error — it is a key
+nothing reads, and the theme quietly uses its default. If an option looks like
+it is being ignored, check the spelling first.
 {% end %}
 
 ## Site options
 
-These are the site's own. They are set under `[extra]` in `zola.toml`, and a
-post has no say in any of them.
-
-### Content and navigation
+Set these in `zola.toml`. Posts have no say in any of them.
 
 {% wide() %}
 | Key | What it does | Default |
 |---|---|---|
-| `content_sections` | The sections posts live in, as folder names under `content/`. Feeds the home page's recent posts list and the pool the series panel draws from | unset — see the note below |
-| `recent_limit` | How many posts the home page lists under "Recent posts"; `0` shows every one | `10` |
-| `main_menu` | The header links, as an array of tables — each with a `name` and a `url` | unset (no menu) |
-| `footer` | Footer text; plain text or Markdown | unset |
+| `content_sections` | The sections posts live in, as folder names under `content/`. Feeds the home page's recent posts and the pool the series panel draws from | unset — set it |
+| `recent_limit` | How many posts the home page lists; `0` shows every one | `10` |
+| `main_menu` | Header links, as an array of tables with a `name` and a `url` | unset |
+| `footer` | Footer text, as Markdown | `"Written with ❤️"` |
 | `language_direction` | Writing direction, written to `<html dir="…">` | `"ltr"` |
+| `enable_theme_switcher` | The dark/light toggle in the header | `true` |
+| `enable_search` | The search button. Needs Zola's own `build_search_index = true` as well | `true` |
+| `enable_mermaid` | Lets ` ```mermaid ` blocks render as diagrams through `render()` | `true` |
+| `enable_math` | Lets ` ```math ` blocks render as notation through `render()` | `true` |
 {% end %}
 
-`content_sections` has no single fallback, which is the one place the theme is
-inconsistent with itself. Left unset, the series panel and the series listing
-page fall back to every root-level section — but the home page has none, and
-prints *No sections specified for displaying recents* instead. Set it.
+Left unset, `content_sections` makes the home page print *No sections specified
+for displaying recents*.
 
 ```toml
 [extra]
@@ -96,25 +83,6 @@ name = "Posts"
 url = "/posts"
 ```
 
-### Feature switches
-
-The four keys carrying the `enable_` prefix. Each turns a whole feature on or
-off for the site, and none of them can be overridden by a post.
-
-{% wide() %}
-| Key | What it does | Default |
-|---|---|---|
-| `enable_theme_switcher` | Shows the dark/light toggle in the header | `true` |
-| `enable_search` | Shows the search button. Needs Zola's own `build_search_index = true` as well — the button has nothing to search without it | `true` |
-| `enable_mermaid` | Lets ` ```mermaid ` blocks render as diagrams through `render()` | `true` |
-| `enable_math` | Lets ` ```math ` blocks render as notation through `render()` | `true` |
-{% end %}
-
-Both libraries ship inside the theme's own `static/`, so neither costs a
-third-party request. With a flag off, a `mermaid` block falls back to a plain
-code block and a `math` block to its raw source — nothing is lost but the
-rendering.
-
 ### Fonts
 
 One table per family, under `[[extra.fonts]]`.
@@ -124,135 +92,77 @@ One table per family, under `[[extra.fonts]]`.
 |---|---|---|
 | `source` | Subfolder under `static/fonts/` the family was synced into | required |
 | `name` | Folder name of the family under that source | required |
-| `preload` | Subset files fetched alongside the stylesheet rather than one request behind it | unset |
+| `preload` | Subset files fetched alongside the stylesheet rather than one request behind it | `[]` |
 {% end %}
 
-Only list a `preload` file the site actually draws text with — a preloaded font
-that goes unused is a wasted download the browser will warn about in the
-console.
+Only preload a file the site actually draws text with — an unused one is a
+wasted download the browser warns about.
 
-## Defaults a post can override
+## Post options
 
-Each key below is written the same way in both places: under `[extra]` in
-`zola.toml` to set the site's default, and under `[extra]` in a post's front
-matter to override it for that post alone. `list` is one of these too, and has
-a section of its own further down.
-
-### Table of contents
+Each of these is a site default in `zola.toml` and an override in a post, under
+the same name.
 
 {% wide() %}
 | Key | What it does | Default |
 |---|---|---|
+| `list` | Where the post is listed — see below | `"always"` |
 | `toc` | Whether the post gets a collapsible table of contents | `true` |
 | `toc_max_level` | Deepest heading shown, `1` (h1) to `6` (h6) | `6` |
 | `toc_exclude` | Heading ids left out wherever they occur | `[]` |
-{% end %}
-
-An excluded heading is dropped alone and its children move up to take its
-place; a heading past `toc_max_level` is dropped *with* its children, since
-they are deeper still. That difference is deliberate — the usual reason to
-exclude one heading is that it demonstrates heading syntax rather than dividing
-the page, and the sections under it are still real.
-
-### Series
-
-{% wide() %}
-| Key | What it does | Default |
-|---|---|---|
-| `series` | The name of the series this post belongs to. Naming one is what puts a post in it. **Post only** | unset |
-| `series_part` | Where the post sits in the reading order. `0` marks the overview page. **Post only** | unset |
-| `series_panel` | Whether the panel listing the parts appears above the contents | `true` |
-| `series_state` | Whether that panel starts open: `"expanded"` or `"collapsed"` | `"expanded"` |
+| `series` | The series this post belongs to. Naming one is what joins it. Posts only | unset |
+| `series_part` | Position in the reading order; `0` marks the overview. Posts only | unset |
+| `series_panel` | The panel listing the parts, above the contents | `true` |
+| `series_state` | Whether that panel starts `"expanded"` or `"collapsed"` | `"expanded"` |
 | `series_nav` | Previous/next links under the post | `true` |
-{% end %}
-
-A series of one post renders neither panel nor nav — there is nothing to
-introduce and nowhere to go next. A part left without a `series_part` still
-belongs to the series and is listed, unnumbered, at the end.
-
-### Related posts
-
-{% wide() %}
-| Key | What it does | Default |
-|---|---|---|
-| `related` | Whether posts to read next are listed under the post. On a post it does double duty — see below | `true` |
+| `related` | Posts to read next, matched by shared tags. A list of paths picks them by hand instead; `false` turns the section off | `true` |
 | `related_limit` | How many to list; `0` shows every match | `0` |
 {% end %}
 
-`related` on a post does two jobs. A list of paths picks the posts by hand, in
-that order; `false` turns the section off for that post alone.
-
 ```toml
-[extra]
-related = ["posts/markdown.md", "posts/showcase.md"]
-```
++++
+title = "Part two"
 
-Left to itself the theme matches by tag: every post sharing at least one tag,
-most tags in common first, newest first at equal footing. Other parts of the
-post's own series are left out, since the panel at the top already lists them
-in order.
+[extra]
+series = "Shortcodes"
+series_part = 2
+related = ["posts/markdown.md", "posts/showcase.md"]
++++
+```
 
 ## Where a post is listed
 
-`list` decides how far a post travels through the site's listings. It is a
-post-level key with a site-wide default of the same name, and it takes one of
-three words.
-
-{% wide() %}
-| Value | Meaning |
-|---|---|
-| `"always"` | Every listing. The default |
-| `"local"` | Its own section's listing, and its series — nowhere else |
-| `"never"` | No listing at all |
-{% end %}
-
-```toml
-+++
-title = "Reachable, but not advertised"
-
-[extra]
-list = "never"
-+++
-```
-
-{% admonition(title="`list` is not `draft`", color="yellow") %}
-A post is **rendered at its permalink whichever value it takes**. `list` governs
-where a post is advertised, not whether it exists — `list = "never"` keeps a
-page reachable by anyone holding the link. To stop a page being built at all,
-use Zola's own `draft = true` instead.
-{% end %}
-
-Surface by surface:
+`list` takes one of three words, and decides how far a post travels through the
+site's listings.
 
 {% wide() %}
 | Surface | `"always"` | `"local"` | `"never"` |
 |---|---|---|---|
 | Rendered at its permalink | yes | yes | yes |
-| Its own section's list, and the count beside it | yes | yes | no |
-| Home page "Recent posts" | yes | no | no |
-| Tag pages, and the counts on the tag index | yes | no | no |
-| Related posts, when found by tag | yes | no | no |
-| Series panel and the series listing page | yes | yes | no |
-| `atom.xml` | yes | no | no |
+| Its own section's list | yes | yes | no |
+| Series panel and series listing | yes | yes | no |
 | `sitemap.xml` | yes | yes | no |
-| Search index | yes | yes | yes — see below |
+| Home page "Recent posts" | yes | no | no |
+| Tag pages and tag counts | yes | no | no |
+| Related posts, when matched by tag | yes | no | no |
+| `atom.xml` | yes | no | no |
+| Search index | yes | yes | yes |
 {% end %}
 
-Two rows are worth explaining. A **series** keeps its `"local"` parts because a
-series is a local grouping to begin with; a part held back by `"never"` leaves a
-gap in the numbering rather than shifting the parts after it, since each part is
-numbered by its own `series_part`. And a **sitemap** keeps `"local"` because
-such a post is linked from its own section like any other, while a `"never"`
-post is precisely the kind of unlinked page a sitemap would otherwise expose.
-
-A path named by hand in `related` is honoured whatever its `list` says. A
+A path named by hand in `related` is honoured whatever its `list` says — a
 hand-picked link is not a listing.
 
+{% admonition(title="`list` is not `draft`", color="yellow") %}
+A post is **rendered at its permalink whichever value it takes**. `list`
+governs where a post is advertised, not whether it exists — `list = "never"`
+keeps a page reachable by anyone holding the link. To stop a page being built
+at all, use Zola's own `draft = true`.
+{% end %}
+
 {% admonition(title="Search is a separate key", color="red") %}
-`list` does not touch the search index, and cannot: Zola builds it internally
-with no template to filter. A post that should stay out of the search box needs
-Zola's own key alongside, at the top level of its front matter rather than
-under `[extra]`:
+`list` cannot touch the search index: Zola builds it internally, with no
+template to filter. Keeping a post out of the search box needs Zola's own key,
+at the top level of the front matter rather than under `[extra]`:
 
 ```toml
 +++
@@ -265,36 +175,29 @@ list = "never"
 ```
 {% end %}
 
-Holding a post back from the feed and the sitemap means the theme owns
-`templates/atom.xml` and `templates/sitemap.xml`, which are Zola's built-ins
-plus a filter. When upgrading Zola, diff them against
-`components/templates/src/builtins/` in the Zola repository and re-apply the
-filter rather than editing around it.
-
 ## Zola's own keys worth knowing
 
-Not theme options — these are Zola's, and they sit at the top level of front
-matter rather than under `[extra]`. They come up because they overlap with what
-`list` does.
+Not theme options — these are Zola's, and sit at the top level of front matter
+rather than under `[extra]`. They come up because they overlap with `list`.
 
 {% wide() %}
 | Key | What it does |
 |---|---|
-| `draft` | `true` drops the page from the build entirely: no page at its URL, and absent from every listing, the feed, the sitemap and the search index. Built only with `zola build --drafts` |
-| `render` | `false` writes no HTML for the page — but its permalink survives in tag pages and the feed, both then pointing at a URL that 404s. `list = "never"` is almost always what was actually wanted |
+| `draft` | `true` drops the page from the build entirely. Built only with `zola build --drafts` |
+| `render` | `false` writes no HTML, but the permalink survives in tag pages and the feed, pointing at a URL that 404s. `list = "never"` is almost always what was wanted |
 | `in_search_index` | `false` keeps the page out of the search index |
-| `template` | Renders the page or section with a named template — `content/series/_index.md` uses it to become the series listing page |
+| `template` | Renders the page with a named template — `content/series/_index.md` uses it to become the series listing |
 {% end %}
 
-One more that is easy to put in the wrong place: `insert_anchor_links` adds a
-clickable anchor beside every heading, and belongs under `[markdown]` in
-`zola.toml`, taking `"left"`, `"right"`, `"heading"` or `"none"`. Written under
-`[extra]`, or set to `true`, it does nothing at all.
+One more that is easy to misplace: `insert_anchor_links` adds a clickable
+anchor beside every heading, and belongs under `[markdown]` in `zola.toml`,
+taking `"left"`, `"right"`, `"heading"` or `"none"`. Under `[extra]`, or set to
+`true`, it does nothing.
 
 ## Where to go next
 
 [Markdown Showcase](@/posts/markdown.md)
-: Every element the renderer supports, and the `[markdown]` settings that change how it behaves.
+: Every element the renderer supports, and the `[markdown]` settings behind them.
 
 [Shortcode: Elements](@/posts/shortcode.md)
 : The shortcodes these options switch on and off.

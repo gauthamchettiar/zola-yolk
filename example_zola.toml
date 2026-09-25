@@ -1,0 +1,145 @@
+# zola-yolk — example configuration
+#
+# Copy this to `zola.toml` at the root of your site and fill in the values
+# marked CHANGE ME. Everything else is a working default: delete a key to
+# accept it, or keep it to see it at a glance.
+#
+# Every option here, and every per-post key that overrides one, is documented
+# in the theme's Configuration page:
+#   themes/zola-yolk/content/posts/configuration.md
+
+# CHANGE ME — the URL you actually serve from, including the scheme. The icon
+# macro writes it into an inline url(...), which no proxy rewrites for you, so
+# an http base_url on an https site shows up as mixed content.
+base_url = "https://example.com"
+
+# CHANGE ME — shown in the header and the <title> of every page.
+title = "My Site"
+
+# CHANGE ME — used for <meta name="description"> and Open Graph.
+description = "A short sentence about this site."
+
+theme = "zola-yolk"
+
+compile_sass = true
+build_search_index = true   # required by extra.enable_search below
+generate_feeds = true       # emits atom.xml; the theme links it from <head>
+
+taxonomies = [{ name = "tags" }]
+
+[markdown]
+definition_list = true
+bottom_footnotes = true
+
+# Leave this off. On Zola 0.22.1 it empties the generated slug of every heading
+# that follows a markdown image, so heading anchors and the table of contents
+# break. The img() shortcode lazy-loads anyway, and carries the width and
+# height Zola cannot infer here.
+lazy_async_image = false
+
+# Adds a clickable anchor beside every heading: "left", "right", "heading" or
+# "none". A Zola key, not a theme one — under [extra], or set to true, it does
+# nothing.
+# insert_anchor_links = "right"
+
+[markdown.highlighting]
+style = "class"
+light_theme = "catppuccin-latte"
+dark_theme = "catppuccin-mocha"
+
+
+[extra]
+
+# --- Site settings ------------------------------------------------------
+# These describe the site as a whole. A post has no say in any of them.
+
+# The sections posts live in, as folder names under content/. Feeds the home
+# page's recent posts and the pool the series panel draws from. Leaving it
+# unset makes the home page print a placeholder instead — set it.
+content_sections = ["posts"]
+
+# How many posts the home page lists under "Recent posts"; 0 shows every one.
+recent_limit = 10
+
+# Writing direction, written to <html dir="…">: "ltr" or "rtl".
+language_direction = "ltr"
+
+# CHANGE ME — footer text, as Markdown.
+footer = "© 2026 Your Name"
+
+
+# --- Feature switches ---------------------------------------------------
+# Whole features of the theme, on or off for the site. The enable_ prefix
+# marks them as the site's alone: no post overrides these.
+
+enable_theme_switcher = true   # dark/light toggle in the header
+enable_search = true           # search button; needs build_search_index above
+enable_mermaid = true          # ```mermaid blocks through render()
+enable_math = true             # ```math blocks through render()
+
+
+# --- Defaults a post can override ---------------------------------------
+# Every key below is a default a post may override by writing the same key
+# under its own [extra]. The names match on both sides on purpose.
+
+# Where a post appears in listings: "always", "local" (its own section and its
+# series only) or "never". A post renders at its permalink whichever it is —
+# this governs where it is advertised, not whether it exists. To keep one out
+# of the search box too, add Zola's own in_search_index = false to that post.
+list = "always"
+
+toc = true            # collapsible table of contents on every post
+toc_max_level = 6     # deepest heading shown, 1 (h1) to 6 (h6)
+toc_exclude = []      # heading ids left out wherever they occur
+
+series_panel = true          # panel listing the parts, above the contents
+series_state = "expanded"    # or "collapsed"
+series_nav = true            # previous/next links under the post
+
+# Related posts, matched by shared tags. A post can name its own with a list of
+# paths, or turn the section off with false.
+related = true
+related_limit = 0     # how many to list; 0 shows every match
+
+
+# --- Fonts --------------------------------------------------------------
+# Self-hosted, one table per family. This one ships inside the theme, so it
+# works as-is. To use another, sync it first:
+#
+#   cd themes/zola-yolk/scripts/py-ssg-tools
+#   uv run pst sync fonts --name "Your Font" --dest ../../static/fonts/google \
+#     --weights 400,700 --subset latin
+#
+# `source` is the subfolder under static/fonts/, `name` the synced folder
+# inside it. Preload only the subsets your visible text renders with — body
+# copy at 400 and headings at 700 — since an unused preload is a wasted
+# download the browser warns about.
+[[extra.fonts]]
+source = "google"
+name = "IBM Plex Mono"
+preload = ["ibm-plex-mono-400-latin.woff2", "ibm-plex-mono-700-latin.woff2"]
+
+
+# --- Header menu --------------------------------------------------------
+# CHANGE ME — one table per link, in the order they appear. Each url must
+# resolve to a page you actually have, or the link 404s.
+
+[[extra.main_menu]]
+name = "Posts"
+url = "/posts"
+
+[[extra.main_menu]]
+name = "Tags"
+url = "/tags"
+
+# A series index needs content/series/_index.md to exist, rendered by the
+# theme's series template. Create it, then uncomment this:
+#
+#   +++
+#   title = "Series"
+#   template = "series.html"
+#   +++
+#
+# [[extra.main_menu]]
+# name = "Series"
+# url = "/series"
