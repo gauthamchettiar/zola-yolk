@@ -1,0 +1,6 @@
+{#
+  tabs — each fenced code block in the body becomes a tab.
+  Parameters: see blocks::tabs in macros/blocks.html.
+#}
+{%- import "macros/blocks.html" as blocks -%}
+{{ blocks::tabs(content=body | markdown, titles=titles | default(value=[]), id=nth, group=group | default(value="")) }}

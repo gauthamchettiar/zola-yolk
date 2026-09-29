@@ -1,20 +1,6 @@
 {#
   elink shortcode — an external hyperlink.
-
-  markdown:
-    {{ elink(text="Example", href="https://example.com") }}
-    {{ elink(text="Example", href="https://example.com", new_tab=false) }}
-    {{ elink(text="Example", href="https://example.com", show_icon=false) }}
-
-  template:
-    {% import "macros/widgets.html" as widgets %}
-    {{ widgets::elink(text="Example", href="https://example.com") }}
-
-  Parameters:
-    text       — visible link text (required)
-    href       — destination URL (required)
-    new_tab    — open in a new tab with rel="noopener noreferrer" (default: true)
-    show_icon  — append an external-link indicator icon (default: true)
+  Parameters: see widgets::elink in macros/widgets.html.
 #}
 {%- import "macros/widgets.html" as widgets -%}
 {{- widgets::elink(text=text, href=href, new_tab=new_tab | default(value=true), show_icon=show_icon | default(value=true)) -}}

@@ -1,23 +1,6 @@
 {#
   col shortcode — stacks its contents, and forms one column inside a `row`.
-
-  markdown:
-    {% row() %}
-    {% col(span="2") %}
-    Twice the width.
-    {% end %}
-    {% col() %}
-    Half of that.
-    {% end %}
-    {% end %}
-
-  template:
-    {% import "macros/blocks.html" as blocks %}
-    {{ blocks::col(content="<p>Twice the width.</p>", span="2") }}
-
-  Parameters:
-    gap   — sm | md | lg (default: "md")
-    span  — shares of the row's width; works like a table colspan (default: 1)
+  Parameters: see blocks::col in macros/blocks.html.
 #}
 {%- import "macros/blocks.html" as blocks -%}
 {{ blocks::col(content=body | markdown, gap=gap | default(value="md"), span=span | default(value="")) }}

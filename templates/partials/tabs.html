@@ -1,17 +1,6 @@
 {#
-  Keeps tab blocks that share a `group` in step: picking "template files" in one
-  block picks it in every other block of the same group on the page.
-
-  This is an enhancement, not the mechanism. The tabs themselves are a radio
-  group in CSS (see sass/_components.scss), so without JavaScript every block
-  still switches — just on its own rather than together.
-
-  Panels keep their natural height, so a group switch can change the height of
-  every block on the page at once — including ones above the block the visitor
-  is looking at, which would otherwise shove their scroll position around. This
-  measures the clicked block's position before and after the sync and scrolls
-  by the difference in the same frame, so to the eye nothing above moves; only
-  the tab the visitor clicked visibly changes.
+  Keeps tab blocks with the same `group` in step, and holds the scroll position
+  while their heights change. Without JS each block still switches alone.
 #}
 <script>
   (function () {

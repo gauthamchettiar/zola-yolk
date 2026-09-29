@@ -1,28 +1,6 @@
 {#
-  Activates the render() shortcode (templates/shortcodes/render.html):
-  turns a `.mermaid` block into a diagram and a `.math-block` /
-  `.math-inline` into typeset math (display vs. inline mode, picked by the
-  shortcode's own `inline` parameter).
-
-  base.html includes this only on pages whose rendered body actually contains
-  one of those markers, and sets `needs_mermaid` / `needs_math` to say which —
-  mermaid.min.js alone is 3.4 MB, far too much to hand to a page with no
-  diagram on it.
-
-  Neither library is in the markup below. Both are injected when the first
-  block that needs them comes near the viewport, so a page with a diagram
-  halfway down it still paints without waiting on the bundle. A block that is
-  already on screen loads immediately: IntersectionObserver reports the initial
-  intersection when you start observing, so no separate above-the-fold check is
-  needed.
-
-  Both libraries ship inside this theme's own static/ (mermaid.min.js,
-  katex/katex.min.{js,css} + katex/fonts/*.woff2) rather than a CDN, same
-  spirit as the self-hosted fonts and icons — see content/posts/externals.md.
-  Zola serves a theme's static/ for any site that installs it, so nothing
-  extra needs downloading to turn a flag on. katex.min.css was trimmed to
-  woff2-only @font-face rules and switched to font-display: swap, both fine
-  given this theme's own browser baseline (see README's Browser support).
+  Loads mermaid / KaTeX (from the theme's static/) when the first block that
+  needs them nears the viewport. base.html includes this only when needed.
 #}
 <script>
   (function () {

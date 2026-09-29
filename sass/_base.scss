@@ -19,9 +19,7 @@ body {
   line-height: 1.7;
 }
 
-// Only the block padding lives here. Nothing constrains the inline size, so a
-// .wide descendant can grow past the reading column at any nesting depth
-// (see .wide in _components.scss) without needing to be a direct child.
+// No inline constraint here, so .wide can escape the column at any depth.
 main {
   padding-block: 1rem;
 }
@@ -44,10 +42,7 @@ h4::before { content: "#### "; }
 h5::before { content: "##### "; }
 h6::before { content: "###### "; }
 
-// A <header> groups a title with its metadata, so close the gap between them.
-// The metadata lines space themselves; whatever follows the header keeps its
-// distance from it, except a post's table of contents, which reads as one more
-// line of the header.
+// A header's title and metadata sit together; a post's TOC joins them.
 main header {
   margin-bottom: 0;
 
@@ -61,11 +56,7 @@ p {
   margin: 1rem auto;
 }
 
-// Lists step in from body text by one indent, and nesting steps in again by
-// the same amount. Markers render `inside` the box so the bullet or number
-// shares that edge with the item's text instead of hanging out into the page
-// gutter. Lists that are navigation rather than prose — the breadcrumb, the
-// main menu, the search results — reset this to 0 where they are styled.
+// Lists indent 2ch with markers inside; nav lists reset this where styled.
 ul, ol {
   padding-inline-start: 2ch;
   list-style-position: inside;
@@ -73,23 +64,18 @@ ul, ol {
   ul, ol { padding-inline-start: 2ch; }
 }
 
-// An `inside` marker gets pushed onto its own line when the item starts with a
-// block, which is every loose list and every footnote. Keeping that first
-// paragraph inline puts the marker back alongside its text.
+// Keep an `inside` marker on the same line as a leading paragraph.
 li > p:first-child {
   display: inline;
 }
 
-// A task item already has a checkbox; the bullet on top of it is noise.
-// Matching on the checkbox itself means a list can mix task and plain items.
+// Task items: no bullet beside the checkbox.
 li:has(> input[type="checkbox"]) {
   list-style: none;
 
   > input[type="checkbox"] { margin-inline-end: 0.5ch; }
 }
 
-// Match the list indent above so a definition sits where a list item does,
-// rather than at the browser default of 40px.
 dd {
   margin-inline-start: 2ch;
 }
@@ -100,16 +86,13 @@ a {
   &:hover { color: var(--color-secondary-accent); }
 }
 
-// Buttons are bare: an icon (the search dialog's close) or text dressed as a
-// link (the Search menu item). Styling the element rather than a class means
-// new buttons need little or no CSS.
+// Bare buttons.
 button {
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
   font: inherit;
-  line-height: 1;
   color: var(--color-text-muted);
 
   &:hover { color: var(--color-secondary-accent); }
@@ -126,9 +109,7 @@ img {
   height: auto;
 }
 
-// Against #fff body text, weight alone barely registers — bold reads as a
-// faint thickening rather than emphasis. The magenta accent (the theme's
-// "pink") marks it unmistakably and clears AA at 4.8:1.
+// Bold alone barely shows on white text, so it's pink too.
 strong, b {
   color: var(--color-secondary-accent);
 }
@@ -179,26 +160,16 @@ blockquote {
   p { margin: 0; }
 }
 
-// No frame: a collapsible is a quiet, muted line until it is opened, so it
-// reads as an aside to the page rather than a box competing with it.
+// `expand` (style simple): a muted line, body indented under it.
 details {
   margin: 1.5rem 0;
-  // Indents the body under the summary's text, past its "+ " / "- " marker —
-  // without a frame, this is what says the body belongs to it. 2ch is the
-  // marker's width in a monospace font.
   > :not(summary) { margin-left: 2ch; }
 
-  // The content's own top/bottom margins would otherwise push it away from the
-  // summary and the text after it — summary keeps its own spacing below since
-  // it isn't a paragraph.
   > summary + * { margin-top: 0; }
   > :last-child { margin-bottom: 0; }
 }
 
-// The native marker sits flush against the text with no room to add a gap, so
-// it's replaced with the same pattern headings use: draw the marker in
-// ::before with the space baked into its content, same as "# " before a
-// heading, and hide the browser's own marker.
+// Custom +/- marker instead of the browser's.
 summary {
   cursor: pointer;
   color: var(--color-text-muted);
@@ -221,9 +192,7 @@ details[open] > summary {
   &::before { content: "- "; }
 }
 
-// The `border` style of the expand shortcode: a frame does the job the indent
-// does for the simple style, so the body sits flush inside it, and the title
-// takes the accent colour to stand out as the box's heading.
+// `expand` style border: framed, accent title.
 details[data-style="border"] {
   padding: 0.75rem 1rem;
   border: 1px solid var(--color-border);
@@ -259,8 +228,7 @@ details[data-style="border"] {
   }
 }
 
-// Emitted by Zola's giallo syntax highlighter (markdown.highlighting.style = "class").
-// Colours come from static/giallo.css; only layout belongs here.
+// Syntax highlighting layout; colours are in static/giallo.css.
 .giallo-l {
   display: inline-block;
   min-height: 1lh;

@@ -11,8 +11,7 @@
     {{ widgets::meta(page=page) }}
     {%- if page.extra.series %}
     {%- if page.extra.series_label | default(value=config.extra.series_label | default(value=true)) %}
-    {#- The line's text, most specific first: the post's own, then the one set
-        for its series in [extra.series_label_texts], then the site's. -#}
+    {#- Label text: the post's, then its series', then the site's. -#}
     {%- set label_text = config.extra.series_label_text | default(value="Part {part} of {count} from series “{series}”") %}
     {%- if config.extra.series_label_texts %}
     {%- set label_text = config.extra.series_label_texts | get(key=page.extra.series, default=label_text) %}
@@ -32,16 +31,13 @@
   {%- include "partials/content.html" %}
   {{ widgets::tags(page=page) }}
 </article>
-{#- Both of these point away from the post, so they sit outside <article>:
-    where to go next is not part of what was written. -#}
+{#- Navigation away from the post sits outside <article>. -#}
 {%- if page.extra.series %}
 {%- if page.extra.series_nav | default(value=config.extra.series_nav | default(value=true)) %}
 {{ series::show(view="nav", page=page) }}
 {%- endif %}
 {%- endif %}
-{#- `related` is one key doing two jobs: a list of paths picks the posts by
-    hand, and `false` turns the section off for this page. Anything else falls
-    through to the site default, which finds them by tag. -#}
+{#- related: a list of paths, false, or the tag-matched default. -#}
 {%- set related = page.extra.related | default(value=config.extra.related | default(value=true)) %}
 {%- if related %}
 {{ list::related(

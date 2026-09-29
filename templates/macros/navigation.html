@@ -1,12 +1,4 @@
-{#
-  Renders the site breadcrumb trail as an ordered list.
-
-  The "/" separators are drawn by CSS (.breadcrumb in sass/_layout.scss). The
-  crumb marked aria-current="page" gets no trailing slash, which is why the
-  homepage — where the site title *is* the current page — renders bare.
-
-  Reads Zola context globals: config, page, section, term, taxonomy.
-#}
+{# Breadcrumb trail; the "/" separators are CSS. #}
 {% macro breadcrumb() -%}
 {%- set has_path = page is defined or (section is defined and section.components | length > 0) or terms is defined or term is defined -%}
 <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -29,16 +21,9 @@
 {%- endmacro breadcrumb %}
 
 {#
-  Renders the main site navigation from config.extra.main_menu, followed by a
-  Search item when config.extra.enable_search is set. Search is a button, not a
-  link: it opens the dialog in partials/search.html rather than going anywhere.
-  The [brackets] around each item are drawn by CSS (.site-nav in sass/_layout.scss).
-
-  The item for the page being viewed is marked aria-current="page", and the item
-  for the section it sits under aria-current="true" — /posts stays lit on every
-  post. A "/" item would sit above every page, so it only ever matches exactly.
-
-  Reads Zola context globals: config, current_path.
+  Main menu from config.extra.main_menu, plus a Search button when
+  enable_search is on. The current page or section gets aria-current; a "/"
+  item only matches exactly.
 #}
 {% macro menu() -%}
 {%- if config.extra.main_menu or config.extra.enable_search %}

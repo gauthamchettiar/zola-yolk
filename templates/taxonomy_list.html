@@ -5,10 +5,7 @@
 {% block content %}
 <h1>{{ taxonomy.name | capitalize }}</h1>
 <ul>
-  {#- Counted the same way the term's own page counts, so the two agree: a post
-      kept out of site-wide listings by `list` is in neither. A term left with
-      nothing to show is dropped rather than listed as an empty tag. See
-      macros/list.html. -#}
+  {#- Counts match the tag pages; empty tags are skipped. -#}
   {%- for term in terms %}
   {%- set_global _shown = 0 -%}
   {%- for candidate in term.pages -%}

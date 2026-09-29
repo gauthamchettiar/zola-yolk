@@ -3,9 +3,7 @@
 {% block title %}{{ section.title }} | {{ config.title | default(value="Site") }}{% endblock title %}
 
 {% block content %}
-{#- A section's own listing is the one place a `list = "local"` post still
-    appears; only `never` is held back. The count is of what is shown, so it
-    counts the same list the page below it renders. See macros/list.html. -#}
+{#- A section lists everything except list = "never". -#}
 {%- set_global _pages = [] -%}
 {%- for candidate in section.pages -%}
   {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) != "never" -%}

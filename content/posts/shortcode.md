@@ -11,14 +11,12 @@ series = "Shortcodes"
 series_part = 1
 +++
 
-Shortcodes for *inserting* content. For the ones that arrange it — borders,
-wide blocks, columns and tabs — see [Shortcode: Layouts](@/posts/layout.md).
-For the ones that lean on a bundled external library — Mermaid diagrams,
-KaTeX math — see [Shortcode: Externals](@/posts/externals.md).
+Shortcodes for *inserting* content. See also [Layouts](@/posts/layout.md) and
+[Externals](@/posts/externals.md).
 
 ## Icons
 
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​{ icon(name="star") }​}
 {​{ icon(name="github", style="brands") }​}
@@ -54,9 +52,7 @@ lemon&nbsp; : {{ icon(name="lemon", style="regular") }}
 
 ## External Links
 
-Opens in a new tab with `rel="noopener noreferrer"` and appends an indicator.
-
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​{ elink(text="Example", href="https://example.com") }​}
 {​{ elink(text="Example", href="https://example.com", new_tab=false) }​}
@@ -70,17 +66,11 @@ Opens in a new tab with `rel="noopener noreferrer"` and appends an indicator.
 ```
 {% end %}
 
-text
-: visible link text. Required.
+text, href
+: required
 
-href
-: destination URL. Required.
-
-new_tab
-: `true` (default), `false` — opens in a new tab with `rel="noopener noreferrer"`
-
-show_icon
-: `true` (default), `false` — appends the external-link indicator
+new_tab, show_icon
+: `true` (default), `false`
 
 default&nbsp;&nbsp;&nbsp; : {{ elink(text="Example", href="https://example.com") }}  
 no new tab : {{ elink(text="Example", href="https://example.com", new_tab=false) }}  
@@ -88,9 +78,7 @@ no icon&nbsp;&nbsp;&nbsp; : {{ elink(text="Example", href="https://example.com",
 
 ## Mark
 
-Calls out a run of text, either filled or outlined.
-
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​{ mark(text="highlighted") }​}
 {​{ mark(text="outlined", color="pink", decoration="border") }​}
@@ -102,16 +90,11 @@ Calls out a run of text, either filled or outlined.
 ```
 {% end %}
 
-text
-: the text to mark. Required.
-
 color
 : `white`, `red`, `orange`, `yellow` (default), `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `muted`
 
 decoration
-: `highlight` (default, filled), `border` (outlined)
-
-Every colour, in both decorations:
+: `highlight` (default), `border`
 
 | colour | filled | outlined |
 |---|---|---|
@@ -129,10 +112,9 @@ Every colour, in both decorations:
 
 ## Color
 
-Colours a run of text — like `mark`, but plain: no background, no border,
-just colour.
+Like `mark`, but only the text colour.
 
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​{ color(text="important") }​}
 {​{ color(text="careful", color="red") }​}
@@ -144,24 +126,15 @@ just colour.
 ```
 {% end %}
 
-text
-: the text to colour. Required.
-
 color
-: `white`, `red`, `orange`, `yellow` (default), `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `muted`
+: same colours as `mark`, default `yellow`
 
 {{ color(text="white", color="white") }} {{ color(text="red", color="red") }} {{ color(text="orange", color="orange") }} {{ color(text="yellow") }} {{ color(text="lime", color="lime") }} {{ color(text="green", color="green") }} {{ color(text="cyan", color="cyan") }} {{ color(text="blue", color="blue") }} {{ color(text="purple", color="purple") }} {{ color(text="pink", color="pink") }} {{ color(text="muted", color="muted") }}
-
-The same colours work for `mark`, `border`, `quote` and `admonition`.
-
 ## Shimmer
 
-Fun, animated multi-colour text. Cycles through the site's existing accent
-palette (yellow, pink, green, red, blue) rather than an arbitrary rainbow, so
-it stays part of the same colour system instead of clashing with it. Pure
-CSS, no JavaScript, and disabled entirely under `prefers-reduced-motion`.
+Animated multi-colour text. Off under `prefers-reduced-motion`.
 
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​{ shimmer(text="look at me") }​}
 {​{ shimmer(text="smooth", type="background", style="wave") }​}
@@ -173,16 +146,11 @@ CSS, no JavaScript, and disabled entirely under `prefers-reduced-motion`.
 ```
 {% end %}
 
-text
-: the text to animate. Required.
-
 type
-: `text` (default) — the text itself cycles colour. `background` — the text
-  stays a fixed colour while a highlight behind it cycles instead.
+: `text` (default), `background`
 
 style
-: `cycle` (default) — jumps between accents in place. `wave` — sweeps a
-  moving gradient across the text.
+: `cycle` (default), `wave`
 
 text, cycle&nbsp;&nbsp;&nbsp;&nbsp; : {{ shimmer(text="look at me") }}  
 text, wave&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ shimmer(text="look at me", style="wave") }}  
@@ -191,10 +159,7 @@ background, wave&nbsp; : {{ shimmer(text="look at me", type="background", style=
 
 ## Quotes
 
-An attributed quotation, rendered as `<figure>` / `<blockquote>` / `<figcaption>`
-— the attribution describes the quote, so HTML puts it outside the quote itself.
-
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% quote(author="Alan Kay", cite="1971") %​}
 The best way to predict the future is to invent it.
@@ -206,22 +171,11 @@ The best way to predict the future is to invent it.
 ```
 {% end %}
 
-body
-: the quotation itself. From a template this is the `content` parameter, and
-  it takes already-rendered HTML.
-
-author
-: who said it. Default none.
-
-cite
-: the work it came from, rendered in `<cite>`. Default none.
-
-url
-: source URL. Sets the blockquote's `cite` attribute and links the citation.
-  Default none.
+author, cite, url
+: who said it, the work, and a source link. All optional.
 
 color
-: `white`, `red`, `orange`, `yellow`, `lime`, `green`, `cyan`, `blue`, `purple`, `pink` (default), `muted`
+: same colours as `mark`, default `pink`
 
 {% quote(author="Alan Kay", cite="1971") %}
 The best way to predict the future is to invent it.
@@ -233,9 +187,7 @@ The Web does not just connect machines, it connects people.
 
 ## Admonitions
 
-A callout set apart from the surrounding text, rendered as `<aside>`.
-
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% admonition(title="Note") %​}
 Worth knowing.
@@ -252,19 +204,14 @@ This one bites.
 ```
 {% end %}
 
-body
-: the callout's content. From a template this is the `content` parameter, and
-  it takes already-rendered HTML.
-
 title
-: heading text beside the icon. Default none, which floats the lone icon
-  beside the first line instead of above it.
+: optional
 
 icon
-: Font Awesome name. Default `circle-info`.
+: Font Awesome name, default `circle-info`
 
 color
-: `white`, `red`, `orange`, `yellow` (default), `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `muted`
+: same colours as `mark`, default `yellow`
 
 {% admonition(title="Note") %}
 Worth knowing.
@@ -280,10 +227,9 @@ An icon with no title works too.
 
 ### Admonition Presets
 
-`note`, `warning`, `danger`, `info` and `tip` are `admonition` with a fixed
-color and icon, and a title that defaults to their own name.
+`note`, `warning`, `danger`, `info` and `tip`: `admonition` with a fixed colour and icon.
 
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% note() %​}
 Worth knowing.
@@ -322,12 +268,9 @@ There's a faster way to do this.
 
 ## Expand
 
-A collapsible section, rendered as native `<details>`/`<summary>` — no class or
-JavaScript needed to drive it. Two styles: `simple`, a muted `+ title` line
-with the body indented under it once opened, and `border`, a framed box with the
-title in the accent colour.
+A collapsible section.
 
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% expand(title="Show the answer", state="expanded") %​}
 42.
@@ -370,10 +313,9 @@ A bordered expand, already open.
 
 ## Mobile and Desktop Content
 
-`mobile` shows only below the mobile breakpoint (`48rem`), `desktop` only
-above it.
+`mobile` shows below `48rem`, `desktop` above it.
 
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% mobile() %​}
 Only visible on small screens.
@@ -390,9 +332,7 @@ Only visible on larger screens.
 ```
 {% end %}
 
-Neither takes parameters. Both variants are emitted and a single media query
-reveals the matching one, so this works with JavaScript disabled. Resize
-the window to see these switch:
+Resize the window to see these switch:
 
 {% mobile() %}
 Your screen is **narrow**!

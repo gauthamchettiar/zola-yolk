@@ -1,30 +1,6 @@
 {#
   admonition shortcode — a callout set apart from the main flow.
-
-  markdown:
-    {% admonition(title="Note") %}
-    Worth knowing.
-    {% end %}
-
-    {% admonition(title="Careful", icon="triangle-exclamation", color="pink") %}
-    This one bites.
-    {% end %}
-
-  template:
-    {% import "macros/blocks.html" as blocks %}
-    {{ blocks::admonition(content="<p>Worth knowing.</p>", title="Note") }}
-
-  Parameters:
-    title  — heading text beside the icon (default: none)
-    icon   — Font Awesome name (default: "circle-info")
-    color  — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted (default: "yellow")
-
-  Rendered as <aside>, the element for content tangential to what surrounds it.
-
-  `note`, `warning`, `danger`, `info` and `tip` are presets of this shortcode
-  with a fixed color and icon — reach for one of those first, and drop to
-  `admonition` directly only when you need a color/icon combination they don't
-  cover.
+  Parameters: see blocks::admonition in macros/blocks.html.
 #}
 {%- import "macros/blocks.html" as blocks -%}
 {{ blocks::admonition(content=body | markdown, title=title | default(value=""), icon=icon | default(value="circle-info"), color=color | default(value="yellow")) }}

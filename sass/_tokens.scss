@@ -1,7 +1,4 @@
-// Design tokens. Everything visual is driven from here.
-//
-// The theme is dark only. `color-scheme: dark` keeps browser-drawn UI —
-// scrollbars, form controls, the search input — on the dark side as well.
+// Design tokens. Dark only; color-scheme darkens browser UI too.
 
 :root {
   color-scheme: dark;
@@ -13,11 +10,8 @@
   --max-width: 42rem;
   --page-gutter: 1.5rem; // breathing room at the screen edge, never crossed
 
-  // Accents deliberately exceed sRGB: every engine clamps them identically to
-  // the gamut boundary, which is the most saturated result. Every one clears
-  // WCAG AA against --color-bg both ways round — as text on the background,
-  // and with the background as text on it (a filled `mark`) — so any accent
-  // works in any component. The ratio against --color-bg is noted per line.
+  // Accents clear WCAG AA against --color-bg both ways (text on bg, bg on
+  // accent). Ratios noted per line.
   --color-bg:               #1a1a1a;
   --color-text:             #fff;
   --color-text-muted:       #999999;
@@ -28,8 +22,7 @@
   --color-red-accent:       oklch(.70 .22 29);  // red       5.9:1
   --color-blue-accent:      oklch(.75 .2 264);  // blue      7.6:1
 
-  // The rest of the wheel, for the colour-taking shortcodes (mark, color,
-  // border, quote, admonition). The theme itself uses none of these.
+  // Extra colours for the colour-taking shortcodes.
   --color-orange-accent:    oklch(.80 .17 60);  // orange    9.1:1
   --color-lime-accent:      oklch(.89 .21 128); // lime     14.0:1
   --color-cyan-accent:      oklch(.84 .14 210); // cyan     11.9:1

@@ -7,19 +7,11 @@ description = "What Zola is, what this theme does, and where to find the rest of
 tags = ["zola", "theme"]
 +++
 
-The short version of what you are looking at: *the generator underneath, the
-theme on top, and where the rest of the demo lives*.
-
 ## What is Zola?
 
 {{ elink(text="Zola", href="https://www.getzola.org/") }} is a static site
-generator. You write Markdown, it produces plain HTML files that any web server
-can hand out as-is — no database, no runtime, nothing to keep patched.
-
-It ships as a **single binary** with no dependencies: no Node, no Ruby, no
-`node_modules`. Syntax highlighting, Sass compilation, search indexing and
-internal-link checking are all built in, so this site needs no build pipeline
-beyond one command.
+generator: Markdown in, plain HTML out. It's a single binary with Sass, syntax
+highlighting and search built in.
 
 {% row(gap="sm") %}
 {% border(size="sm") %}
@@ -41,13 +33,9 @@ Validates every link.
 
 ## What is zola-yolk?
 
-A deliberately small theme built around one idea: **the page should look a
-little like the Markdown that produced it**. Headings keep their `#` prefixes,
-menu items sit in `[brackets]`, and a post's tags are `#hashtags` — look at the
-foot of this page.
-
-Everything is monospace, the palette is seven colours, and the whole stylesheet
-is a few hundred lines split across four files.
+A small, dark, monospace theme where **the page looks a little like its
+Markdown**: headings keep their `#`, menu items sit in `[brackets]`, tags are
+`#hashtags`.
 
 {% wide() %}
 {% row() %}
@@ -73,33 +61,26 @@ is a few hundred lines split across four files.
 ## Where to go next
 
 [Markdown Showcase](@/posts/markdown.md)
-: Every element the renderer supports, rendered live — plus what it deliberately does *not* support, and which features are off by default.
+: Every Markdown element, rendered.
 
 [Shortcode: Elements](@/posts/shortcode.md)
-: Shortcodes that insert content — `icon`, `elink` and the screen-size-conditional `mobile` / `desktop`.
+: Icons, links, marks, quotes, callouts, expand.
 
 [Shortcode: Layouts](@/posts/layout.md)
-: Shortcodes that arrange it — `border`, `wide`, and `row` / `col` with table-style proportional spans.
+: Borders, alignment, wide blocks, columns, tabs.
 
 [Shortcode: Externals](@/posts/externals.md)
-: Shortcodes that lean on a bundled external library — Mermaid diagrams and KaTeX math, both on by default.
+: Mermaid diagrams and KaTeX math.
 
 [UI Showcase](@/posts/showcase.md)
 : Screenshots of the theme.
 
 [Configuration](@/posts/configuration.md)
-: Every option the theme reads — the site-wide defaults and the per-post overrides that beat them.
+: Every option, site-wide and per post.
 
 [All posts](@/posts/_index.md) · [Tags](/tags)
-: The archive, grouped by year, and the tag index.
+: The archive and the tag index.
 
 ## Making it yours
 
-Colours, fonts and spacing are CSS custom properties in one file,
-`sass/_tokens.scss`, so restyling the theme means editing that file and nothing
-else.
-
-The rest of the stylesheet is split by role — bare element styles, page layout,
-and the handful of components that genuinely need a class. Most of the theme is
-styled by element rather than by class, so semantic markup picks up the right
-styling on its own.
+Colours, fonts and spacing are CSS custom properties in `sass/_tokens.scss`.

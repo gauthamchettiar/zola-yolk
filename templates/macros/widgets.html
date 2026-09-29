@@ -13,13 +13,7 @@
 {{- base::icon(source=source, style=style, name=name, class=class, aria=aria) -}}
 {%- endmacro icon %}
 
-{#
-  An external hyperlink.
-    text       — visible link text (required)
-    href       — destination URL (required)
-    new_tab    — open in a new tab with rel="noopener noreferrer" (default: true)
-    show_icon  — append an external-link indicator (default: true)
-#}
+{# External link. new_tab: target=_blank · show_icon: append ↗ #}
 {% macro elink(text, href, new_tab=true, show_icon=true) -%}
 <a href="{{ href | safe }}"{% if new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ text | safe }}
 {%- if show_icon %}&nbsp;{{ base::icon(name="arrow-up-right-from-square") }}{% endif -%}
@@ -27,64 +21,31 @@
 {%- endmacro elink %}
 
 {#
-  Marked-up run of text. <mark> is the element for text called out for
-  reference, which is what both decorations mean here.
-    text        — the text to mark (required)
-    color       — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted (default: "yellow")
-    decoration  — highlight (filled) | border (outlined) (default: "highlight")
+  Called-out text. decoration: highlight | border
+  Colours: white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted
 #}
 {% macro mark(text, color="yellow", decoration="highlight") -%}
 <mark class="mark" data-color="{{ color }}" data-decoration="{{ decoration }}">{{ text | safe }}</mark>
 {%- endmacro mark %}
 
-{#
-  Coloured run of text — like `mark`, but plain: no background, no border,
-  just colour. Reach for `mark` when the text needs to be called out, this
-  when it just needs to not be the default colour.
-    text   — the text to colour (required)
-    color  — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted (default: "yellow")
-#}
+{# Coloured text; same colours as mark. #}
 {% macro color(text, color="yellow") -%}
 <span class="color" data-color="{{ color }}">{{ text | safe }}</span>
 {%- endmacro color %}
 
-{#
-  Fun, animated multi-colour text. Cycles through the site's existing accent
-  palette (yellow, pink, green, red, blue) rather than an arbitrary rainbow,
-  so it stays part of the same colour system instead of clashing with it.
-  Respects prefers-reduced-motion (see .shimmer in sass/_components.scss).
-    text   — the text to animate (required)
-    type   — text | background — which part of the element cycles colour
-             (default: "text")
-    style  — cycle | wave — cycle jumps between accents in place; wave sweeps
-             a moving gradient across the text (default: "cycle")
-#}
+{# Animated multi-colour text. type: text | background · style: cycle | wave #}
 {% macro shimmer(text, type="text", style="cycle") -%}
 <span class="shimmer" data-type="{{ type }}" data-style="{{ style }}">{{ text | safe }}</span>
 {%- endmacro shimmer %}
 
-{#
-  Renders the line under a post's title: "Published on" and its date, and
-  nothing else. Tags are
-  about where a post belongs rather than what it is, so they go under the post
-  instead — see `tags` below.
-
-  Parameters:
-    page  — the page object (required)
-#}
+{# "Published on <date>" under a post's title. #}
 {% macro meta(page) -%}
 {%- if page.date -%}
 <p class="page-meta">Published on <time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time></p>
 {%- endif -%}
 {%- endmacro meta %}
 
-{#
-  Renders a post's tags as a row of links, for the foot of the post. The "#"
-  before each is drawn by CSS (.page-tags in sass/_components.scss).
-
-  Parameters:
-    page  — the page object (required)
-#}
+{# A post's tags as #links, for its foot. #}
 {% macro tags(page) -%}
 {%- if page.taxonomies.tags -%}
 <ul class="page-tags" aria-label="Tags">

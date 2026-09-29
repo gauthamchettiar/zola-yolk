@@ -1,94 +1,51 @@
 {% import "macros/icon.html" as base %}
 {#
-  Block-level building blocks, shared by the shortcodes of the same name.
-
-  Every macro here takes `content` as already-rendered HTML. The matching
-  shortcode is a one-line wrapper that passes `body | markdown`, so markdown
-  authors and template authors get identical output from one definition:
-
-    markdown   {% border(color="pink") %}text{% end %}
-    template   {% import "macros/blocks.html" as blocks %}
-               {{ blocks::border(content="<p>text</p>", color="pink") }}
+  Block macros behind the block shortcodes. Each takes `content` as rendered
+  HTML; the shortcode passes `body | markdown`.
+  Colours: white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted
 #}
 
-{#
-  A framed block.
-    content — inner HTML (required)
-    size    — sm | md | lg | xl        (default: "md")
-    color   — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted (default: "white")
-    style   — solid | dashed | dotted | double (default: "solid")
-#}
+{# A framed block. size: sm | md | lg | xl · style: solid | dashed | dotted | double #}
 {% macro border(content, size="md", color="white", style="solid") -%}
 <div class="border" data-size="{{ size }}" data-color="{{ color }}" data-style="{{ style }}">{{ content | safe }}</div>
 {%- endmacro border %}
 
-{#
-  Text alignment for a block. `center`, `left` and `right` are presets of
-  this with a fixed `align`.
-    content — inner HTML (required)
-    align   — left | center | right (default: "left")
-#}
+{# Text alignment. align: left | center | right #}
 {% macro align(content, align="left") -%}
 <div class="align" data-align="{{ align }}">{{ content | safe }}</div>
 {%- endmacro align %}
 
-{#
-  Content that breaks out of the reading column.
-    content — inner HTML (required)
-    size    — sm | md | lg | xl (default: "md")
-#}
+{# Breaks out of the reading column. size: sm | md | lg | xl #}
 {% macro wide(content, size="md") -%}
 <div class="wide" data-size="{{ size }}">{{ content | safe }}</div>
 {%- endmacro wide %}
 
-{#
-  Side-by-side layout; each top-level block of `content` becomes a column.
-    content — inner HTML (required)
-    gap     — sm | md | lg (default: "md")
-    span    — shares of the parent row's width, when nested (default: unset)
-#}
+{# Side by side; each top-level block is a column. gap: sm | md | lg · span: width share when nested #}
 {% macro row(content, gap="md", span="") -%}
 <div class="row" data-gap="{{ gap }}"{% if span %} style="--span: {{ span }}"{% endif %}>{{ content | safe }}</div>
 {%- endmacro row %}
 
-{#
-  Stacked layout; one column inside a row.
-    content — inner HTML (required)
-    gap     — sm | md | lg (default: "md")
-    span    — shares of the row's width (default: unset)
-#}
+{# Stacked; one column inside a row. gap: sm | md | lg · span: width share #}
 {% macro col(content, gap="md", span="") -%}
 <div class="col" data-gap="{{ gap }}"{% if span %} style="--span: {{ span }}"{% endif %}>{{ content | safe }}</div>
 {%- endmacro col %}
 
-{#
-  Content shown only below the mobile breakpoint (see .only-mobile in
-  sass/_components.scss). Pure CSS, so it works with JavaScript disabled.
-    content — inner HTML (required)
-#}
+{# Shown only below the 48rem breakpoint. #}
 {% macro mobile(content) -%}
 <div class="only-mobile">{{ content | safe }}</div>
 {%- endmacro mobile %}
 
-{#
-  Content shown only above the mobile breakpoint.
-    content — inner HTML (required)
-#}
+{# Shown only above the 48rem breakpoint. #}
 {% macro desktop(content) -%}
 <div class="only-desktop">{{ content | safe }}</div>
 {%- endmacro desktop %}
 
 {#
-  Tabbed panels; each top-level block of `content` becomes one panel.
-    content — inner HTML (required)
-    titles  — one label per panel, in order (required)
-    id      — unique per group on a page. The shortcode passes Zola's `nth`;
-              supply your own when calling from a template.
-    group   — blocks sharing a name switch together (default: unset). Each
-              block still owns its radios, so it works alone without
-              JavaScript; partials/tabs.html mirrors the choice across the rest.
+  Tabs; each top-level block is a panel, labelled by `titles` in order.
+  id: unique per page (the shortcode passes `nth`) · group: blocks with the
+  same group switch together (partials/tabs.html)
 #}
-{% macro code(content, titles, id="1", group="") -%}
+{% macro tabs(content, titles, id="1", group="") -%}
 <div class="tabs"{% if group %} data-group="{{ group }}"{% endif %}>
 {%- for title in titles %}
   <input type="radio" name="tabs-{{ id }}" id="tabs-{{ id }}-{{ loop.index0 }}"{% if loop.first %} checked{% endif %}>
@@ -96,39 +53,11 @@
 {%- endfor %}
   <div class="tabs-panels">{{ content | safe }}</div>
 </div>
-{%- endmacro code %}
+{%- endmacro tabs %}
 
 {#
-  Renders a ```mermaid or ```math block as an actual diagram / math notation
-  rather than syntax-highlighted code. This only prepares the markup —
-  partials/render.html carries the library that turns it into a diagram or
-  formula client-side, loaded when config.extra.enable_mermaid /
-  enable_math is on. With the flag off, or the library missing, mermaid still
-  shows as a plain code block and math as its raw source, so nothing is lost.
-    content — raw block source, unprocessed and unescaped (required)
-    lang    — mermaid | math — anything else falls back to a plain <pre> (required)
-    inline  — math only: a <span> in running text instead of a centred <div>
-              (default: false)
-#}
-{#
-  An image that carries its own intrinsic size and a set of smaller variants.
-
-  Markdown's own ![alt](src) has nowhere to put width and height, so the page
-  can't reserve space and the surrounding text jumps once the file lands. It also
-  hands a phone the same file it hands a desktop. This reads the real dimensions
-  off the file at build time, and has Zola generate downscaled copies so a narrow
-  screen fetches a proportionate one.
-
-  Variants are only ever smaller than the original — upscaling a screenshot would
-  cost bytes to add nothing — so a source narrower than a breakpoint simply
-  contributes no entry at it.
-
-    src    — path under static/, with or without the leading slash (required)
-    alt    — alternative text; empty only if the image is decorative (default: "")
-    eager  — fetch straight away rather than on approach. Set it for an image
-             that is on screen when the page opens (default: false)
-    sizes  — the `sizes` attribute. The default matches --max-width in
-             sass/_tokens.scss: full width on a phone, 42rem once there is room
+  Image with width/height and smaller WebP variants in a srcset.
+  src: path under static/ · eager: load now (above the fold) · sizes: the sizes attribute
 #}
 {% macro img(src, alt="", eager=false, sizes="(max-width: 42rem) 100vw, 42rem") -%}
 {%- set path = src | trim_start_matches(pat="/") -%}
@@ -136,8 +65,7 @@
 {%- set_global srcset = [] -%}
 {%- for w in [480, 720, 1080] -%}
 {%- if meta.width > w -%}
-{#- quality matters: left unset, Zola encodes WebP losslessly, which here came
-    out several times larger than the full-size original it was downscaled from. -#}
+{#- Without a quality, Zola writes lossless WebP, larger than the original. -#}
 {%- set variant = resize_image(path="static/" ~ path, width=w, op="fit_width", format="webp", quality=80) -%}
 {%- set_global srcset = srcset | concat(with=variant.url ~ " " ~ w ~ "w") -%}
 {%- endif -%}
@@ -146,6 +74,10 @@
 <img src="{{ get_url(path=path) }}" srcset="{{ srcset | join(sep=", ") | safe }}" sizes="{{ sizes }}" alt="{{ alt }}" width="{{ meta.width }}" height="{{ meta.height }}"{% if eager %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">
 {%- endmacro img %}
 
+{#
+  Markup for a mermaid diagram or math, rendered client-side by
+  partials/render.html. lang: mermaid | math · inline: math in running text
+#}
 {% macro render(content, lang, inline=false) -%}
 {%- if lang == "mermaid" -%}
 <pre class="mermaid">{{ content }}</pre>
@@ -160,16 +92,7 @@
 {%- endif -%}
 {%- endmacro render %}
 
-{#
-  An attributed quotation. Rendered as <figure>/<blockquote>/<figcaption>,
-  which is the pattern HTML defines for a quote with its attribution — the
-  attribution is about the quote, so it must sit outside the <blockquote>.
-    content — inner HTML (required)
-    author  — who said it (default: none)
-    cite    — the work it came from, rendered in <cite> (default: none)
-    url     — source URL, used for the blockquote's cite attribute (default: none)
-    color   — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted (default: "pink")
-#}
+{# An attributed quotation. cite: the work · url: source link #}
 {% macro quote(content, author="", cite="", url="", color="pink") -%}
 <figure class="quote" data-color="{{ color }}">
   <blockquote{% if url %} cite="{{ url }}"{% endif %}>{{ content | safe }}</blockquote>
@@ -183,14 +106,7 @@
 </figure>
 {%- endmacro quote %}
 
-{#
-  A callout set apart from the main flow — <aside> is the element for content
-  that is tangential to what surrounds it.
-    content — inner HTML (required)
-    title   — heading text beside the icon (default: none)
-    icon    — Font Awesome name (default: "circle-info")
-    color   — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted (default: "yellow")
-#}
+{# A callout. icon: Font Awesome name #}
 {% macro admonition(content, title="", icon="circle-info", color="yellow") -%}
 <aside class="admonition" data-color="{{ color }}"{% if not title %} data-untitled{% endif %}>
   {%- if icon or title %}
@@ -203,16 +119,7 @@
 </aside>
 {%- endmacro admonition %}
 
-{#
-  A collapsible section. <details>/<summary> is the native element for this,
-  so it needs no class and no JS to drive it.
-    content — inner HTML (required)
-    title   — summary text (default: "Details")
-    state   — expanded | collapsed (default: "collapsed")
-    style   — simple (a muted line, body indented under it) | border (framed,
-              with an accent-coloured title) (default: "simple")
-    class   — class on the <details>, for callers that restyle it (default: none)
-#}
+{# Collapsible section. state: expanded | collapsed · style: simple | border #}
 {% macro expand(content, title="Details", state="collapsed", style="simple", class="") -%}
 <details data-style="{{ style }}"{% if class %} class="{{ class }}"{% endif %}{% if state == "expanded" %} open{% endif %}>
   <summary>{{ title }}</summary>
@@ -221,25 +128,9 @@
 {%- endmacro expand %}
 
 {#
-  Recursive helper for `toc` — one <li> per heading, with a nested <ol> for
-  any children. Walks the shape Zola gives `page.toc`/`section.toc`: each
-  item has `id`, `permalink`, `title`, `level` and `children`. Not meant to
-  be called directly; renders bare <li>s with no enclosing <ol> so an
-  excluded heading can splice its children into its parent's list instead of
-  losing them.
-
-  `max_level` and `exclude` act differently on purpose. A heading past
-  `max_level` is dropped together with its children, since they're deeper
-  still and so also past it — there's nothing to rescue. An excluded heading
-  is dropped alone: its children move up to take its place, because the
-  usual reason to exclude one heading is that it isn't a real section
-  boundary (e.g. a heading written to demonstrate heading syntax, not to
-  divide the page) — its children are still real sections and would
-  otherwise vanish along with it.
-
-    items      — a `page.toc`-shaped array (required)
-    max_level  — drop headings deeper than this, and their children (required)
-    exclude    — heading ids to drop, promoting their children (required)
+  toc helper: bare <li>s for `items` (page.toc shape). A heading deeper than
+  max_level is dropped with its children; an excluded one is dropped alone and
+  its children move up.
 #}
 {% macro toc_items(items, max_level, exclude) -%}
   {%- for item in items %}
@@ -258,21 +149,8 @@
 {%- endmacro toc_items %}
 
 {#
-  A table of contents built from `page.toc`, wrapped in `expand` so it can be
-  collapsed out of the way without leaving the page.
-
-  Headings are only known once the page's own markdown has been fully parsed,
-  so this has to run from a template, not a shortcode: a shortcode called
-  from inside a page's body runs before that page's headings are collected,
-  and would only ever see an empty `page.toc`. `page.html` renders it once
-  from the template instead, after the content — and so the headings —
-  already exist.
-
-    page       — the page (or section) object, for its `toc` field (required)
-    title      — summary text (default: "Table of Contents")
-    state      — expanded | collapsed (default: "collapsed")
-    max_level  — drop headings deeper than this h1=1 .. h6=6 (default: 6, no cap)
-    exclude    — heading ids to leave out, wherever they occur (default: none)
+  Table of contents for a page, in an `expand`. Called from page.html: a
+  shortcode in the body runs before the page's headings exist.
 #}
 {% macro toc(page, title="Table of Contents", state="collapsed", max_level=6, exclude) -%}
 {%- if page.toc %}

@@ -1,11 +1,6 @@
 {#
-  Listing page for every series on the site, in place of the flat list of pages
-  a section normally shows. A section opts into it with `template =
-  "series.html"` in its own front matter — see content/series/_index.md.
-
-  The section itself holds no pages: the series are gathered from wherever the
-  posts are (config.extra.content_sections), so this page works from any path
-  and needs nothing kept in step with the posts it lists.
+  Every series with its parts. Use with `template = "series.html"` on a
+  section (see content/series/_index.md).
 #}
 {% extends "base.html" %}
 {% import "macros/series.html" as series %}

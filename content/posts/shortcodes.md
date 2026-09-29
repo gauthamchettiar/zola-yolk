@@ -7,37 +7,15 @@ description = "Everything the theme's shortcodes can do, across three posts: the
 tags = ["shortcode", "zola"]
 
 [extra]
-# The overview of a series is a way in to the three parts, not a post that
-# stands on its own — it belongs in the series, not in the site's recents.
+# Series overview: keep it out of recents.
 list = "local"
 series = "Shortcodes"
 series_part = 0
 +++
 
-Zola calls a reusable snippet you can drop into a post a
-{{ elink(text="shortcode", href="https://www.getzola.org/documentation/content/shortcodes/") }}.
-This theme ships around thirty of them, and they split cleanly into three
-groups — one post each.
+The theme's shortcodes, in three parts. Each one also works as a template macro.
 
-## What's in each part
-
-Every shortcode here is a thin wrapper over a macro, so all of them are
-callable from Markdown *and* from a template with identical output. Which post
-covers a shortcode depends only on what it does to your page:
-
-- **[Elements](@/posts/shortcode.md)** — shortcodes that *insert* something
-  that wasn't there: icons, external links, marks, coloured text, quotes,
-  callouts and blocks that appear on only one screen size.
-- **[Layouts](@/posts/layout.md)** — shortcodes that *arrange* what you already
-  wrote: borders, alignment, wide blocks, columns, tabbed code.
-- **[Externals](@/posts/externals.md)** — the two that need a library beyond
-  Zola itself: Mermaid diagrams and KaTeX math. Both libraries ship inside the
-  theme, and each is behind a flag so a site that uses neither pays nothing for
-  them.
-
-## Where to start
-
-Read them in order if you're new to the theme — each post assumes only what the
-one before it showed. If you're after one specific shortcode, the theme's
-[README](https://github.com/gauthamchettiar/zola-yolk) lists every one with its
-parameters, and links straight to the part that demonstrates it.
+- **[Elements](@/posts/shortcode.md)** — icons, links, marks, colour, quotes,
+  callouts, expand, mobile / desktop.
+- **[Layouts](@/posts/layout.md)** — borders, alignment, wide blocks, columns, tabs.
+- **[Externals](@/posts/externals.md)** — Mermaid diagrams and KaTeX math.

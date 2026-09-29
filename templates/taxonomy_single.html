@@ -3,8 +3,7 @@
 {% block title %}{{ term.name }} | {{ config.title | default(value="Site") }}{% endblock title %}
 
 {% block content %}
-{#- A tag page gathers from the whole site, so it shows only the posts that
-    asked to be listed site-wide. See macros/list.html. -#}
+{#- Only posts listed "always". -#}
 {%- set_global _pages = [] -%}
 {%- for candidate in term.pages -%}
   {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) == "always" -%}

@@ -1,21 +1,6 @@
 {#
   border shortcode — frames a block of content.
-
-  markdown:
-    {% border(size="lg", color="pink", style="dashed") %}
-    Any markdown.
-    {% end %}
-
-  template:
-    {% import "macros/blocks.html" as blocks %}
-    {{ blocks::border(content="<p>Any HTML.</p>", size="lg", color="pink") }}
-
-  Parameters:
-    size   — sm | md | lg | xl                      (default: "md")
-    color  — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted  (default: "white")
-    style  — solid | dashed | dotted | double       (default: "solid")
-
-  Rendering lives in macros/blocks.html so both forms produce the same HTML.
+  Parameters: see blocks::border in macros/blocks.html.
 #}
 {%- import "macros/blocks.html" as blocks -%}
 {{ blocks::border(content=body | markdown, size=size | default(value="md"), color=color | default(value="white"), style=style | default(value="solid")) }}

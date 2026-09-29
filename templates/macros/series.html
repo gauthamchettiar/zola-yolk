@@ -1,115 +1,54 @@
 {% import "macros/sections.html" as paths %}
 {#
-  Series: several posts that are meant to be read in order. A post joins one by
-  naming it under its own [extra], along with where it sits in the order:
+  Series: posts with `series = "Name"` and `series_part = N` under [extra].
+  Part 0 is the overview: sorts first, isn't counted as a part, gets no label.
 
-      [extra]
-      series = "Shortcodes"
-      series_part = 2   # 0 marks the series' overview page
+  One macro, three views, so they share one idea of what a series contains:
+    label — "Part X of N from series “Name”" in a post's header
+    nav   — previous/next links under a post
+    index — every series with its parts (templates/series.html)
 
-  Part 0 is the page that introduces the series rather than continuing it, so
-  it sorts first, is numbered 0 in the list, and its `description` is what the
-  listing page uses to explain what the series is about.
-
-  A series has three views, and one macro renders all of them:
-
-    label  — one line saying which part of which series this is, which goes
-             in a post's header, under its date
-    nav    — the previous/next links that go under a post
-    index  — every series on the site, each with its parts, for a listing page
-             (see templates/series.html)
-
-  They are one macro because they all need the same thing first: the pages of a
-  series, in order. A Tera macro returns a string and nothing else, so that
-  list cannot be gathered once and handed to a second macro — splitting the
-  views up would mean gathering it two or three times, in as many places, which
-  is how they would end up disagreeing about what a series contains.
+  page — the post (label, nav) · text — label text; {part}, {count} and
+  {series} are filled in, {series} linking to the overview or else to the
+  series' entry on the config.extra.series_page listing.
 #}
-
-{#
-  Renders one of the three views of a series. Nothing is rendered for a page
-  that names no series, or for a series with only one page in it.
-
-    view   — label | nav | index (default: "label")
-    page   — the page object, for the views that are about a post: it supplies
-             the series, the position in it, and which part to mark as current.
-             `index` needs none of that and takes no page (default: false)
-    name   — the series to render, when it isn't `page`'s own. `index` ignores
-             it and renders every series there is (default: "")
-    text   — label only: the line to render, with {part}, {count} and
-             {series} filled in. {series} links to the series' overview page
-             (series_part = 0) when it has one, and otherwise to the series'
-             entry on the listing page named by config.extra.series_page, when
-             that section exists (default: "Part {part} of {count} from series “{series}”")
-#}
-{% macro show(view="label", page=false, name="", text="Part {part} of {count} from series “{series}”") -%}
-{#- What the caller is: a post knows its own series and where it sits in it; a
-    listing page knows neither, and renders every series instead. -#}
-{%- set_global _name = name -%}
+{% macro show(view="label", page=false, text="Part {part} of {count} from series “{series}”") -%}
+{%- set_global _name = "" -%}
 {%- set_global _current = "" -%}
 {%- set_global _part = -1 -%}
 {%- if page -%}
-  {%- if not _name -%}{%- set_global _name = page.extra.series | default(value="") -%}{%- endif -%}
+  {%- set_global _name = page.extra.series | default(value="") -%}
   {%- set_global _current = page.permalink -%}
   {%- set_global _part = page.extra.series_part | default(value=-1) -%}
 {%- endif -%}
 
-{#- Where to look for the pages of a series. config.extra.content_sections is
-    the site's list of post sections; with none set, a post's series is assumed
-    not to leave the section the post itself is in, and a listing page — which
-    has no section to start from — falls back to every section at the root.
-    Only a section's own pages are searched, not its subsections'. -#}
-{%- set_global _paths = [] -%}
-{%- if config.extra.content_sections -%}
-  {#- A name whose section does not exist is skipped rather than aborting the
-      build — see macros/sections.html. -#}
-  {%- for section_name in config.extra.content_sections -%}
-    {%- set _path = paths::resolve(name=section_name) | trim -%}
-    {%- if _path -%}
-      {%- set_global _paths = _paths | concat(with=_path) -%}
-    {%- endif -%}
-  {%- endfor -%}
-{%- elif page -%}
-  {%- set_global _paths = [page.ancestors | last] -%}
-{%- else -%}
-  {%- set root = get_section(path="_index.md") -%}
-  {%- set_global _paths = root.subsections -%}
-{%- endif -%}
-
-{#- A series is a local grouping, so `list = "local"` is still part of one and
-    only `never` is held back. Dropping a part renumbers nothing: the numbers
-    come from each part's own series_part, so a withheld part leaves a gap in
-    the list rather than shifting the parts after it. See macros/list.html. -#}
+{#- Candidate pages: everything in the post sections except list = "never". -#}
 {%- set_global _pool = [] -%}
-{%- for path in _paths -%}
+{%- set _paths = paths::resolve(names=config.extra.content_sections | default(value=[]), fallback=true) -%}
+{%- for path in _paths | split(pat="\n") -%}
+  {%- if path -%}
   {%- set sec = get_section(path=path) -%}
   {%- for candidate in sec.pages -%}
     {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) != "never" -%}
       {%- set_global _pool = _pool | concat(with=candidate) -%}
     {%- endif -%}
   {%- endfor -%}
+  {%- endif -%}
 {%- endfor -%}
 
-{#- Which series to render: the one the post is in, or all of them, in name
-    order. Everything below runs per series either way, so the three views
-    share one definition of what a series is and how its parts are ordered. -#}
 {%- if view == "index" -%}
   {%- set _names = _pool | filter(attribute="extra.series") | map(attribute="extra.series") | unique | sort -%}
 {%- else -%}
   {%- set _names = [_name] -%}
 {%- endif -%}
 
-{#- A listing page with nothing to list still needs to say so: the heading
-    alone, above nothing, reads as a page that failed to render. -#}
 {%- if view == "index" and _names | length == 0 %}
 <p>No series yet.</p>
 {%- endif -%}
 
 {%- for series_name in _names -%}
 {%- set _members = _pool | filter(attribute="extra.series", value=series_name) -%}
-{#- Sorting on a missing key would abort the build, so the numbered parts are
-    sorted on their own and anything left unnumbered keeps its section order at
-    the end — a part waiting to be given a number still belongs to the series. -#}
+{#- Numbered parts in order, then unnumbered ones (sorting on a missing key aborts the build). -#}
 {%- set_global _ordered = _members | filter(attribute="extra.series_part") | sort(attribute="extra.series_part") -%}
 {%- for member in _members -%}
   {%- if member.extra.series_part is not defined -%}
@@ -119,8 +58,6 @@
 
 {%- set _length = _ordered | length -%}
 {%- set _overview = _ordered | filter(attribute="extra.series_part", value=0) -%}
-{#- The overview introduces the series rather than being an instalment of it,
-    so it doesn't count towards the number of parts. -#}
 {%- set _overviews = _overview | length -%}
 {%- set _count = _length - _overviews -%}
 {%- set _parts = _count ~ " part" -%}
@@ -131,7 +68,7 @@
   {%- if member.permalink == _current -%}{%- set_global _index = loop.index0 -%}{%- endif -%}
 {%- endfor -%}
 
-{#- A series of one is just a post: nothing to introduce, nowhere to go next. -#}
+{#- A series of one page renders nothing. -#}
 {%- if series_name and _length > 1 -%}
 
 {%- if view == "nav" -%}
@@ -151,22 +88,17 @@
 {%- endif -%}
 
 {%- elif view == "label" -%}
-{#- The overview introduces the series rather than being a part of it, so it
-    gets no line: it has no part number to give, and its own content is what
-    says what the series is. A part without a series_part is numbered by where
-    it falls in the order, and a page held out of the series (list = "never")
-    is not in it at all. -#}
+{#- Unnumbered parts are numbered by position. -#}
 {%- if _index > -1 and _part != 0 -%}
   {%- if _part > 0 %}{% set _number = _part %}{% else %}{% set _number = _index + 1 - _overviews %}{% endif -%}
-  {#- The text is escaped before the link goes in, so the link is the only
-      markup in the line whatever the text or the series name contain. -#}
+  {#- Escape the text first so the link is its only markup. -#}
   {%- set _series = series_name | escape -%}
   {%- set _href = "" -%}
   {%- if _overviews > 0 -%}
     {%- set _intro = _overview | first -%}
     {%- set _href = _intro.permalink -%}
   {%- else -%}
-    {%- set _listing = paths::resolve(name=config.extra.series_page | default(value="series")) | trim -%}
+    {%- set _listing = paths::resolve(names=[config.extra.series_page | default(value="series")]) | trim -%}
     {%- if _listing -%}
       {%- set _listing_section = get_section(path=_listing, metadata_only=true) -%}
       {%- set _anchor = series_name | slugify -%}
@@ -178,8 +110,6 @@
 {%- endif -%}
 
 {%- else -%}
-{#- What the series is about is the overview page's job to say, so its own
-    description is shown under the heading whenever there is one. -#}
 {%- set_global _blurb = "" -%}
 {%- if _overviews > 0 -%}
   {%- set intro = _overview | first -%}
@@ -190,8 +120,6 @@
   {%- if _blurb %}
   <p>{{ _blurb }}</p>
   {%- endif %}
-  {#- `value` numbers each item by its own series_part, so the overview reads
-      as 0 and a series that starts at 1 is numbered as written. -#}
   <ol class="series-parts">
   {%- for member in _ordered %}
     <li{% if member.extra.series_part is defined %} value="{{ member.extra.series_part }}"{% endif %}><a href="{{ member.permalink }}">{{ member.title }}</a></li>

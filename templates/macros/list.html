@@ -1,39 +1,13 @@
 {% import "macros/sections.html" as paths %}
 {#
-  Where a post is listed is its own to decide, with `list` under its [extra]:
-
-      always   every listing (the default)
-      local    its own section's listing, and its series — nowhere else
-      never    no listing at all
-
-  A post is rendered at its permalink whichever it picks: `list` governs where
-  it is advertised, not whether it exists. `never` is how a page stays reachable
-  by anyone holding the link while staying out of the section list, the home
-  page, tag pages, related posts, the feed and the sitemap.
-
-  Every listing on the site therefore has to ask the same question of a page
-  before showing it, and a Tera macro returns a string rather than a list, so
-  the question cannot be factored into one macro that hands back the pages that
-  pass. It is instead written where each listing gathers its pages — here, in
-  section.html, in the taxonomy templates, in macros/series.html, and in the
-  atom.xml and sitemap.xml overrides. It reads the same in all of them:
-
-      page.extra.list | default(value=config.extra.list | default(value="always"))
-
-  A site-wide listing keeps only "always". A section's own listing, and a
-  series, keep "local" too and drop only "never".
+  Post listings. A post's `list` ([extra]) decides where it shows:
+    always — everywhere (default) · local — its own section and series · never — nowhere
+  It still renders at its permalink. Tera macros return strings, so each
+  listing repeats the check:
+    page.extra.list | default(value=config.extra.list | default(value="always"))
 #}
 
-{#
-  Renders the <li> for each page: its date, then its title. Shared by every
-  list macro below so they cannot drift apart.
-
-  The date sits in a column of its own (.post-list in sass/_components.scss), so
-  titles line up however long they run. An undated page keeps the column empty
-  rather than letting its title slide left out of line.
-  Parameters:
-    pages  — list of page objects (required)
-#}
+{# One <li> per page: date, then title. #}
 {% macro items(pages) -%}
 {%- for page in pages %}
 <li>
@@ -43,29 +17,7 @@
 {%- endfor -%}
 {%- endmacro items %}
 
-{#
-  Renders a flat list of pages, in the order given.
-  Parameters:
-    pages  — list of page objects to render (required)
-#}
-{% macro simple(pages) -%}
-{%- if pages | length > 0 %}
-<ul class="post-list">{{ self::items(pages=pages) }}</ul>
-{%- else %}
-<p>No posts yet.</p>
-{%- endif -%}
-{%- endmacro simple %}
-
-{#
-  Renders pages grouped under a heading per year, newest year first and newest
-  page first within each year. Sorting is done here rather than relying on the
-  section's sort_by, so the output is the same however the caller orders them.
-
-  Pages without a date are listed together at the end.
-
-  Parameters:
-    pages  — list of page objects to render (required)
-#}
+{# Pages grouped by year, newest first; undated pages last. #}
 {% macro by_year(pages) -%}
 {%- if pages | length > 0 -%}
   {%- set dated = pages | filter(attribute="year") -%}
@@ -89,30 +41,9 @@
 {%- endmacro by_year %}
 
 {#
-  Posts worth reading next to this one, listed under the post itself.
-
-  `source` decides where they come from. A list of paths is used as written —
-  the author's own picks, in their own order. `true` finds them by tag instead:
-  every post sharing at least one tag with this one, most tags in common first
-  and, at equal footing, newest first.
-
-  There is no way to attach a score to a page and sort on it — Tera has no map
-  literal and cannot add a field to an existing object — so the ranking is done
-  by making one pass per possible score, from every tag in common down to one.
-  That is a handful of passes over a list of candidates, all of it at build time.
-
-  Other parts of this post's own series are left out: the series' previous /
-  next links and its listing page already cover them, in reading order. So are posts
-  that keep themselves out of site-wide listings with `list` — but only when
-  they are being found by tag. A path named in `source` was chosen by hand for
-  this post, and a hand-picked link is not a listing, so it is honoured as
-  written.
-
-    page   — the page object (required)
-    source — true to match by tag, or a list of paths relative to content/,
-             e.g. ["posts/markdown.md"] (default: true)
-    limit  — number of posts to show; 0 means no limit (default: 0)
-    title  — heading above the list (default: "Related")
+  Related posts under a post. source: a list of paths (used as given) or true
+  (posts sharing tags, most shared first, then newest). Tag matches skip the
+  post's own series and posts not listed "always".
 #}
 {% macro related(page, source=true, limit=0, title="Related") -%}
 {%- set_global _related = [] -%}
@@ -133,12 +64,10 @@
       {%- set_global _pool = _pool | concat(with=term.pages) -%}
     {%- endif -%}
   {%- endfor -%}
-  {#- Sorting on a missing date would abort the build, so an undated post is
-      dropped here rather than listed out of order. -#}
+  {#- Undated posts are dropped: sorting on a missing date aborts the build. -#}
   {%- set_global _pool = _pool | filter(attribute="date") | sort(attribute="date") | reverse -%}
 
-  {#- Permalinks of the posts already taken: a post sharing three tags turns up
-      three times in the pool, and would turn up again at each lower score. -#}
+  {#- Tera can't sort on a computed score, so take one pass per score, highest first. -#}
   {%- set_global _seen = [] -%}
   {%- for step in range(end=tag_count) -%}
     {%- set score = tag_count - step -%}
@@ -167,53 +96,31 @@
 {%- if _related | length > 0 %}
 <section class="related">
   <h2>{{ title }}</h2>
-  {#- `list::items`, not `self::items`: Tera resolves a macro namespace against
-      the template the call is written in, and page.html — the only caller —
-      imports macros/blocks.html as well, which takes the `self` slot there.
-      The `list` alias is base.html's, so every template of the theme has it. -#}
+  {#- list::, not self::: page.html also imports blocks, which takes `self` there. -#}
   <ul class="post-list">{{ list::items(pages=_related) }}</ul>
 </section>
 {%- endif -%}
 {%- endmacro related %}
 
-{#
-  Fetches pages from multiple sections, sorts them, and renders a flat list.
-  Parameters:
-    sections   — list of section folder names, e.g. ["posts", "notes"] (required)
-    limit      — number of items to show; 0 means no limit (default: 0)
-    sort_by    — page attribute to sort by (default: "date")
-    sort_order — "asc" or "desc" (default: "desc")
-#}
-{% macro recents(sections, limit=0, sort_by="date", sort_order="desc") -%}
-{%- if sections | length == 0 %}
-<p>No sections specified for displaying recents.</p>
-{%- else -%}
-  {#- A name whose section does not exist is skipped rather than aborting the
-      build — see macros/sections.html. -#}
-  {%- set_global _pages = [] -%}
-  {%- for section_name in sections -%}
-    {%- set _path = paths::resolve(name=section_name) | trim -%}
-    {%- if _path -%}
-      {%- set sec = get_section(path=_path) -%}
-      {%- set_global _pages = _pages | concat(with=sec.pages) -%}
+{# Newest posts listed "always" across the post sections. limit: 0 = all #}
+{% macro recents(limit=0) -%}
+{%- set _paths = paths::resolve(names=config.extra.content_sections | default(value=[]), fallback=true) -%}
+{%- set_global _pages = [] -%}
+{%- for path in _paths | split(pat="\n") -%}
+  {%- if path -%}
+  {%- set sec = get_section(path=path) -%}
+  {%- for candidate in sec.pages -%}
+    {%- if candidate.date and candidate.extra.list | default(value=config.extra.list | default(value="always")) == "always" -%}
+      {%- set_global _pages = _pages | concat(with=candidate) -%}
     {%- endif -%}
   {%- endfor -%}
-  {#- A site-wide listing, so a post that asked to be listed only in its own
-      section is not one of these. -#}
-  {%- set_global _listed = [] -%}
-  {%- for candidate in _pages -%}
-    {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) == "always" -%}
-      {%- set_global _listed = _listed | concat(with=candidate) -%}
-    {%- endif -%}
-  {%- endfor -%}
-  {%- set_global _pages = _listed -%}
-  {#- Drop pages missing the sort key; sorting on a null would abort the build. -#}
-  {%- set_global _pages = _pages | filter(attribute=sort_by) | sort(attribute=sort_by) -%}
-  {%- if sort_order == "desc" -%}{%- set_global _pages = _pages | reverse -%}{%- endif -%}
-  {%- if limit > 0 -%}{%- set_global _pages = _pages | slice(end=limit) -%}{%- endif -%}
-  {%- if _pages | length > 0 -%}{{ self::simple(pages=_pages) }}
-  {%- else %}
-<p>No recent items to display.</p>
   {%- endif -%}
+{%- endfor -%}
+{%- set_global _pages = _pages | sort(attribute="date") | reverse -%}
+{%- if limit > 0 -%}{%- set_global _pages = _pages | slice(end=limit) -%}{%- endif -%}
+{%- if _pages | length > 0 %}
+<ul class="post-list">{{ self::items(pages=_pages) }}</ul>
+{%- else %}
+<p>No posts yet.</p>
 {%- endif -%}
 {%- endmacro recents %}

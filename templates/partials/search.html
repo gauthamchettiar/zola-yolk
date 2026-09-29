@@ -1,13 +1,5 @@
 {#
-  Search: markup, scripts and behaviour in one file. Included at the end of
-  <body> by base.html when config.extra.enable_search is set.
-
-  A native <dialog> supplies the backdrop, Escape-to-close, the focus trap and
-  focus restoration, so none of that is reimplemented below.
-
-  elasticlunr and the search index are not loaded with the page. Nothing needs
-  them until the dialog opens, and the index grows with every post written, so
-  they are fetched the first time it does — see loadIndex() below.
+  Search dialog. elasticlunr and the index load the first time it opens.
 #}
 <dialog id="search-modal" aria-label="Search">
   <search>

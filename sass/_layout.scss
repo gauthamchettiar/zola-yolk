@@ -21,8 +21,7 @@
   padding: 1rem 0;
 }
 
-// Trail of ancestors. The separator is presentation, so it lives here rather
-// than in the markup; the current page never gets a trailing slash.
+// Breadcrumb; the "/" separators are drawn here.
 .breadcrumb {
   flex: 1;
   min-width: 0;
@@ -54,7 +53,7 @@
   }
 }
 
-// Main menu. The [brackets] are decoration, not content.
+// Main menu; the [brackets] are drawn here.
 .site-nav {
   flex-shrink: 0;
   margin-right: 0.5rem;
@@ -68,8 +67,7 @@
     padding: 0;
   }
 
-  // The Search item is a <button> (it opens a dialog, it goes nowhere), dressed
-  // to match the links around it.
+  // The Search item is a <button> styled like the links.
   a, button {
     color: var(--color-text-muted);
     text-decoration: none;
@@ -80,15 +78,12 @@
     &:hover { color: var(--color-secondary-accent); }
   }
 
-  // Where the reader is: the page itself, or the section it sits under.
+  // The current page or section.
   a[aria-current] { color: var(--color-text); }
 
-  button { line-height: inherit; } // base `button` sets 1, for bare icons
 }
 
-// Below this width the trail and the menu stop fitting on one line. Send the
-// menu to a row of its own rather than let the breadcrumb break mid-trail.
-// Tuned to the longest trail this theme produces; widen it for a longer title.
+// Narrow screens: the menu gets its own row.
 @media (max-width: 28rem) {
   .site-nav {
     flex-basis: 100%;

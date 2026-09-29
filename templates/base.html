@@ -1,14 +1,6 @@
 {#
-  Root skeleton. Every other template extends this and fills {% block content %}.
-
-  The three macro namespaces below are imported once here; templates that extend
-  base.html and partials included by it can both use them without re-importing.
-
-  macros/blocks.html is deliberately not imported here: some of its macros
-  (`toc`) call each other via `self::` for recursion, and Tera cannot resolve
-  `self::` inside a macro that reaches a caller through this kind of shared,
-  cross-template import — only through a local `{% import %}` in the template
-  that actually calls it (see page.html).
+  Root skeleton. list, widgets and navigation are imported here for every
+  template; blocks is not, since its recursive `toc` needs a local import.
 #}
 {% import "macros/list.html" as list %}
 {% import "macros/widgets.html" as widgets %}
@@ -26,16 +18,10 @@
     {%- block content %}{% endblock content %}
   </main>
   {%- include "partials/footer.html" %}
-  {%- include "partials/tabs.html" %}
   {%- if config.extra.enable_search %}
   {%- include "partials/search.html" %}
   {%- endif %}
-  {#- render() ships two large libraries, so they are pulled in per page rather
-      than site-wide: only partials/content.html ever renders page or section
-      content, and macros/blocks.html emits a fixed marker for each renderer, so
-      searching the rendered body for those markers tells us exactly which
-      library this page needs. Taxonomy pages render no content and so need
-      neither. -#}
+  {#- Page scripts load only when the content needs them. -#}
   {%- set render_body = "" %}
   {%- if page is defined %}{% set render_body = page.content %}
   {%- elif section is defined %}{% set render_body = section.content %}{% endif %}
@@ -43,6 +29,9 @@
   {%- set needs_math = config.extra.enable_math and render_body is containing('class="math-') %}
   {%- if needs_mermaid or needs_math %}
   {%- include "partials/render.html" %}
+  {%- endif %}
+  {%- if render_body is containing('class="tabs" data-group=') %}
+  {%- include "partials/tabs.html" %}
   {%- endif %}
   {%- if render_body is containing('type="checkbox"') %}
   {%- include "partials/tasklist.html" %}

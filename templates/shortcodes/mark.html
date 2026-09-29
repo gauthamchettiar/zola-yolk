@@ -1,18 +1,6 @@
 {#
   mark shortcode — calls out a run of text.
-
-  markdown:
-    {{ mark(text="highlighted") }}
-    {{ mark(text="outlined", color="pink", decoration="border") }}
-
-  template:
-    {% import "macros/widgets.html" as widgets %}
-    {{ widgets::mark(text="highlighted", color="green") }}
-
-  Parameters:
-    text        — the text to mark (required)
-    color       — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted (default: "yellow")
-    decoration  — highlight (filled) | border (outlined) (default: "highlight")
+  Parameters: see widgets::mark in macros/widgets.html.
 #}
 {%- import "macros/widgets.html" as widgets -%}
 {{- widgets::mark(text=text, color=color | default(value="yellow"), decoration=decoration | default(value="highlight")) -}}

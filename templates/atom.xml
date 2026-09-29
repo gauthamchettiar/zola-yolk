@@ -1,13 +1,6 @@
 {#
-  Zola's built-in atom.xml, with one change: the feed is a site-wide listing,
-  so it carries only the posts that asked to be listed site-wide. See the note
-  at the top of macros/list.html for what `list` does.
-
-  Zola offers no per-page key for staying out of the feed, so holding one back
-  means owning the template. Everything below the filter is Zola 0.22.1's own
-  atom.xml verbatim — when upgrading, diff it against
-  components/templates/src/builtins/atom.xml in the Zola repo and re-apply the
-  filter rather than editing around it.
+  Zola 0.22.1's atom.xml, limited to posts listed "always".
+  On a Zola upgrade, re-apply the filter to the new built-in.
 #}
 {%- set_global _pages = [] -%}
 {%- for candidate in pages -%}

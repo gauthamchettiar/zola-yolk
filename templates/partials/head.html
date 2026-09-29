@@ -14,9 +14,7 @@
   {%- set meta_desc = section.description | default(value=config.description | default(value="")) -%}
   {%- set meta_url = section.permalink -%}
   {%- set meta_type = "website" -%}
-{#- Taxonomy pages have no prose of their own to describe them, and repeating the
-    site description on every one of them is what search engines read as a
-    duplicate. Say what the page actually lists instead. -#}
+{#- Taxonomy pages describe what they list, not the site. -#}
 {%- elif term is defined -%}
   {%- set _tax = taxonomy.name | capitalize -%}
   {%- set meta_title = _tax ~ ": " ~ term.name -%}
@@ -47,11 +45,7 @@
 <link rel="alternate" type="{% if feed == "rss.xml" %}application/rss+xml{% else %}application/atom+xml{% endif %}" title="{{ config.title | default(value="Site") }}" href="{{ get_url(path=feed) }}">
 {%- endfor %}{% endif %}
 
-{#- Text is the largest-contentful element on most pages here, and the fonts it
-    needs sit two requests deep: this document, then the font stylesheet, then
-    the woff2. Preloading the subsets that actually get used collapses that
-    chain. Subset filenames can't be derived from the font name, so each entry
-    lists its own under `preload`; entries without one just skip it. -#}
+{#- Preload the font subsets listed under `preload`. -#}
 {%- for font in config.extra.fonts | default(value=[]) %}
 {%- set font_dir = font.name | replace(from=" ", to="_") %}
 {%- set font_base = "fonts/" ~ font.source ~ "/" ~ font_dir ~ "/" %}

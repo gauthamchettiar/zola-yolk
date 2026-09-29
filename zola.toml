@@ -1,139 +1,54 @@
-# The URL the site will be built for
 base_url = "https://zola-yolk.gauthamchettiar.com"
 title = "zola-yolk"
 description = "A minimal, dark monospace Zola theme with search, Font Awesome icons, and a component-based template architecture."
 compile_sass = true
 build_search_index = true
-# Emits atom.xml; the theme links to it from <head> when this is on.
 generate_feeds = true
 taxonomies = [{ name = "tags" }]
 
 [markdown]
 definition_list = true
 bottom_footnotes = true
-# lazy_async_image stays off. On Zola 0.22.1 it empties the generated slug of
-# every heading that follows a markdown image, so ids collapse to "", "-1", "-2"
-# and the table of contents links to nothing. The img() shortcode sets
-# loading="lazy" itself and adds the width and height Zola cannot infer here,
-# so nothing is lost by leaving this alone.
+# Keep off: on Zola 0.22.1 it breaks heading ids after images. Use img() instead.
 lazy_async_image = false
-
-# Adds a clickable anchor beside every heading. Off by default; "left" and
-# "right" put a mark on that side of the heading, "heading" turns the heading
-# text itself into the link. This is a Zola key, not a theme one — it belongs
-# to [markdown] and takes one of those words, so setting it under [extra], or
-# to true, does nothing at all.
-# insert_anchor_links = "right"
+# insert_anchor_links = "right"   # "left" | "right" | "heading"
 
 [markdown.highlighting]
 style = "class"
-# The theme is dark only, so one highlighter theme is all it needs. Zola writes
-# it to static/giallo.css, which the theme links from <head>.
-theme = "catppuccin-mocha"
+theme = "catppuccin-mocha"   # written to static/giallo.css
 
 [extra]
 
-# --- Site settings ------------------------------------------------------
-# These describe the site as a whole. A post has no say in any of them.
-
-# The sections posts live in (folder names under content/). The home page's
-# recent posts list is built from these, and so is the pool the series label
-# and the series listing page draw their parts from.
-#
-# Leaving it unset is not the same in both places: the series pool falls back
-# to every root-level section, but the home page has no fallback and says
-# "No sections specified for displaying recents" instead. Set it.
-content_sections = ["posts"]
-
-# The series listing page, as a folder name under content/ (the section using
-# the series.html template). A series without an overview page has its name in
-# the series label link to its entry there; if the section doesn't exist, the
-# name is left unlinked.
-series_page = "series"
-
-# How many posts the home page's "Recent posts" list shows; 0 shows every one.
-recent_limit = 10
-
-# Writing direction, written to <html dir="…">: "ltr" or "rtl".
-language_direction = "ltr"
-
-# Footer text (plain text or HTML).
+# --- Site settings ---
+content_sections = ["posts"]   # post sections; unset = every root section
+series_page = "series"         # series listing section, linked from series labels
+recent_limit = 10              # home page posts; 0 = all
+language_direction = "ltr"     # "ltr" | "rtl"
 footer = "Made with ❤️ for [zola](https://www.getzola.org/)"
 
-# --- Feature switches ---------------------------------------------------
-# Whole features of the theme, on or off for the site. The `enable_` prefix
-# marks them as the site's alone: no post overrides these.
+# --- Features ---
+enable_search = true           # Search menu item; needs build_search_index
+enable_mermaid = true          # ```mermaid via render()
+enable_math = true             # ```math via render()
 
-# Adds a Search item to the end of the header menu (Ctrl/Cmd+K opens it too).
-# Needs build_search_index above as well — it has nothing to search without it.
-enable_search = true
-
-# Lets the render() shortcode turn ```mermaid blocks into diagrams. The library
-# ships inside the theme's own static/ — see content/posts/externals.md.
-enable_mermaid = true
-
-# Lets the render() shortcode turn ```math blocks into notation. The library
-# ships inside the theme's own static/ — see content/posts/externals.md.
-enable_math = true
-
-# --- Defaults a post can override ---------------------------------------
-# Every key below is a default that a post may override by writing the same key
-# under its own [extra]. The names match on both sides on purpose: what you
-# read in a post's front matter is what you look up here.
-
-# Where a post appears in the site's listings:
-#   "always"  every listing
-#   "local"   its own section's listing, and its series — nowhere else
-#   "never"   no listing at all
-# A post is rendered at its permalink whichever it is, so "never" keeps a page
-# reachable by anyone holding the link while keeping it off the section list,
-# the home page, tag pages, related posts, the feed and the sitemap. Keeping it
-# out of the search box as well is a separate Zola key, set on the post itself
-# rather than under [extra]: in_search_index = false.
-list = "always"
-
-# Adds a collapsible table of contents to every post.
+# --- Defaults a post can override (same key under the post's [extra]) ---
+list = "always"                # "always" | "local" (own section + series) | "never"
 toc = true
-
-# Whether that table of contents starts "collapsed" or "expanded".
-toc_state = "collapsed"
-
-# Deepest heading level shown in the table of contents (h1 = 1 .. h6 = 6).
-toc_max_level = 6
-
-# Heading ids left out of the table of contents, wherever they occur.
-toc_exclude = []
-
-# Shows one line under the date on any post that names a series, saying which
-# part it is; the series' name links to its overview page, or else to its
-# entry on the series_page listing. Not shown on a series' overview (series_part = 0).
-series_label = true
-
-# That line's text. {part}, {count} and {series} are filled in. A single
-# series can have its own under [extra.series_label_texts] below.
+toc_state = "collapsed"        # "collapsed" | "expanded"
+toc_max_level = 6              # 1 (h1) .. 6 (h6)
+toc_exclude = []               # heading ids to leave out
+series_label = true            # "Part X of N …" under the date
 series_label_text = "Part {part} of {count} from series “{series}”"
+series_nav = true              # previous / next under the post
+related = true                 # true = by tag, a list of paths, or false
+related_limit = 0              # 0 = all
 
-# Shows previous/next links under a post that is part of a series.
-series_nav = true
-
-# Lists related posts under every post, found by tag. A post can name its own
-# instead, by giving `related` a list of paths, or turn the section off with
-# false.
-related = true
-
-# Number of related posts listed; 0 shows every match.
-related_limit = 0
-
-# Per-series text for the series label, keyed by series name. Wins over
-# series_label_text above; a post's own series_label_text wins over both.
+# Per-series label text (beats series_label_text; a post's own beats both).
 # [extra.series_label_texts]
 # "Shortcodes" = "Chapter {part} of {count} — {series}"
 
-# Self-hosted fonts to load. Each entry needs a source (subfolder under static/fonts/)
-# and a name matching the synced folder under that source. `preload` is optional:
-# list the subset files the site renders text with and they are fetched alongside
-# the font stylesheet instead of two requests deep behind it. Body copy is 400 and
-# every heading is 700, so both earn their place; the other subsets do not.
+# Self-hosted fonts: source = folder under static/fonts/, name = synced folder.
+# preload = subset files to fetch early.
 [[extra.fonts]]
 source = "google"
 name = "IBM Plex Mono"

@@ -7,9 +7,7 @@ description = "Shortcodes for arranging content: borders, wide blocks, columns a
 tags = ["layout", "shortcode", "zola"]
 
 [extra]
-# "Left" and "Right" are sample content inside a row/col demo, not sections of
-# this post — listing them in the contents implies a structure the page doesn't
-# have. They stay h3 so the heading order runs h2 -> h3 without a gap.
+# Demo headings inside a row/col example, not sections.
 toc_exclude = ["left", "right"]
 series = "Shortcodes"
 series_part = 2
@@ -19,13 +17,11 @@ Shortcodes for *arranging* content. For the ones that insert it, see
 [Shortcode: Elements](@/posts/shortcode.md). For the ones that lean on a
 bundled external library, see [Shortcode: Externals](@/posts/externals.md).
 
-Each is a thin wrapper over a macro in `macros/blocks.html`, so the same thing
-is callable from Markdown and from a template. Both forms are shown throughout —
-switch tabs on any example below and the rest of the page follows.
+Each example shows the shortcode and its template macro.
 
 ## Borders
 
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% border() %​}
 Any markdown goes inside.
@@ -75,7 +71,7 @@ styles&nbsp; : `solid` (default), `dashed`, `dotted`, `double`
 
 ## Alignment
 
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% align(align="center") %​}
 Centered text.
@@ -96,10 +92,9 @@ Centered text.
 {% end %}
 
 ### Center, Left, & Right
-`center`, `left` and `right` are presets of `align` with a fixed `align`, and
-take no parameters of their own:
+Presets of `align`:
 
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% center() %​}
 Centered text.
@@ -125,7 +120,7 @@ Right-aligned text.
 
 ## Wide Content
 
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% wide() %​}
 ![a wide screenshot](/images/wide.png)
@@ -144,8 +139,7 @@ Spans the whole screen.
 
 sizes : `sm`, `md` (default), `lg`, `xl` (as wide as the screen allows)
 
-Each size is capped at the screen width, so on a narrow screen they all fall
-back to the normal column. Widen this window to see them separate.
+Capped at the screen width; widen the window to see them differ.
 
 {% wide(size="sm") %}
 {% border(color="yellow") %}
@@ -173,12 +167,9 @@ back to the normal column. Widen this window to see them separate.
 
 ## Columns and Rows
 
-`row` lays its contents out side by side; `col` stacks them. Every top-level
-block inside becomes an item, so two paragraphs are already two columns. In a
-template, Tera cannot combine a macro call with `~` in one expression, so the
-columns have to be built with `set` first.
+`row` puts each top-level block side by side; `col` stacks them.
 
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% row() %​}
 Left paragraph.
@@ -230,9 +221,7 @@ gaps : `sm`, `md` (default), `lg` — on both `row` and `col`
 
 ### Col/Row Proportions
 
-`span` works like a table's colspan: a column with `span="2"` is exactly twice
-the width of a default one. Both the flex basis and the grow factor scale with
-it, so the ratio holds at any container width.
+`span` works like colspan: `span="2"` is twice the width of a default column.
 
 ```md
 {​% row() %​}
@@ -271,20 +260,15 @@ Half of that.
 {% end %}
 {% end %}
 
-A span only applies to a `col` (or a `row` nested in another `row`), so a bare
-paragraph needs wrapping in `col` before it can take one.
+Columns stack on narrow screens. For more room, nest a `row` in [`wide`](#wide-content).
 
-Columns collapse to a stack on narrow screens. Three fit at the default gap;
-for more room, nest a `row` inside [`wide`](#wide-content).
+## Tabs
 
-## Tabbed Code Blocks
+`tabs` shows several code blocks as tabs.
 
-`code` shows several code blocks as tabs — handy for the same example in more
-than one language.
-
-{% code(titles=["markdown content", "template files"], group="usage") %}
+{% tabs(titles=["markdown content", "template files"], group="usage") %}
 ````md
-{​% code(titles=["Python", "Java"]) %​}
+{​% tabs(titles=["Python", "Java"]) %​}
 ```python
 print("hi")
 ```
@@ -295,14 +279,14 @@ System.out.println("hi");
 ````
 ```jinja2
 {​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::code(content=panels, titles=["Python", "Java"], id="api") }​}
+{​{ blocks::tabs(content=panels, titles=["Python", "Java"], id="api") }​}
 ```
 {% end %}
 
 titles : one label per code block, in order  
 group&nbsp; : optional name; blocks sharing one switch together
 
-{% code(titles=["Python", "Java"]) %}
+{% tabs(titles=["Python", "Java"]) %}
 ```python
 print("hi")
 ```
@@ -311,21 +295,5 @@ System.out.println("hi");
 ```
 {% end %}
 
-The body should hold nothing but fenced code blocks: each one becomes a panel,
-and panels pair with titles by position. Switching is a radio group rather than
-a script, so it works with JavaScript disabled and the arrow keys move between
-tabs. The shortcode uses Zola's per-page `nth` to keep blocks apart; from a
-template, pass your own `id`.
-
-Give several blocks the same `group` and they move as one — every
-markdown/template example on this page carries `group="usage"`, which is why
-picking one tab picks the same tab on all the rest. Each block keeps its own
-radios, so this is the one part that does need JavaScript; with it off, every
-block still switches on its own.
-
-A group switch also changes the height of every block on the page at once,
-including ones above the tab you clicked — which would otherwise shove your
-scroll position around as they resize. `partials/tabs.html` measures the
-clicked block's position before and after the sync and scrolls by the
-difference in the same frame, so nothing above you visibly moves; only the tab
-you clicked changes.
+Works without JavaScript. Blocks with the same `group` switch together — every
+example on this page uses `group="usage"`. From a template, pass your own `id`.
