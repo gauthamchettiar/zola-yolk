@@ -1,7 +1,7 @@
 +++
 title = "Shortcode: Elements"
 date = 2026-04-20
-description = "Shortcodes that insert content: icons, links, marks, quotes, callouts and theme-conditional blocks."
+description = "Shortcodes that insert content: icons, links, marks, quotes, callouts and screen-size-conditional blocks."
 
 [taxonomies]
 tags = ["shortcode", "syntax", "zola"]
@@ -106,13 +106,26 @@ text
 : the text to mark. Required.
 
 color
-: `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
+: `white`, `red`, `orange`, `yellow` (default), `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `muted`
 
 decoration
 : `highlight` (default, filled), `border` (outlined)
 
-filled&nbsp;&nbsp; : {{ mark(text="yellow") }} {{ mark(text="pink", color="pink") }} {{ mark(text="green", color="green") }} {{ mark(text="red", color="red") }} {{ mark(text="blue", color="blue") }}  
-outlined : {{ mark(text="yellow", decoration="border") }} {{ mark(text="pink", color="pink", decoration="border") }} {{ mark(text="green", color="green", decoration="border") }} {{ mark(text="red", color="red", decoration="border") }} {{ mark(text="blue", color="blue", decoration="border") }}
+Every colour, in both decorations:
+
+| colour | filled | outlined |
+|---|---|---|
+| `white` | {{ mark(text="white", color="white") }} | {{ mark(text="white", color="white", decoration="border") }} |
+| `red` | {{ mark(text="red", color="red") }} | {{ mark(text="red", color="red", decoration="border") }} |
+| `orange` | {{ mark(text="orange", color="orange") }} | {{ mark(text="orange", color="orange", decoration="border") }} |
+| `yellow` | {{ mark(text="yellow") }} | {{ mark(text="yellow", decoration="border") }} |
+| `lime` | {{ mark(text="lime", color="lime") }} | {{ mark(text="lime", color="lime", decoration="border") }} |
+| `green` | {{ mark(text="green", color="green") }} | {{ mark(text="green", color="green", decoration="border") }} |
+| `cyan` | {{ mark(text="cyan", color="cyan") }} | {{ mark(text="cyan", color="cyan", decoration="border") }} |
+| `blue` | {{ mark(text="blue", color="blue") }} | {{ mark(text="blue", color="blue", decoration="border") }} |
+| `purple` | {{ mark(text="purple", color="purple") }} | {{ mark(text="purple", color="purple", decoration="border") }} |
+| `pink` | {{ mark(text="pink", color="pink") }} | {{ mark(text="pink", color="pink", decoration="border") }} |
+| `muted` | {{ mark(text="muted", color="muted") }} | {{ mark(text="muted", color="muted", decoration="border") }} |
 
 ## Color
 
@@ -135,9 +148,11 @@ text
 : the text to colour. Required.
 
 color
-: `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
+: `white`, `red`, `orange`, `yellow` (default), `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `muted`
 
-{{ color(text="yellow") }} {{ color(text="pink", color="pink") }} {{ color(text="green", color="green") }} {{ color(text="red", color="red") }} {{ color(text="blue", color="blue") }}
+{{ color(text="white", color="white") }} {{ color(text="red", color="red") }} {{ color(text="orange", color="orange") }} {{ color(text="yellow") }} {{ color(text="lime", color="lime") }} {{ color(text="green", color="green") }} {{ color(text="cyan", color="cyan") }} {{ color(text="blue", color="blue") }} {{ color(text="purple", color="purple") }} {{ color(text="pink", color="pink") }} {{ color(text="muted", color="muted") }}
+
+The same colours work for `mark`, `border`, `quote` and `admonition`.
 
 ## Shimmer
 
@@ -206,7 +221,7 @@ url
   Default none.
 
 color
-: `white`, `yellow`, `pink` (default), `green`, `red`, `blue`, `muted`
+: `white`, `red`, `orange`, `yellow`, `lime`, `green`, `cyan`, `blue`, `purple`, `pink` (default), `muted`
 
 {% quote(author="Alan Kay", cite="1971") %}
 The best way to predict the future is to invent it.
@@ -249,7 +264,7 @@ icon
 : Font Awesome name. Default `circle-info`.
 
 color
-: `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
+: `white`, `red`, `orange`, `yellow` (default), `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `muted`
 
 {% admonition(title="Note") %}
 Worth knowing.
@@ -308,17 +323,23 @@ There's a faster way to do this.
 ## Expand
 
 A collapsible section, rendered as native `<details>`/`<summary>` — no class or
-JavaScript needed to drive it.
+JavaScript needed to drive it. Two styles: `simple`, a muted `+ title` line
+with the body indented under it once opened, and `border`, a framed box with the
+title in the accent colour.
 
 {% code(titles=["markdown content", "template files"], group="usage") %}
 ```md
 {​% expand(title="Show the answer", state="expanded") %​}
 42.
 {​% end %​}
+
+{​% expand(title="In a border", style="border") %​}
+Framed.
+{​% end %​}
 ```
 ```jinja2
 {​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::expand(content="<p>Hidden until opened.</p>", title="Show the answer") }​}
+{​{ blocks::expand(content="<p>Hidden until opened.</p>", title="Show the answer", style="border") }​}
 ```
 {% end %}
 
@@ -328,6 +349,9 @@ title
 state
 : `expanded`, `collapsed` (default)
 
+style
+: `simple` (default), `border`
+
 {% expand() %}
 Hidden until opened.
 {% end %}
@@ -336,41 +360,16 @@ Hidden until opened.
 The answer is forty-two.
 {% end %}
 
-## Light and Dark Mode Content
-
-Whatever is inside `lmode` shows only in light mode, and `dmode` only in dark.
-
-{% code(titles=["markdown content", "template files"], group="usage") %}
-```md
-{​% lmode() %​}
-Only visible in light mode.
-{​% end %​}
-
-{​% dmode() %​}
-Only visible in dark mode.
-{​% end %​}
-```
-```jinja2
-{​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::lmode(content="<p>Only visible in light mode.</p>") }​}
-{​{ blocks::dmode(content="<p>Only visible in dark mode.</p>") }​}
-```
+{% expand(title="Show the answer, bordered", style="border") %}
+The answer is still forty-two.
 {% end %}
 
-Neither takes parameters. Both variants are emitted and CSS reveals the matching
-one, so this works with JavaScript disabled. Toggle the theme in the header:
-
-{% lmode() %}
-You are in **light mode** {{ icon(name="sun", aria="sun") }} — this line is hidden in dark mode.
-{% end %}
-
-{% dmode() %}
-You are in **dark mode** {{ icon(name="moon", aria="moon") }} — this line is hidden in light mode.
+{% expand(title="Open by default, bordered", state="expanded", style="border") %}
+A bordered expand, already open.
 {% end %}
 
 ## Mobile and Desktop Content
 
-Same idea as `lmode` / `dmode`, but for viewport width instead of theme —
 `mobile` shows only below the mobile breakpoint (`48rem`), `desktop` only
 above it.
 
@@ -391,9 +390,8 @@ Only visible on larger screens.
 ```
 {% end %}
 
-Neither takes parameters. Unlike `lmode` / `dmode` this needs no data-theme
-override or OS-preference fallback — viewport width is always known to CSS,
-so a single media query does the whole job, still with no JavaScript. Resize
+Neither takes parameters. Both variants are emitted and a single media query
+reveals the matching one, so this works with JavaScript disabled. Resize
 the window to see these switch:
 
 {% mobile() %}

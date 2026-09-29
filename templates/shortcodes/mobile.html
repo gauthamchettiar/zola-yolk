@@ -11,8 +11,7 @@
     {{ blocks::mobile(content="<p>Mobile only.</p>") }}
 
   See desktop for the counterpart. Both variants are always in the HTML and
-  a media query reveals the matching one — no JavaScript involved, since
-  (unlike lmode/dmode) viewport width needs no toggle or no-JS fallback.
+  a media query reveals the matching one — no JavaScript involved.
 #}
 {%- import "macros/blocks.html" as blocks -%}
 {{ blocks::mobile(content=body | markdown) }}

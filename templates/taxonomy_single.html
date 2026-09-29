@@ -11,6 +11,6 @@
     {%- set_global _pages = _pages | concat(with=candidate) -%}
   {%- endif -%}
 {%- endfor %}
-<h1>{{ taxonomy.name | capitalize }} :: {{ term.name | capitalize }} ({{ _pages | length }})</h1>
+<h1>{{ term.name | capitalize }} ({{ _pages | length }})</h1>
 {{ list::by_year(pages=_pages) }}
 {% endblock content %}

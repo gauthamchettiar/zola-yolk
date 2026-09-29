@@ -59,13 +59,14 @@ Set these in `zola.toml`. Posts have no say in any of them.
 {% wide() %}
 | Key | What it does | Default |
 |---|---|---|
-| `content_sections` | The sections posts live in, as folder names under `content/`. Feeds the home page's recent posts and the pool the series panel draws from | unset — set it |
+| `content_sections` | The sections posts live in, as folder names under `content/`. Feeds the home page's recent posts and the pool the series label draws from | unset — set it |
 | `recent_limit` | How many posts the home page lists; `0` shows every one | `10` |
-| `main_menu` | Header links, as an array of tables with a `name` and a `url` | unset |
+| `main_menu` | Header links, as an array of tables with a `name` and a `url`. The item for the page you are on, or the section it sits under, is shown in white | unset |
 | `footer` | Footer text, as Markdown | `"Written with ❤️"` |
 | `language_direction` | Writing direction, written to `<html dir="…">` | `"ltr"` |
-| `enable_theme_switcher` | The dark/light toggle in the header | `true` |
-| `enable_search` | The search button. Needs Zola's own `build_search_index = true` as well | `true` |
+| `series_page` | The series listing section, as a folder name under `content/`. A series without an overview has its name in the series label link to its entry there; unlinked if the section doesn't exist | `"series"` |
+| `series_label_texts` | Series label text for one series, as a table keyed by series name. Wins over `series_label_text` | unset |
+| `enable_search` | A Search item at the end of the header menu, also opened with <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd>. Needs Zola's own `build_search_index = true` as well | `true` |
 | `enable_mermaid` | Lets ` ```mermaid ` blocks render as diagrams through `render()` | `true` |
 | `enable_math` | Lets ` ```math ` blocks render as notation through `render()` | `true` |
 {% end %}
@@ -108,12 +109,13 @@ the same name.
 |---|---|---|
 | `list` | Where the post is listed — see below | `"always"` |
 | `toc` | Whether the post gets a collapsible table of contents | `true` |
+| `toc_state` | Whether it starts `"collapsed"` or `"expanded"` | `"collapsed"` |
 | `toc_max_level` | Deepest heading shown, `1` (h1) to `6` (h6) | `6` |
 | `toc_exclude` | Heading ids left out wherever they occur | `[]` |
 | `series` | The series this post belongs to. Naming one is what joins it. Posts only | unset |
 | `series_part` | Position in the reading order; `0` marks the overview. Posts only | unset |
-| `series_panel` | The panel listing the parts, above the contents | `true` |
-| `series_state` | Whether that panel starts `"expanded"` or `"collapsed"` | `"expanded"` |
+| `series_label` | One line under the date saying which part of which series this is, the series' name linking to its overview, or to its entry on the `series_page` listing. Never shown on the overview (`series_part = 0`) | `true` |
+| `series_label_text` | That line's text; `{part}`, `{count}` and `{series}` are filled in | `"Part {part} of {count} from series “{series}”"` |
 | `series_nav` | Previous/next links under the post | `true` |
 | `related` | Posts to read next, matched by shared tags. A list of paths picks them by hand instead; `false` turns the section off | `true` |
 | `related_limit` | How many to list; `0` shows every match | `0` |
@@ -140,7 +142,7 @@ site's listings.
 |---|---|---|---|
 | Rendered at its permalink | yes | yes | yes |
 | Its own section's list | yes | yes | no |
-| Series panel and series listing | yes | yes | no |
+| Series label, previous / next and series listing | yes | yes | no |
 | `sitemap.xml` | yes | yes | no |
 | Home page "Recent posts" | yes | no | no |
 | Tag pages and tag counts | yes | no | no |

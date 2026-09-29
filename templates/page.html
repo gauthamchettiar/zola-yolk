@@ -9,24 +9,28 @@
   <header>
     <h1>{{ page.title }}</h1>
     {{ widgets::meta(page=page) }}
+    {%- if page.extra.series %}
+    {%- if page.extra.series_label | default(value=config.extra.series_label | default(value=true)) %}
+    {#- The line's text, most specific first: the post's own, then the one set
+        for its series in [extra.series_label_texts], then the site's. -#}
+    {%- set label_text = config.extra.series_label_text | default(value="Part {part} of {count} from series “{series}”") %}
+    {%- if config.extra.series_label_texts %}
+    {%- set label_text = config.extra.series_label_texts | get(key=page.extra.series, default=label_text) %}
+    {%- endif %}
+    {{ series::show(view="label", page=page, text=page.extra.series_label_text | default(value=label_text)) }}
+    {%- endif %}
+    {%- endif %}
   </header>
-  {%- if page.extra.series %}
-  {%- if page.extra.series_panel | default(value=config.extra.series_panel | default(value=true)) %}
-  {{ series::show(
-    view="panel",
-    page=page,
-    state=page.extra.series_state | default(value=config.extra.series_state | default(value="expanded"))
-  ) }}
-  {%- endif %}
-  {%- endif %}
   {%- if page.extra.toc | default(value=config.extra.toc | default(value=true)) %}
   {{ blocks::toc(
     page=page,
+    state=page.extra.toc_state | default(value=config.extra.toc_state | default(value="collapsed")),
     max_level=page.extra.toc_max_level | default(value=config.extra.toc_max_level | default(value=6)),
     exclude=page.extra.toc_exclude | default(value=config.extra.toc_exclude | default(value=[]))
   ) }}
   {%- endif %}
   {%- include "partials/content.html" %}
+  {{ widgets::tags(page=page) }}
 </article>
 {#- Both of these point away from the post, so they sit outside <article>:
     where to go next is not part of what was written. -#}

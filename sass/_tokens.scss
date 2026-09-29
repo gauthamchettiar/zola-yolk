@@ -1,11 +1,10 @@
 // Design tokens. Everything visual is driven from here.
 //
-// Colours use light-dark(): the first value applies in light mode, the second
-// in dark. Which one wins is decided by `color-scheme`, so the whole palette
-// switches by changing that single property — no media queries, no overrides.
+// The theme is dark only. `color-scheme: dark` keeps browser-drawn UI —
+// scrollbars, form controls, the search input — on the dark side as well.
 
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 
   --font-family: 'IBM Plex Mono', Menlo, Monaco, Consolas, monospace;
   --font-size: 1rem;
@@ -14,23 +13,25 @@
   --max-width: 42rem;
   --page-gutter: 1.5rem; // breathing room at the screen edge, never crossed
 
-  // Light accents sit as high in lightness as WCAG AA (4.5:1) allows, with
-  // chroma pushed to the sRGB edge — any lighter and they stop being legible on
-  // the cream background, any darker and they turn muddy. Measured contrast is
-  // noted per line. Dark accents deliberately exceed sRGB: every engine clamps
-  // them identically to the gamut boundary, which is the most saturated result.
-  --color-bg:               light-dark(#faf8f2, #1a1a1a);
-  --color-text:             light-dark(#1a1a1a, #fff);
-  --color-text-muted:       light-dark(oklch(.52 .045 70), #999999);   // 5.2:1
-  --color-border:           light-dark(#e0d8c4, #444444);
-  --color-primary-accent:   light-dark(oklch(.54 .114 75),  oklch(.92 .15 95));  // 4.9:1 amber
-  --color-secondary-accent: light-dark(oklch(.57 .243 345), oklch(.76 .25 345)); // 4.8:1 magenta
-  --color-link:             light-dark(oklch(.522 .129 155), oklch(.87 .24 166));// 4.9:1 green
-  --color-red-accent:       light-dark(oklch(.56 .22 29),   oklch(.70 .22 29));  // 4.9:1 red
-  --color-blue-accent:      light-dark(oklch(.545 .25 264), oklch(.75 .2 264)); // 5.0:1 blue
-}
+  // Accents deliberately exceed sRGB: every engine clamps them identically to
+  // the gamut boundary, which is the most saturated result. Every one clears
+  // WCAG AA against --color-bg both ways round — as text on the background,
+  // and with the background as text on it (a filled `mark`) — so any accent
+  // works in any component. The ratio against --color-bg is noted per line.
+  --color-bg:               #1a1a1a;
+  --color-text:             #fff;
+  --color-text-muted:       #999999;
+  --color-border:           #444444;
+  --color-primary-accent:   oklch(.92 .15 95);  // amber    14.5:1
+  --color-secondary-accent: oklch(.76 .25 345); // magenta   6.8:1
+  --color-link:             oklch(.87 .24 166); // green    14.1:1
+  --color-red-accent:       oklch(.70 .22 29);  // red       5.9:1
+  --color-blue-accent:      oklch(.75 .2 264);  // blue      7.6:1
 
-// The theme toggle writes data-theme on <html>; pinning color-scheme here
-// overrides the OS preference for every token above at once.
-[data-theme="light"] { color-scheme: light; }
-[data-theme="dark"]  { color-scheme: dark; }
+  // The rest of the wheel, for the colour-taking shortcodes (mark, color,
+  // border, quote, admonition). The theme itself uses none of these.
+  --color-orange-accent:    oklch(.80 .17 60);  // orange    9.1:1
+  --color-lime-accent:      oklch(.89 .21 128); // lime     14.0:1
+  --color-cyan-accent:      oklch(.84 .14 210); // cyan     11.9:1
+  --color-purple-accent:    oklch(.74 .2 305);  // purple    7.3:1
+}

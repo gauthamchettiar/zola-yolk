@@ -31,6 +31,7 @@ jobs:
           uv run --project scripts/py-ssg-tools pst screenshots \
             --url "${{ inputs.url || 'https://zola-yolk.gauthamchettiar.com' }}" \
             --dest static/images/screenshots \
+            --theme dark \
             --page home:/ \
             --page intro:/posts/introduction/ \
             --page posts:/posts/ \

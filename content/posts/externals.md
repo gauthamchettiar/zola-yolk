@@ -71,10 +71,6 @@ graph TD
 ```
 {% end %}
 
-Mermaid picks its colour theme once, from the page's `data-theme` at load —
-it does not redraw an already-rendered diagram if the visitor flips
-light/dark afterwards.
-
 ### Math
 
 {% code(titles=["markdown content", "template files"], group="usage") %}

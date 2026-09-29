@@ -30,7 +30,7 @@
   Marked-up run of text. <mark> is the element for text called out for
   reference, which is what both decorations mean here.
     text        — the text to mark (required)
-    color       — white | yellow | pink | green | red | blue | muted (default: "yellow")
+    color       — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted (default: "yellow")
     decoration  — highlight (filled) | border (outlined) (default: "highlight")
 #}
 {% macro mark(text, color="yellow", decoration="highlight") -%}
@@ -42,7 +42,7 @@
   just colour. Reach for `mark` when the text needs to be called out, this
   when it just needs to not be the default colour.
     text   — the text to colour (required)
-    color  — white | yellow | pink | green | red | blue | muted (default: "yellow")
+    color  — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted (default: "yellow")
 #}
 {% macro color(text, color="yellow") -%}
 <span class="color" data-color="{{ color }}">{{ text | safe }}</span>
@@ -64,25 +64,33 @@
 {%- endmacro shimmer %}
 
 {#
-  Renders the page metadata line: date, reading time, and tags.
-
-  Renders as `{ date = …, read_time = …, tags = [a, b] }`. The braces, the ` = `
-  and the separating commas are drawn by CSS (.page-meta in sass/_components.scss),
-  so this macro only has to emit the pairs that exist — no separator bookkeeping.
+  Renders the line under a post's title: "Published on" and its date, and
+  nothing else. Tags are
+  about where a post belongs rather than what it is, so they go under the post
+  instead — see `tags` below.
 
   Parameters:
     page  — the page object (required)
 #}
 {% macro meta(page) -%}
-{%- if page.date or page.reading_time or page.taxonomies.tags -%}
-<dl class="page-meta">
-{%- if page.date %}<dt>date</dt><dd><time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time></dd>{% endif -%}
-{%- if page.reading_time %}<dt>read_time</dt><dd>{{ page.reading_time }} min</dd>{% endif -%}
-{%- if page.taxonomies.tags %}<dt>tags</dt><dd class="tags">
-{%- for tag in page.taxonomies.tags -%}
-<a href="{{ get_taxonomy_url(kind='tags', name=tag) }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
-{%- endfor -%}
-</dd>{% endif -%}
-</dl>
+{%- if page.date -%}
+<p class="page-meta">Published on <time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time></p>
 {%- endif -%}
 {%- endmacro meta %}
+
+{#
+  Renders a post's tags as a row of links, for the foot of the post. The "#"
+  before each is drawn by CSS (.page-tags in sass/_components.scss).
+
+  Parameters:
+    page  — the page object (required)
+#}
+{% macro tags(page) -%}
+{%- if page.taxonomies.tags -%}
+<ul class="page-tags" aria-label="Tags">
+{%- for tag in page.taxonomies.tags %}
+  <li><a href="{{ get_taxonomy_url(kind='tags', name=tag) }}" rel="tag">{{ tag }}</a></li>
+{%- endfor %}
+</ul>
+{%- endif -%}
+{%- endmacro tags %}

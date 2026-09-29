@@ -10,6 +10,10 @@
     42.
     {% end %}
 
+    {% expand(title="In a border", style="border") %}
+    Framed.
+    {% end %}
+
   template:
     {% import "macros/blocks.html" as blocks %}
     {{ blocks::expand(content="<p>Hidden until opened.</p>", title="Show the answer") }}
@@ -17,6 +21,7 @@
   Parameters:
     title  — summary text (default: "Details")
     state  — expanded | collapsed (default: "collapsed")
+    style  — simple | border (default: "simple")
 #}
 {%- import "macros/blocks.html" as blocks -%}
-{{ blocks::expand(content=body | markdown, title=title | default(value="Details"), state=state | default(value="collapsed")) }}
+{{ blocks::expand(content=body | markdown, title=title | default(value="Details"), state=state | default(value="collapsed"), style=style | default(value="simple")) }}

@@ -43,8 +43,8 @@ Validates every link.
 
 A deliberately small theme built around one idea: **the page should look a
 little like the Markdown that produced it**. Headings keep their `#` prefixes,
-menu items sit in `[brackets]`, and a post's metadata reads like a config block —
-look just under the title of this page.
+menu items sit in `[brackets]`, and a post's tags are `#hashtags` — look at the
+foot of this page.
 
 Everything is monospace, the palette is seven colours, and the whole stylesheet
 is a few hundred lines split across four files.
@@ -55,16 +55,16 @@ is a few hundred lines split across four files.
 
 ### Reading
 
-- Light and dark themes that follow your system and remember your choice
-- Full-text search — press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd>
-- Posts grouped by year, browsable by tag
+- A single dark theme — no toggle, no flash of the wrong colours
+- Full-text search — the Search menu item, or <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd>
+- Posts grouped by year, each listed date first, browsable by tag
 {% end %}
 {% col() %}
 
 ### Authoring
 
 - Shortcodes for icons, links, borders, columns and wide content
-- Content that can differ between light and dark mode
+- Content that can differ between mobile and desktop
 - Self-hosted fonts and icons — no third-party requests
 {% end %}
 {% end %}
@@ -76,7 +76,7 @@ is a few hundred lines split across four files.
 : Every element the renderer supports, rendered live — plus what it deliberately does *not* support, and which features are off by default.
 
 [Shortcode: Elements](@/posts/shortcode.md)
-: Shortcodes that insert content — `icon`, `elink` and the theme-conditional `lmode` / `dmode`.
+: Shortcodes that insert content — `icon`, `elink` and the screen-size-conditional `mobile` / `desktop`.
 
 [Shortcode: Layouts](@/posts/layout.md)
 : Shortcodes that arrange it — `border`, `wide`, and `row` / `col` with table-style proportional spans.
@@ -85,7 +85,7 @@ is a few hundred lines split across four files.
 : Shortcodes that lean on a bundled external library — Mermaid diagrams and KaTeX math, both on by default.
 
 [UI Showcase](@/posts/showcase.md)
-: Screenshots of the theme in both modes.
+: Screenshots of the theme.
 
 [Configuration](@/posts/configuration.md)
 : Every option the theme reads — the site-wide defaults and the per-post overrides that beat them.
@@ -96,8 +96,8 @@ is a few hundred lines split across four files.
 ## Making it yours
 
 Colours, fonts and spacing are CSS custom properties in one file,
-`sass/_tokens.scss`. Each colour declares its light and dark value on a single
-line, so restyling the theme means editing that file and nothing else.
+`sass/_tokens.scss`, so restyling the theme means editing that file and nothing
+else.
 
 The rest of the stylesheet is split by role — bare element styles, page layout,
 and the handful of components that genuinely need a class. Most of the theme is

@@ -25,16 +25,21 @@
 #}
 
 {#
-  Renders the <li> for each page. Shared by every list macro below so they
-  cannot drift apart.
+  Renders the <li> for each page: its date, then its title. Shared by every
+  list macro below so they cannot drift apart.
+
+  The date sits in a column of its own (.post-list in sass/_components.scss), so
+  titles line up however long they run. An undated page keeps the column empty
+  rather than letting its title slide left out of line.
   Parameters:
     pages  — list of page objects (required)
 #}
 {% macro items(pages) -%}
-{%- for page in pages -%}
-<li><a href="{{ page.permalink }}">{{ page.title }}</a>
-{%- if page.date %}<time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time>{% endif -%}
-</li>
+{%- for page in pages %}
+<li>
+  {%- if page.date %}<time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time>
+  {%- else %}<span aria-hidden="true"></span>{% endif -%}
+  <a href="{{ page.permalink }}">{{ page.title }}</a></li>
 {%- endfor -%}
 {%- endmacro items %}
 
@@ -96,8 +101,8 @@
   by making one pass per possible score, from every tag in common down to one.
   That is a handful of passes over a list of candidates, all of it at build time.
 
-  Other parts of this post's own series are left out: they are already listed,
-  in reading order, by the series panel at the top of the page. So are posts
+  Other parts of this post's own series are left out: the series' previous /
+  next links and its listing page already cover them, in reading order. So are posts
   that keep themselves out of site-wide listings with `list` — but only when
   they are being found by tag. A path named in `source` was chosen by hand for
   this post, and a hand-picked link is not a listing, so it is honoured as

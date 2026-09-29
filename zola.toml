@@ -1,7 +1,7 @@
 # The URL the site will be built for
 base_url = "https://zola-yolk.gauthamchettiar.com"
 title = "zola-yolk"
-description = "A minimal monospace Zola theme with dark/light mode, search, Font Awesome icons, and a component-based template architecture."
+description = "A minimal, dark monospace Zola theme with search, Font Awesome icons, and a component-based template architecture."
 compile_sass = true
 build_search_index = true
 # Emits atom.xml; the theme links to it from <head> when this is on.
@@ -27,8 +27,9 @@ lazy_async_image = false
 
 [markdown.highlighting]
 style = "class"
-light_theme = "catppuccin-latte"
-dark_theme = "catppuccin-mocha"
+# The theme is dark only, so one highlighter theme is all it needs. Zola writes
+# it to static/giallo.css, which the theme links from <head>.
+theme = "catppuccin-mocha"
 
 [extra]
 
@@ -36,13 +37,19 @@ dark_theme = "catppuccin-mocha"
 # These describe the site as a whole. A post has no say in any of them.
 
 # The sections posts live in (folder names under content/). The home page's
-# recent posts list is built from these, and so is the pool the series panel
+# recent posts list is built from these, and so is the pool the series label
 # and the series listing page draw their parts from.
 #
 # Leaving it unset is not the same in both places: the series pool falls back
 # to every root-level section, but the home page has no fallback and says
 # "No sections specified for displaying recents" instead. Set it.
 content_sections = ["posts"]
+
+# The series listing page, as a folder name under content/ (the section using
+# the series.html template). A series without an overview page has its name in
+# the series label link to its entry there; if the section doesn't exist, the
+# name is left unlinked.
+series_page = "series"
 
 # How many posts the home page's "Recent posts" list shows; 0 shows every one.
 recent_limit = 10
@@ -57,11 +64,8 @@ footer = "Made with ❤️ for [zola](https://www.getzola.org/)"
 # Whole features of the theme, on or off for the site. The `enable_` prefix
 # marks them as the site's alone: no post overrides these.
 
-# Shows a dark/light mode toggle button in the header.
-enable_theme_switcher = true
-
-# Shows a search button in the header. Needs build_search_index above as well —
-# the button has nothing to search without it.
+# Adds a Search item to the end of the header menu (Ctrl/Cmd+K opens it too).
+# Needs build_search_index above as well — it has nothing to search without it.
 enable_search = true
 
 # Lets the render() shortcode turn ```mermaid blocks into diagrams. The library
@@ -91,18 +95,23 @@ list = "always"
 # Adds a collapsible table of contents to every post.
 toc = true
 
+# Whether that table of contents starts "collapsed" or "expanded".
+toc_state = "collapsed"
+
 # Deepest heading level shown in the table of contents (h1 = 1 .. h6 = 6).
 toc_max_level = 6
 
 # Heading ids left out of the table of contents, wherever they occur.
 toc_exclude = []
 
-# Shows the series panel above the table of contents on any post that names a
-# series.
-series_panel = true
+# Shows one line under the date on any post that names a series, saying which
+# part it is; the series' name links to its overview page, or else to its
+# entry on the series_page listing. Not shown on a series' overview (series_part = 0).
+series_label = true
 
-# Whether that panel starts open: "expanded" or "collapsed".
-series_state = "expanded"
+# That line's text. {part}, {count} and {series} are filled in. A single
+# series can have its own under [extra.series_label_texts] below.
+series_label_text = "Part {part} of {count} from series “{series}”"
 
 # Shows previous/next links under a post that is part of a series.
 series_nav = true
@@ -114,6 +123,11 @@ related = true
 
 # Number of related posts listed; 0 shows every match.
 related_limit = 0
+
+# Per-series text for the series label, keyed by series name. Wins over
+# series_label_text above; a post's own series_label_text wins over both.
+# [extra.series_label_texts]
+# "Shortcodes" = "Chapter {part} of {count} — {series}"
 
 # Self-hosted fonts to load. Each entry needs a source (subfolder under static/fonts/)
 # and a name matching the synced folder under that source. `preload` is optional:

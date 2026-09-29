@@ -9,12 +9,12 @@
 
   Part 0 is the page that introduces the series rather than continuing it, so
   it sorts first, is numbered 0 in the list, and its `description` is what the
-  panel uses to explain what the series is about.
+  listing page uses to explain what the series is about.
 
   A series has three views, and one macro renders all of them:
 
-    panel  — the collapsible naming the series and listing its parts, which
-             goes above a post's table of contents
+    label  — one line saying which part of which series this is, which goes
+             in a post's header, under its date
     nav    — the previous/next links that go under a post
     index  — every series on the site, each with its parts, for a listing page
              (see templates/series.html)
@@ -30,15 +30,19 @@
   Renders one of the three views of a series. Nothing is rendered for a page
   that names no series, or for a series with only one page in it.
 
-    view   — panel | nav | index (default: "panel")
+    view   — label | nav | index (default: "label")
     page   — the page object, for the views that are about a post: it supplies
              the series, the position in it, and which part to mark as current.
              `index` needs none of that and takes no page (default: false)
     name   — the series to render, when it isn't `page`'s own. `index` ignores
              it and renders every series there is (default: "")
-    state  — panel only: expanded | collapsed (default: "expanded")
+    text   — label only: the line to render, with {part}, {count} and
+             {series} filled in. {series} links to the series' overview page
+             (series_part = 0) when it has one, and otherwise to the series'
+             entry on the listing page named by config.extra.series_page, when
+             that section exists (default: "Part {part} of {count} from series “{series}”")
 #}
-{% macro show(view="panel", page=false, name="", state="expanded") -%}
+{% macro show(view="label", page=false, name="", text="Part {part} of {count} from series “{series}”") -%}
 {#- What the caller is: a post knows its own series and where it sits in it; a
     listing page knows neither, and renders every series instead. -#}
 {%- set_global _name = name -%}
@@ -146,42 +150,43 @@
 </nav>
 {%- endif -%}
 
+{%- elif view == "label" -%}
+{#- The overview introduces the series rather than being a part of it, so it
+    gets no line: it has no part number to give, and its own content is what
+    says what the series is. A part without a series_part is numbered by where
+    it falls in the order, and a page held out of the series (list = "never")
+    is not in it at all. -#}
+{%- if _index > -1 and _part != 0 -%}
+  {%- if _part > 0 %}{% set _number = _part %}{% else %}{% set _number = _index + 1 - _overviews %}{% endif -%}
+  {#- The text is escaped before the link goes in, so the link is the only
+      markup in the line whatever the text or the series name contain. -#}
+  {%- set _series = series_name | escape -%}
+  {%- set _href = "" -%}
+  {%- if _overviews > 0 -%}
+    {%- set _intro = _overview | first -%}
+    {%- set _href = _intro.permalink -%}
+  {%- else -%}
+    {%- set _listing = paths::resolve(name=config.extra.series_page | default(value="series")) | trim -%}
+    {%- if _listing -%}
+      {%- set _listing_section = get_section(path=_listing, metadata_only=true) -%}
+      {%- set _anchor = series_name | slugify -%}
+      {%- set _href = _listing_section.permalink ~ "#" ~ _anchor -%}
+    {%- endif -%}
+  {%- endif -%}
+  {%- if _href %}{% set _series = '<a href="' ~ _href ~ '">' ~ _series ~ '</a>' %}{% endif -%}
+<p class="series-label">{{ text | escape | replace(from="{part}", to=_number ~ "") | replace(from="{count}", to=_count ~ "") | replace(from="{series}", to=_series) | safe }}</p>
+{%- endif -%}
+
 {%- else -%}
 {#- What the series is about is the overview page's job to say, so its own
-    description is the explanation whenever there is one. On a post without an
-    overview there is only the position to go on, which is still worth stating:
-    the panel is the first thing on the page and should say why it is there. A
-    listing page needs no such line — the heading above it already names the
-    series, and a page of fallback sentences would say nothing. -#}
+    description is shown under the heading whenever there is one. -#}
 {%- set_global _blurb = "" -%}
 {%- if _overviews > 0 -%}
   {%- set intro = _overview | first -%}
   {%- if intro.description -%}{%- set_global _blurb = intro.description -%}{%- endif -%}
-{%- endif -%}
-{%- if view == "panel" and not _blurb -%}
-  {%- if _part == 0 -%}
-    {%- set_global _blurb = "This page introduces a series of " ~ _parts ~ ", listed below." -%}
-  {%- elif _part > 0 -%}
-    {%- set_global _blurb = "This is part " ~ _part ~ " of a series of " ~ _parts ~ ", listed below." -%}
-  {%- else -%}
-    {%- set_global _blurb = "This page belongs to a series of " ~ _parts ~ ", listed below." -%}
-  {%- endif -%}
-{%- endif -%}
-{#- Two frames around one body. The panel collapses, and says where in the
-    series the reader currently is; the index entry is a plain section headed
-    by the series' name. What goes inside is identical, so it is written once,
-    between the two of them. -#}
-{%- if view == "index" %}
-<section class="series">
-  <h2>{{ series_name }}<span class="series-position">{{ _parts }}</span></h2>
-{%- else %}
-<details class="series"{% if state == "expanded" %} open{% endif %}>
-  <summary>{{ series_name }}
-    {%- if _part == 0 %}<span class="series-position">overview</span>
-    {%- elif _part > 0 %}<span class="series-position">part {{ _part }} of {{ _count }}</span>
-    {%- endif -%}
-  </summary>
 {%- endif %}
+<section class="series" id="{{ series_name | slugify }}">
+  <h2>{{ series_name }}<span class="series-position">{{ _parts }}</span></h2>
   {%- if _blurb %}
   <p>{{ _blurb }}</p>
   {%- endif %}
@@ -189,15 +194,10 @@
       as 0 and a series that starts at 1 is numbered as written. -#}
   <ol class="series-parts">
   {%- for member in _ordered %}
-    <li{% if member.extra.series_part is defined %} value="{{ member.extra.series_part }}"{% endif %}><a href="{{ member.permalink }}"
-      {%- if member.permalink == _current %} aria-current="page"{% endif %}>{{ member.title }}</a></li>
+    <li{% if member.extra.series_part is defined %} value="{{ member.extra.series_part }}"{% endif %}><a href="{{ member.permalink }}">{{ member.title }}</a></li>
   {%- endfor %}
   </ol>
-{%- if view == "index" %}
 </section>
-{%- else %}
-</details>
-{%- endif -%}
 
 {%- endif -%}
 {%- endif -%}

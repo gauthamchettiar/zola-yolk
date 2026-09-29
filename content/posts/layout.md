@@ -43,7 +43,7 @@ With a size, a colour and a line style.
 {% end %}
 
 sizes&nbsp; : `sm`, `md` (default), `lg`, `xl`  
-colours : `white` (default), `yellow`, `pink`, `green`, `red`, `blue`, `muted`  
+colours : `white` (default), `red`, `orange`, `yellow`, `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `muted`  
 styles&nbsp; : `solid` (default), `dashed`, `dotted`, `double`
 
 {% border(size="sm") %}

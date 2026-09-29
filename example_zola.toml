@@ -48,8 +48,7 @@ lazy_async_image = false
 
 [markdown.highlighting]
 style = "class"
-light_theme = "catppuccin-latte"
-dark_theme = "catppuccin-mocha"
+theme = "catppuccin-mocha"   # dark only; written to static/giallo.css
 
 
 [extra]
@@ -58,9 +57,15 @@ dark_theme = "catppuccin-mocha"
 # These describe the site as a whole. A post has no say in any of them.
 
 # The sections posts live in, as folder names under content/. Feeds the home
-# page's recent posts and the pool the series panel draws from. Leaving it
+# page's recent posts and the pool the series label draws from. Leaving it
 # unset makes the home page print a placeholder instead — set it.
 content_sections = ["posts"]
+
+# The series listing page, as a folder name under content/ (the section using
+# the series.html template). A series without an overview page has its name in
+# the series label link to its entry there; if the section doesn't exist, the
+# name is left unlinked.
+series_page = "series"
 
 # How many posts the home page lists under "Recent posts"; 0 shows every one.
 recent_limit = 10
@@ -76,8 +81,7 @@ footer = "© 2026 Your Name"
 # Whole features of the theme, on or off for the site. The enable_ prefix
 # marks them as the site's alone: no post overrides these.
 
-enable_theme_switcher = true   # dark/light toggle in the header
-enable_search = true           # search button; needs build_search_index above
+enable_search = true           # Search menu item; needs build_search_index above
 enable_mermaid = true          # ```mermaid blocks through render()
 enable_math = true             # ```math blocks through render()
 
@@ -93,17 +97,23 @@ enable_math = true             # ```math blocks through render()
 list = "always"
 
 toc = true            # collapsible table of contents on every post
+toc_state = "collapsed"   # or "expanded"
 toc_max_level = 6     # deepest heading shown, 1 (h1) to 6 (h6)
 toc_exclude = []      # heading ids left out wherever they occur
 
-series_panel = true          # panel listing the parts, above the contents
-series_state = "expanded"    # or "collapsed"
+series_label = true          # "Part 2 of 3 …" line, under the post date
+series_label_text = "Part {part} of {count} from series “{series}”"  # {part}, {count}, {series} filled in
 series_nav = true            # previous/next links under the post
 
 # Related posts, matched by shared tags. A post can name its own with a list of
 # paths, or turn the section off with false.
 related = true
 related_limit = 0     # how many to list; 0 shows every match
+
+
+# Per-series label text, keyed by series name; wins over series_label_text.
+# [extra.series_label_texts]
+# "Shortcodes" = "Chapter {part} of {count} — {series}"
 
 
 # --- Fonts --------------------------------------------------------------

@@ -42,7 +42,7 @@ jobs:
       - name: Strip unused CSS
         run: |
           npx --yes purgecss \
-            --css public/main.css public/giallo-light.css public/giallo-dark.css \
+            --css public/main.css public/giallo.css \
             --content 'public/**/*.html' \
             --output public/ \
             --safelist search-empty mermaid math-block math-inline

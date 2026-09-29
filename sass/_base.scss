@@ -45,7 +45,17 @@ h5::before { content: "##### "; }
 h6::before { content: "###### "; }
 
 // A <header> groups a title with its metadata, so close the gap between them.
-main header h1 { margin-bottom: 0; }
+// The metadata lines space themselves; whatever follows the header keeps its
+// distance from it, except a post's table of contents, which reads as one more
+// line of the header.
+main header {
+  margin-bottom: 0;
+
+  h1 { margin-bottom: 0; }
+
+  + * { margin-top: 1.5rem; }
+  + .toc { margin-top: 0.25rem; }
+}
 
 p {
   margin: 1rem auto;
@@ -90,8 +100,9 @@ a {
   &:hover { color: var(--color-secondary-accent); }
 }
 
-// The theme has exactly one kind of button: a bare icon. Styling the element
-// rather than a class means new buttons need no CSS at all.
+// Buttons are bare: an icon (the search dialog's close) or text dressed as a
+// link (the Search menu item). Styling the element rather than a class means
+// new buttons need little or no CSS.
 button {
   background: none;
   border: none;
@@ -115,14 +126,11 @@ img {
   height: auto;
 }
 
-// Against #fff body text in dark mode, weight alone barely registers — bold
-// reads as a faint thickening rather than emphasis. The magenta accent (the
-// theme's "pink") marks it unmistakably and clears AA at 4.8:1. Light mode
-// keeps the inherited colour, where 700 on the cream background is already
-// distinct; `currentColor` on `color` means inherit, so bold inside coloured
-// text still follows its parent there.
+// Against #fff body text, weight alone barely registers — bold reads as a
+// faint thickening rather than emphasis. The magenta accent (the theme's
+// "pink") marks it unmistakably and clears AA at 4.8:1.
 strong, b {
-  color: light-dark(currentColor, var(--color-secondary-accent));
+  color: var(--color-secondary-accent);
 }
 
 mark {
@@ -171,14 +179,18 @@ blockquote {
   p { margin: 0; }
 }
 
+// No frame: a collapsible is a quiet, muted line until it is opened, so it
+// reads as an aside to the page rather than a box competing with it.
 details {
   margin: 1.5rem 0;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--color-border);
+  // Indents the body under the summary's text, past its "+ " / "- " marker —
+  // without a frame, this is what says the body belongs to it. 2ch is the
+  // marker's width in a monospace font.
+  > :not(summary) { margin-left: 2ch; }
 
-  // The content's own top/bottom margins would otherwise widen the box past
-  // its padding — summary keeps its own spacing below since it isn't a
-  // paragraph.
+  // The content's own top/bottom margins would otherwise push it away from the
+  // summary and the text after it — summary keeps its own spacing below since
+  // it isn't a paragraph.
   > summary + * { margin-top: 0; }
   > :last-child { margin-bottom: 0; }
 }
@@ -189,7 +201,7 @@ details {
 // heading, and hide the browser's own marker.
 summary {
   cursor: pointer;
-  color: var(--color-primary-accent);
+  color: var(--color-text-muted);
   font-weight: var(--font-weight-bold);
   list-style: none;
 
@@ -207,6 +219,18 @@ details[open] > summary {
   margin-bottom: 0.5rem;
 
   &::before { content: "- "; }
+}
+
+// The `border` style of the expand shortcode: a frame does the job the indent
+// does for the simple style, so the body sits flush inside it, and the title
+// takes the accent colour to stand out as the box's heading.
+details[data-style="border"] {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+
+  > :not(summary) { margin-left: 0; }
+  > summary { color: var(--color-primary-accent); }
+  > summary:hover { color: var(--color-secondary-accent); }
 }
 
 // Emitted by Zola's markdown renderer when bottom_footnotes = true.
@@ -236,7 +260,7 @@ details[open] > summary {
 }
 
 // Emitted by Zola's giallo syntax highlighter (markdown.highlighting.style = "class").
-// Colours come from static/giallo-{light,dark}.css; only layout belongs here.
+// Colours come from static/giallo.css; only layout belongs here.
 .giallo-l {
   display: inline-block;
   min-height: 1lh;

@@ -23,10 +23,6 @@
   extra needs downloading to turn a flag on. katex.min.css was trimmed to
   woff2-only @font-face rules and switched to font-display: swap, both fine
   given this theme's own browser baseline (see README's Browser support).
-
-  Mermaid picks its theme once, from data-theme at load time — it does not
-  redraw already-rendered diagrams if the visitor flips light/dark afterwards
-  (see partials/theme.html).
 #}
 <script>
   (function () {
@@ -67,16 +63,13 @@
     whenNear(document.querySelectorAll(".mermaid"), function () {
       loadScript("{{ get_url(path='mermaid.min.js') }}", function () {
         if (!window.mermaid) return;
-        var dark = document.documentElement.getAttribute("data-theme") === "dark";
         mermaid.initialize({
           startOnLoad: false,
-          theme: dark ? "dark" : "default",
+          theme: "dark",
           // Mermaid's own defaults put #ccc edge labels on a #585858 backdrop,
           // which is 4.43:1 — just under WCAG AA. These mirror --color-bg,
           // --color-text and --color-text-muted from sass/_tokens.scss.
-          themeVariables: dark
-            ? { edgeLabelBackground: "#1a1a1a", textColor: "#ffffff", lineColor: "#999999" }
-            : { edgeLabelBackground: "#faf8f2", textColor: "#1a1a1a" }
+          themeVariables: { edgeLabelBackground: "#1a1a1a", textColor: "#ffffff", lineColor: "#999999" }
         });
         mermaid.run({ querySelector: ".mermaid" });
       });

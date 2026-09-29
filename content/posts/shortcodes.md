@@ -27,7 +27,7 @@ covers a shortcode depends only on what it does to your page:
 
 - **[Elements](@/posts/shortcode.md)** — shortcodes that *insert* something
   that wasn't there: icons, external links, marks, coloured text, quotes,
-  callouts and blocks that appear in only one theme or one screen size.
+  callouts and blocks that appear on only one screen size.
 - **[Layouts](@/posts/layout.md)** — shortcodes that *arrange* what you already
   wrote: borders, alignment, wide blocks, columns, tabbed code.
 - **[Externals](@/posts/externals.md)** — the two that need a library beyond

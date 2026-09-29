@@ -1,25 +1,26 @@
 # zola-yolk 🟡
 
-A minimal, monospace Zola theme with dark/light mode, full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
+A minimal, dark, monospace Zola theme with full-text search, and multiple shortcode support. Created with a component-based template architecture for easy extensibility.
 
-Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`expand`](#expand), [`border`](#border), [`img`](#img), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`render`](#render) (Mermaid / KaTeX math), [`lmode` / `dmode`](#lmode--dmode), [`mobile` / `desktop`](#mobile--desktop). Plus an auto-generated [table of contents](#table-of-contents) on every post, [series](#series) for posts meant to be read in order, and [related posts](#related-posts) under each one.
+Shortcodes: [`icon`](#icon-shortcode), [`elink`](#elink), [`mark`](#mark), [`color`](#color), [`shimmer`](#shimmer), [`quote`](#quote), [`admonition`](#admonition) ([`note`](#admonition) / [`warning`](#admonition) / [`danger`](#admonition) / [`info`](#admonition) / [`tip`](#admonition)), [`expand`](#expand), [`border`](#border), [`img`](#img), [`align`](#align) ([`center`](#align) / [`left`](#align) / [`right`](#align)), [`wide`](#wide), [`row` / `col`](#row--col), [`code`](#code), [`render`](#render) (Mermaid / KaTeX math), [`mobile` / `desktop`](#mobile--desktop). Plus an auto-generated [table of contents](#table-of-contents) on every post, [series](#series) for posts meant to be read in order, and [related posts](#related-posts) under each one.
 
-**dark-theme**: 
-![dark-theme-screenshot](/static/images/screenshots/home-dark.webp)
-
-**light-theme**: 
-![light-theme-screenshot](/static/images/screenshots/home-light.webp)
+![screenshot](/static/images/screenshots/home-dark.webp)
 
 ## Features
 
 - Monospace typography (IBM Plex Mono via Google Fonts)
-- Dark / light mode toggle with `localStorage` persistence, respects `prefers-color-scheme`
-- Full-text search modal powered by elasticlunr (Ctrl/Cmd+K or click icon)
+- Dark only — one palette, no toggle, no flash of the wrong theme
+- Full-text search modal powered by elasticlunr (Ctrl/Cmd+K or the Search menu item)
 - Self-hosted fonts and SVG icons (via `scripts/py-ssg-tools`)
-- [Series](#series) — order a run of posts, with a panel listing every part, previous / next links, and a [listing page](#the-series-listing-page) for every series
+- [Series](#series) — order a run of posts, with a "Part 2 of 3" line, previous / next links, and a [listing page](#the-series-listing-page) for every series
 - [Related posts](#related-posts) — found by tag, or named by hand
 - Component-based template architecture (`partials/`, `macros/`, `shortcodes/`)
 - Semantic HTML throughout — recolour the whole theme by editing one file
+
+A post shows only "Published on" and its date under the title; its tags sit
+at the foot of the post as `#tag` links. Every listing — the home page, section archives, tag
+pages and related posts — puts the date first and the title after it, the
+dates in a column of their own so the titles line up.
 
 ## Customizing
 
@@ -27,18 +28,11 @@ All colours, fonts and spacing are CSS custom properties in **`sass/_tokens.scss
 Editing that one file restyles the site; nothing else hardcodes a colour.
 
 ```scss
---color-bg: light-dark(#faf8f2, #1a1a1a);  // light value, dark value
+--color-bg: #1a1a1a;
 ```
 
-Colours use [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark),
-so each token declares both themes on one line. Which one applies is decided by
-`color-scheme`, which the theme toggle pins via `data-theme` on `<html>`.
-
-Every accent meets WCAG AA (4.5:1) against its background, and the light accents
-are tuned to sit as high in lightness as that allows with chroma pushed to the
-edge of sRGB — so they are as vivid as they can be while staying readable. If
-you lighten them further they will start failing contrast; the measured ratio is
-noted in a comment beside each one.
+The theme is dark only. Every accent meets WCAG AA (4.5:1) against the
+background.
 
 The rest of the stylesheet is split by role:
 
@@ -47,19 +41,19 @@ The rest of the stylesheet is split by role:
 | `sass/_tokens.scss` | design tokens — start here |
 | `sass/_base.scss` | bare element styles (`h1`, `a`, `table`, `button`, …) |
 | `sass/_layout.scss` | page frame: header, breadcrumb, nav |
-| `sass/_components.scss` | icon, post meta, listings, search dialog |
+| `sass/_components.scss` | icon, post date and tags, listings, search dialog |
 
 Most of the theme is styled by element rather than by class, so semantic markup
 picks up the right styling automatically — a `<button>` you add anywhere already
 looks like the theme's buttons.
 
 Punctuation that looks like content — the `[brackets]` around menu items, the
-`/` between breadcrumbs, and the `{ key = value }` post metadata — is drawn with
-CSS `::before`/`::after`, not written into the templates. Change it in the CSS.
+`/` between breadcrumbs, and the `#` before a post's tags — is drawn with CSS
+`::before`/`::after`, not written into the templates. Change it in the CSS.
 
 ### Browser support
 
-The theme uses `light-dark()`, `oklch()`, `<dialog>` and `<search>`, which need
+The theme uses `oklch()`, `<dialog>` and `<search>`, which need
 Chrome 123+, Safari 17.5+ or Firefox 120+ (mid-2024 onwards).
 
 ## Installation
@@ -109,16 +103,16 @@ lazy_async_image = false
 
 [markdown.highlighting]
 style = "class"
-light_theme = "catppuccin-latte"
-dark_theme = "catppuccin-mocha"
+theme = "catppuccin-mocha" # dark only; written to static/giallo.css
 
 [extra]
 # The sections posts live in. The homepage's recent posts list is built from
-# these, and so is the pool the series panel draws its parts from. Left unset,
+# these, and so is the pool the series label draws its parts from. Left unset,
 # the series pool falls back to every root-level section but the homepage has
 # no fallback and shows a placeholder instead — so set it.
 content_sections = ["posts"]
 recent_limit = 10 # posts shown under "Recent posts" on the homepage; 0 = all
+series_page = "series" # the series listing section; see Series
 language_direction = "ltr" # written to <html dir="…">; "ltr" or "rtl"
 
 # Where a post appears in the site's listings: "always" every listing, "local"
@@ -128,8 +122,7 @@ language_direction = "ltr" # written to <html dir="…">; "ltr" or "rtl"
 # out of the search box too, add Zola's own `in_search_index = false` to it.
 list = "always"
 
-enable_theme_switcher = true
-enable_search = true # also needs build_search_index above
+enable_search = true # Search menu item; also needs build_search_index above
 
 # The render() shortcode's ```mermaid and ```math blocks. Both libraries ship
 # inside the theme's own static/, so neither costs a third-party request.
@@ -143,18 +136,22 @@ enable_math = true
 # Adds a collapsible table of contents to every post.
 toc = true
 
+# Whether that table of contents starts "collapsed" or "expanded".
+toc_state = "collapsed"
+
 # Deepest heading level shown in the table of contents (h1 = 1 .. h6 = 6).
 toc_max_level = 6
 
 # Heading ids left out of the table of contents, wherever they occur.
 toc_exclude = []
 
-# Shows the series panel above the table of contents on any post that names a
-# series.
-series_panel = true
+# Shows one line under the date on any post that names a series, saying which
+# part it is; the series' name links to its overview page, or else to its
+# entry on the series_page listing. Not shown on a series' overview (series_part = 0).
+series_label = true
 
-# Whether that panel starts open: "expanded" or "collapsed".
-series_state = "expanded"
+# That line's text. {part}, {count} and {series} are filled in.
+series_label_text = "Part {part} of {count} from series “{series}”"
 
 # Previous / next links under a post that is part of a series.
 series_nav = true
@@ -168,6 +165,11 @@ related = true
 related_limit = 0
 
 footer = "Written with ❤️"
+
+# Per-series text for the series label, keyed by series name. Wins over
+# series_label_text above; a post's own series_label_text wins over both.
+# [extra.series_label_texts]
+# "Shortcodes" = "Chapter {part} of {count} — {series}"
 
 [[extra.fonts]]
 source = "google"
@@ -231,35 +233,47 @@ series_part = 2
 +++
 ```
 
-That gets the post two things. Above its table of contents, a collapsible
-panel names the series, says which part this is, and links every part in
-order — the current one marked, so the panel doubles as a map of where you
-are. Under the post, previous / next links move to the parts on either side.
+That gets the post two things. Under its date, one muted line says where it
+sits — *Part 2 of 3 from series “Shortcodes”*. The series' name links to its
+overview page when it has one (see below), and otherwise to the series' entry
+on the [listing page](#the-series-listing-page). Under the post, previous / next
+links move to the parts on either side.
 
 `series_part = 0` marks the page that *introduces* the series rather than
 continuing it. It sorts first, is numbered 0 rather than counted as a part,
-and its `description` is what the panel uses to say what the series is
-about — so the overview page is the one place that explanation has to be
-written. Without one, the panel falls back to stating the position itself
-("This is part 2 of a series of 3 parts, listed below."). A part left without
-a `series_part` still belongs to the series and is listed after the numbered
-ones.
+gets no label (it has no part number to give), and its `description` is what
+the [listing page](#the-series-listing-page) shows under the series' name. A
+part left without a `series_part` still belongs to the series, sorts after the
+numbered ones, and is labelled by its position in that order.
 
 Parts are found in the sections listed in `content_sections` (see
 [Configuration](#configuration)), or — with none set — in the section the post
 itself is in. Only a section's own pages are searched, not its subsections'.
 
-Both pieces are on by default and controlled by `series_panel`,
-`series_state` and `series_nav` — each written the same way in `zola.toml` as
-in a post, and overridable per post:
+Both pieces are on by default and controlled by `series_label` and
+`series_nav` — each written the same way in `zola.toml` as in a post, and
+overridable per post:
 
 ```toml
 [extra]
 series = "Shortcodes"
 series_part = 3
-series_panel = false  # this part gets no panel
-series_state = "collapsed"  # or: a panel that starts closed
+series_label = false  # this part gets no label
 series_nav = false  # no previous / next links under this one
+```
+
+The label's wording is `series_label_text`, with `{part}`, `{count}` and
+`{series}` filled in — `{series}` as a link to the overview, if there is one. Set it in `zola.toml` for the whole site, for one series
+under `[extra.series_label_texts]`, or in a post for that post alone — the
+most specific one wins:
+
+```toml
+# zola.toml
+[extra]
+series_label_text = "Part {part} of {count} · {series}"
+
+[extra.series_label_texts]
+"Shortcodes" = "Chapter {part} of {count} — {series}"
 ```
 
 A series of one page renders neither piece: there is nothing to introduce and
@@ -287,6 +301,11 @@ in `content_sections`, so the page works at any path and stays in step with
 the posts by itself. Series are listed by name; a series with an overview page
 shows that page's `description` under its heading, and lists it as part 0.
 
+Each series gets an anchor from its slugified name (`/series/#showcases`), and
+that is where the series label links for a series without an overview. The
+label finds the page through `series_page` (default `"series"`, the folder name
+under `content/`); if you put the listing elsewhere, set it to match.
+
 Link it from the menu like any other page:
 
 ```toml
@@ -304,8 +323,9 @@ Under every post, a list of others worth reading next. By default they are
 found by tag: every post sharing at least one tag with this one, the posts
 with the most tags in common first and, between equals, the newest first.
 
-Other parts of the post's own series are left out — the series panel already
-lists them, in a better order than relatedness could.
+Other parts of the post's own series are left out — the series' previous /
+next links and its listing page already cover them, in a better order than
+relatedness could.
 
 `related` in a post's own front matter overrides that. A list of paths picks
 the posts by hand, in the order given; `false` drops the section from this
@@ -425,7 +445,7 @@ Calls out a run of text.
 ```
 
 - `text` — required
-- `color` — `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
+- `color` — `white`, `red`, `orange`, `yellow` (default), `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `muted`
 - `decoration` — `highlight` (default), `border`
 
 ### Color
@@ -442,7 +462,7 @@ just colour.
 ```
 
 - `text` — required
-- `color` — `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
+- `color` — `white`, `red`, `orange`, `yellow` (default), `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `muted`
 
 ### Shimmer
 
@@ -482,7 +502,7 @@ The best way to predict the future is to invent it.
 
 - `author` — who said it · `cite` — the work, rendered in `<cite>`
 - `url` — source URL; sets the blockquote's `cite` attribute and links the citation
-- `color` — `white`, `yellow`, `pink` (default), `green`, `red`, `blue`, `muted`
+- `color` — `white`, `red`, `orange`, `yellow`, `lime`, `green`, `cyan`, `blue`, `purple`, `pink` (default), `muted`
 
 ### Admonition
 
@@ -498,7 +518,7 @@ This one bites.
 ```
 
 - `title` — optional heading · `icon` — Font Awesome name (default: `circle-info`)
-- `color` — `white`, `yellow` (default), `pink`, `green`, `red`, `blue`, `muted`
+- `color` — `white`, `red`, `orange`, `yellow` (default), `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `muted`
 
 `note`, `warning`, `danger`, `info` and `tip` are presets of `admonition` with
 a fixed color and icon, and a title that defaults to their own name:
@@ -527,24 +547,32 @@ name (`"Note"`, `"Warning"`, …) instead of none.
 ### Expand
 
 A collapsible section, rendered as native `<details>`/`<summary>` — no class or
-JavaScript needed to drive it.
+JavaScript needed to drive it. Two styles: `simple`, a muted `+ title` line
+with the body indented under it once opened, and `border`, a framed box with the
+title in the accent colour.
 
 ```
 {% expand(title="Show the answer", state="expanded") %}
 42.
 {% end %}
+
+{% expand(title="In a border", style="border") %}
+Framed.
+{% end %}
 ```
 ```jinja2
-{{ blocks::expand(content="<p>Hidden until opened.</p>", title="Show the answer") }}
+{{ blocks::expand(content="<p>Hidden until opened.</p>", title="Show the answer", style="border") }}
 ```
 
 - `title` — summary text (default: `Details`)
 - `state` — `expanded`, `collapsed` (default)
+- `style` — `simple` (default), `border`
 
 ### Table of Contents
 
 Every post gets a collapsible table of contents (built from its own headings)
-inserted right after its title, unless `toc` is turned off — see
+inserted right after its title, starting collapsed unless `toc_state =
+"expanded"`, and unless `toc` is turned off — see
 [Configuration](#configuration). Turn it off for one post without touching the
 site default:
 
@@ -602,7 +630,7 @@ Anything Markdown can produce.
 ```
 
 - `size` — `sm` (1px), `md` (2px, default), `lg` (4px), `xl` (8px)
-- `color` — `white` (default), `yellow`, `pink`, `green`, `red`, `blue`, `muted`
+- `color` — `white` (default), `red`, `orange`, `yellow`, `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `muted`
 - `style` — `solid` (default), `dashed`, `dotted`, `double`
 
 `double` needs at least 3px to separate into two lines, so it looks solid at
@@ -808,36 +836,9 @@ With a flag off, mermaid falls back to a plain code block and math to its
 raw, untypeset source — nothing errors, only stays unrendered. See
 [Shortcode: Externals](/posts/externals) for a live walkthrough.
 
-### Lmode / Dmode
-
-Show content in only one theme.
-
-```
-{% lmode() %}
-![light](/images/home-light.png)
-{% end %}
-
-{% dmode() %}
-![dark](/images/home-dark.png)
-{% end %}
-```
-```jinja2
-{{ blocks::lmode(content="<p>Light only.</p>") }}
-{{ blocks::dmode(content="<p>Dark only.</p>") }}
-```
-
-Neither takes parameters. Both variants are emitted and CSS reveals the
-matching one, so this works without JavaScript. The underlying classes work on
-any element if you would rather not use a shortcode:
-
-```html
-<div class="only-dark">Shown only in dark mode.</div>
-```
-
 ### Mobile / Desktop
 
-Show content only below or above the mobile breakpoint (`48rem`) — the same
-idea as `lmode` / `dmode`, but for viewport width instead of theme.
+Show content only below or above the mobile breakpoint (`48rem`).
 
 ```
 {% mobile() %}
@@ -853,9 +854,10 @@ Shown on larger screens only.
 {{ blocks::desktop(content="<p>Shown on larger screens only.</p>") }}
 ```
 
-Neither takes parameters. Unlike `lmode` / `dmode`, this needs no data-theme
-override or OS-preference fallback — viewport width is always known to CSS, so
-a single media query does the whole job, still with no JavaScript.
+Neither takes parameters. Both variants are emitted and a single media query
+reveals the matching one, so this works without JavaScript. The underlying
+classes (`only-mobile`, `only-desktop`) work on any element if you would rather
+not use a shortcode.
 
 ## License
 

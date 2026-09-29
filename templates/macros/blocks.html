@@ -15,7 +15,7 @@
   A framed block.
     content — inner HTML (required)
     size    — sm | md | lg | xl        (default: "md")
-    color   — white | yellow | pink | green | red | blue | muted (default: "white")
+    color   — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted (default: "white")
     style   — solid | dashed | dotted | double (default: "solid")
 #}
 {% macro border(content, size="md", color="white", style="solid") -%}
@@ -62,25 +62,8 @@
 {%- endmacro col %}
 
 {#
-  Content shown only in the light theme.
-    content — inner HTML (required)
-#}
-{% macro lmode(content) -%}
-<div class="only-light">{{ content | safe }}</div>
-{%- endmacro lmode %}
-
-{#
-  Content shown only in the dark theme.
-    content — inner HTML (required)
-#}
-{% macro dmode(content) -%}
-<div class="only-dark">{{ content | safe }}</div>
-{%- endmacro dmode %}
-
-{#
   Content shown only below the mobile breakpoint (see .only-mobile in
-  sass/_components.scss). Pure media query, unlike lmode/dmode: viewport
-  width needs no JS toggle or no-JS fallback the way color-scheme does.
+  sass/_components.scss). Pure CSS, so it works with JavaScript disabled.
     content — inner HTML (required)
 #}
 {% macro mobile(content) -%}
@@ -185,7 +168,7 @@
     author  — who said it (default: none)
     cite    — the work it came from, rendered in <cite> (default: none)
     url     — source URL, used for the blockquote's cite attribute (default: none)
-    color   — white | yellow | pink | green | red | blue | muted (default: "pink")
+    color   — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted (default: "pink")
 #}
 {% macro quote(content, author="", cite="", url="", color="pink") -%}
 <figure class="quote" data-color="{{ color }}">
@@ -206,7 +189,7 @@
     content — inner HTML (required)
     title   — heading text beside the icon (default: none)
     icon    — Font Awesome name (default: "circle-info")
-    color   — white | yellow | pink | green | red | blue | muted (default: "yellow")
+    color   — white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted (default: "yellow")
 #}
 {% macro admonition(content, title="", icon="circle-info", color="yellow") -%}
 <aside class="admonition" data-color="{{ color }}"{% if not title %} data-untitled{% endif %}>
@@ -226,9 +209,12 @@
     content — inner HTML (required)
     title   — summary text (default: "Details")
     state   — expanded | collapsed (default: "collapsed")
+    style   — simple (a muted line, body indented under it) | border (framed,
+              with an accent-coloured title) (default: "simple")
+    class   — class on the <details>, for callers that restyle it (default: none)
 #}
-{% macro expand(content, title="Details", state="collapsed") -%}
-<details{% if state == "expanded" %} open{% endif %}>
+{% macro expand(content, title="Details", state="collapsed", style="simple", class="") -%}
+<details data-style="{{ style }}"{% if class %} class="{{ class }}"{% endif %}{% if state == "expanded" %} open{% endif %}>
   <summary>{{ title }}</summary>
   {{ content | safe }}
 </details>
@@ -284,13 +270,13 @@
 
     page       — the page (or section) object, for its `toc` field (required)
     title      — summary text (default: "Table of Contents")
-    state      — expanded | collapsed (default: "expanded")
+    state      — expanded | collapsed (default: "collapsed")
     max_level  — drop headings deeper than this h1=1 .. h6=6 (default: 6, no cap)
     exclude    — heading ids to leave out, wherever they occur (default: none)
 #}
-{% macro toc(page, title="Table of Contents", state="expanded", max_level=6, exclude) -%}
+{% macro toc(page, title="Table of Contents", state="collapsed", max_level=6, exclude) -%}
 {%- if page.toc %}
 {%- set items_html = self::toc_items(items=page.toc, max_level=max_level, exclude=exclude) %}
-{{- self::expand(content="<ol>" ~ items_html ~ "</ol>", title=title, state=state) }}
+{{- self::expand(content="<ol>" ~ items_html ~ "</ol>", title=title, state=state, class="toc") }}
 {%- endif -%}
 {%- endmacro toc %}

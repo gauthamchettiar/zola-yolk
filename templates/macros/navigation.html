@@ -29,18 +29,32 @@
 {%- endmacro breadcrumb %}
 
 {#
-  Renders the main site navigation from config.extra.main_menu.
+  Renders the main site navigation from config.extra.main_menu, followed by a
+  Search item when config.extra.enable_search is set. Search is a button, not a
+  link: it opens the dialog in partials/search.html rather than going anywhere.
   The [brackets] around each item are drawn by CSS (.site-nav in sass/_layout.scss).
 
-  Reads Zola context global: config.
+  The item for the page being viewed is marked aria-current="page", and the item
+  for the section it sits under aria-current="true" — /posts stays lit on every
+  post. A "/" item would sit above every page, so it only ever matches exactly.
+
+  Reads Zola context globals: config, current_path.
 #}
 {% macro menu() -%}
-{%- if config.extra.main_menu %}
+{%- if config.extra.main_menu or config.extra.enable_search %}
 <nav class="site-nav" aria-label="Main">
   <ul>
-    {%- for item in config.extra.main_menu %}
-    <li><a href="{{ item.url }}">{{ item.name }}</a></li>
+    {%- set here = current_path | default(value="") | trim_end_matches(pat="/") %}
+    {%- for item in config.extra.main_menu | default(value=[]) %}
+    {%- set target = item.url | trim_end_matches(pat="/") %}
+    {%- set current = "" %}
+    {%- if here == target %}{% set current = "page" %}
+    {%- elif target and here is starting_with(target ~ "/") %}{% set current = "true" %}{% endif %}
+    <li><a href="{{ item.url }}"{% if current %} aria-current="{{ current }}"{% endif %}>{{ item.name }}</a></li>
     {%- endfor %}
+    {%- if config.extra.enable_search %}
+    <li><button type="button" id="search-toggle" aria-haspopup="dialog">Search</button></li>
+    {%- endif %}
   </ul>
 </nav>
 {%- endif -%}
