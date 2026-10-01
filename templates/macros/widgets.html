@@ -38,10 +38,10 @@
 <span class="shimmer" data-type="{{ type }}" data-style="{{ style }}">{{ text | safe }}</span>
 {%- endmacro shimmer %}
 
-{# "Published on <date>" under a post's title. #}
+{# "<date> | <n> min" under a post's title. #}
 {% macro meta(page) -%}
 {%- if page.date -%}
-<p class="page-meta">Published on <time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time></p>
+<p class="page-meta"><time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time> | {{ page.reading_time }} min</p>
 {%- endif -%}
 {%- endmacro meta %}
 

@@ -11,10 +11,12 @@
   mask: var(--icon-url) center / contain no-repeat;
 }
 
-// "Published on" under a post's title.
+// "$ date | n min" under a post's title; "$ " lines the date up with the h1's text.
 .page-meta {
   margin: 0.5rem 0 0;
   color: var(--color-text-muted);
+
+  &::before { content: "$ "; }
 }
 
 // A post's tags, at its foot.
