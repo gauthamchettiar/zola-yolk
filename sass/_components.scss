@@ -244,6 +244,13 @@ dialog {
 
   > :first-child { margin-top: 0; }
   > :last-child { margin-bottom: 0; }
+
+  // A lone image sits flush against the frame, with no line gap under it.
+  &:has(> img:only-child, > p:only-child > img:only-child) {
+    padding: 0;
+
+    img { display: block; }
+  }
 }
 
 // `mark` shortcode (padding comes from the bare <mark> rule).
