@@ -56,22 +56,26 @@
 {%- endmacro tabs %}
 
 {#
-  Image with width/height and smaller WebP variants in a srcset.
+  Image with width/height and WebP variants in a srcset; the original is never served.
+  Widths stop at 2016, the 42rem column on a 3x screen. PNGs (screenshots, text) get
+  quality 90, other sources 80; Zola's lossless WebP is larger than either, often
+  larger than the PNG.
   src: path under static/ · eager: load now (above the fold) · sizes: the sizes attribute
 #}
 {% macro img(src, alt="", eager=false, sizes="(max-width: 42rem) 100vw, 42rem") -%}
-{%- set path = src | trim_start_matches(pat="/") -%}
-{%- set meta = get_image_metadata(path="static/" ~ path) -%}
+{%- set path = "static/" ~ src | trim_start_matches(pat="/") -%}
+{%- set meta = get_image_metadata(path=path) -%}
+{%- if path | split(pat=".") | last | lower == "png" %}{% set quality = 90 %}{% else %}{% set quality = 80 %}{% endif -%}
 {%- set_global srcset = [] -%}
-{%- for w in [480, 720, 1080] -%}
-{%- if meta.width > w -%}
-{#- Without a quality, Zola writes lossless WebP, larger than the original. -#}
-{%- set variant = resize_image(path="static/" ~ path, width=w, op="fit_width", format="webp", quality=80) -%}
+{%- set_global largest = "" -%}
+{%- for w in [480, 720, 1080, 1440, 2016, meta.width] -%}
+{%- if w < meta.width or (loop.last and meta.width <= 2016) -%}
+{%- set variant = resize_image(path=path, width=w, op="fit_width", format="webp", quality=quality) -%}
 {%- set_global srcset = srcset | concat(with=variant.url ~ " " ~ w ~ "w") -%}
+{%- set_global largest = variant.url -%}
 {%- endif -%}
 {%- endfor -%}
-{%- set_global srcset = srcset | concat(with=get_url(path=path) ~ " " ~ meta.width ~ "w") -%}
-<img src="{{ get_url(path=path) }}" srcset="{{ srcset | join(sep=", ") | safe }}" sizes="{{ sizes }}" alt="{{ alt }}" width="{{ meta.width }}" height="{{ meta.height }}"{% if eager %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">
+<img src="{{ largest | safe }}" srcset="{{ srcset | join(sep=", ") | safe }}" sizes="{{ sizes }}" alt="{{ alt }}" width="{{ meta.width }}" height="{{ meta.height }}"{% if eager %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">
 {%- endmacro img %}
 
 {#
