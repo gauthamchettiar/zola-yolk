@@ -16,13 +16,13 @@ taxonomies = [{ name = "tags" }]
 [markdown]
 definition_list = true
 bottom_footnotes = true
-# Keep off: on Zola 0.22.1 it breaks heading ids after images. Use img() instead.
+# Keep off: the img component lazy-loads and adds width/height itself.
 lazy_async_image = false
 # insert_anchor_links = "right"   # "left" | "right" | "heading"
 
 [markdown.highlighting]
 style = "class"
-theme = "catppuccin-mocha"   # written to static/giallo.css
+theme = "catppuccin-mocha"   # Zola writes giallo.css to the output
 
 [extra]
 
@@ -35,8 +35,8 @@ footer = "© 2026 Your Name"    # CHANGE ME — Markdown
 
 # --- Features ---
 enable_search = true           # Search menu item; needs build_search_index
-enable_mermaid = true          # ```mermaid via render()
-enable_math = true             # ```math via render()
+enable_mermaid = true          # ```mermaid via render
+enable_math = true             # ```math via render
 
 # --- Defaults a post can override (same key under the post's [extra]) ---
 list = "always"                # "always" | "local" (own section + series) | "never"

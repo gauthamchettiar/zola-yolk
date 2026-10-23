@@ -206,12 +206,8 @@ details[data-style="border"] {
 .footnote-reference {
   margin-left: 0.25rem;
 
-  a {
-    text-decoration: none;
-
-    &::before { content: "("; }
-    &::after  { content: ")"; }
-  }
+  // Zola writes the brackets itself: [1].
+  a { text-decoration: none; }
 }
 
 .footnotes {
@@ -228,7 +224,7 @@ details[data-style="border"] {
   }
 }
 
-// Syntax highlighting layout; colours are in static/giallo.css.
+// Syntax highlighting layout; colours are in giallo.css, which Zola generates.
 .giallo-l {
   display: inline-block;
   min-height: 1lh;
