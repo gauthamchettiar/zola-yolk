@@ -15,7 +15,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      ZOLA_VERSION: 0.22.1
+      ZOLA_VERSION: 0.23.6
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -35,7 +35,7 @@ jobs:
       - name: Verify installation
         run: zola --version
       # No --base-url: configure-pages reports this custom domain over http, which
-      # leaves the icon macro's inline `url('http://…')` as mixed content once the
+      # leaves the icon component's inline `url('http://…')` as mixed content once the
       # page is served over https. zola.toml's own base_url is the https one.
       - name: Build the site
         run: zola build
