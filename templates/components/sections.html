@@ -3,12 +3,10 @@
   no section are skipped instead of aborting the build like get_section would.
   With `fallback` and no names, every root-level section.
 
-    {% set _paths = paths::resolve(names=config.extra.content_sections | default(value=[]), fallback=true) %}
+    {% set _paths = <sections.resolve names={config.extra.content_sections | default(value=[])} fallback={true} /> %}
     {% for path in _paths | split(pat="\n") %}{% if path %}…{% endif %}{% endfor %}
-
-  The `_rs_` globals avoid clobbering the caller's variables.
 #}
-{% macro resolve(names, fallback=false) -%}
+{% component sections.resolve(names: array, fallback = false) -%}
 {%- if names -%}
   {%- for name in names -%}
     {%- set_global _rs_sec = get_section(path="_index.md") -%}
@@ -31,4 +29,4 @@
   {%- for path in _rs_root.subsections %}{{ path }}
 {% endfor -%}
 {%- endif -%}
-{%- endmacro resolve %}
+{%- endcomponent sections.resolve %}

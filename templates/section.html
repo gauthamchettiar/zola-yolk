@@ -1,18 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}{{ section.title }} | {{ config.title | default(value="Site") }}{% endblock title %}
+{% block title %}{{ section.title }} | {{ config.title or "Site" }}{% endblock title %}
 
 {% block content %}
 {#- A section lists everything except list = "never". -#}
-{%- set_global _pages = [] -%}
-{%- for candidate in section.pages -%}
-  {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) != "never" -%}
-    {%- set_global _pages = _pages | concat(with=candidate) -%}
-  {%- endif -%}
-{%- endfor %}
+{%- set _pages = [p for p in section.pages if p.extra.list | default(value=config.extra.list | default(value="always")) != "never"] %}
 <header>
   <h1>{{ section.title }} ({{ _pages | length }})</h1>
 </header>
 {%- include "partials/content.html" %}
-{{ list::by_year(pages=_pages) }}
+{{ <list.by_year pages={_pages} /> }}
 {% endblock content %}

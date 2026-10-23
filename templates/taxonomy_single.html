@@ -1,15 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}{{ term.name }} | {{ config.title | default(value="Site") }}{% endblock title %}
+{% block title %}{{ term.name }} | {{ config.title or "Site" }}{% endblock title %}
 
 {% block content %}
 {#- Only posts listed "always". -#}
-{%- set_global _pages = [] -%}
-{%- for candidate in term.pages -%}
-  {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) == "always" -%}
-    {%- set_global _pages = _pages | concat(with=candidate) -%}
-  {%- endif -%}
-{%- endfor %}
+{%- set _pages = [p for p in term.pages if p.extra.list | default(value=config.extra.list | default(value="always")) == "always"] %}
 <h1>{{ term.name | capitalize }} ({{ _pages | length }})</h1>
-{{ list::by_year(pages=_pages) }}
+{{ <list.by_year pages={_pages} /> }}
 {% endblock content %}

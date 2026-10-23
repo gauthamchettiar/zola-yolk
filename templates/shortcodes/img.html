@@ -1,6 +1,0 @@
-{#
-  img shortcode — an image that reserves its own space before it loads.
-  Parameters: see blocks::img in macros/blocks.html.
-#}
-{%- import "macros/blocks.html" as blocks -%}
-{{ blocks::img(src=src, alt=alt | default(value=""), eager=eager | default(value=false)) }}

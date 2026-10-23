@@ -1,6 +1,0 @@
-{#
-  quote shortcode — an attributed quotation.
-  Parameters: see blocks::quote in macros/blocks.html.
-#}
-{%- import "macros/blocks.html" as blocks -%}
-{{ blocks::quote(content=body | markdown, author=author | default(value=""), cite=cite | default(value=""), url=url | default(value=""), color=color | default(value="pink")) }}

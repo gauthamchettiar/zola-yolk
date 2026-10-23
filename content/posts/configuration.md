@@ -16,7 +16,7 @@ Zola doesn't validate `[extra]`, so a misspelled key is silently ignored.
 
 ## Site options
 
-{% wide() %}
+{% <wide> %}
 | Key | What it does | Default |
 |---|---|---|
 | `content_sections` | Folders under `content/` that hold posts. Feeds recent posts, series and the sitemap filter | every root section |
@@ -27,9 +27,9 @@ Zola doesn't validate `[extra]`, so a misspelled key is silently ignored.
 | `series_page` | Series listing section; series labels link to it when a series has no overview | `"series"` |
 | `series_label_texts` | Label text per series name; beats `series_label_text` | unset |
 | `enable_search` | Search menu item (and <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd>). Needs `build_search_index = true` | `true` |
-| `enable_mermaid` | ` ```mermaid ` through `render()` | `true` |
-| `enable_math` | ` ```math ` through `render()` | `true` |
-{% end %}
+| `enable_mermaid` | ` ```mermaid ` through `render` | `true` |
+| `enable_math` | ` ```math ` through `render` | `true` |
+{% </wide> %}
 
 ### Fonts
 
@@ -41,7 +41,7 @@ files to fetch early — only ones the site actually uses).
 
 Site defaults in `zola.toml`, overridable per post.
 
-{% wide() %}
+{% <wide> %}
 | Key | What it does | Default |
 |---|---|---|
 | `list` | Where the post is listed — see below | `"always"` |
@@ -56,14 +56,14 @@ Site defaults in `zola.toml`, overridable per post.
 | `series_nav` | Previous / next links | `true` |
 | `related` | `true` = by tag, a list of paths, or `false` | `true` |
 | `related_limit` | `0` = all | `0` |
-{% end %}
+{% </wide> %}
 
 ```toml
 +++
 title = "Part two"
 
 [extra]
-series = "Shortcodes"
+series = "Components"
 series_part = 2
 related = ["posts/markdown.md", "posts/showcase.md"]
 +++
@@ -71,7 +71,7 @@ related = ["posts/markdown.md", "posts/showcase.md"]
 
 ## Where a post is listed
 
-{% wide() %}
+{% <wide> %}
 | Surface | `"always"` | `"local"` | `"never"` |
 |---|---|---|---|
 | Its permalink | yes | yes | yes |
@@ -80,7 +80,7 @@ related = ["posts/markdown.md", "posts/showcase.md"]
 | `sitemap.xml` | yes | yes | no |
 | Home page, tag pages, tag-matched related, `atom.xml` | yes | no | no |
 | Search index | yes | yes | yes |
-{% end %}
+{% </wide> %}
 
 `list` hides, it doesn't delete — use Zola's `draft = true` for that. To keep a
 post out of search, add Zola's `in_search_index = false` at the top level of its

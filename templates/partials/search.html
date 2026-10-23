@@ -5,10 +5,10 @@
   <search>
     <label for="search-input">
       <span class="visually-hidden">Search</span>
-      {{- widgets::icon(name="magnifying-glass") -}}
+      {{- <icon name="magnifying-glass" /> -}}
     </label>
     <input id="search-input" type="search" placeholder="Search posts…" autocomplete="off" spellcheck="false" autofocus>
-    <button type="button" id="search-close" aria-label="Close search">{{ widgets::icon(name="xmark") }}</button>
+    <button type="button" id="search-close" aria-label="Close search">{{ <icon name="xmark" /> }}</button>
   </search>
   <ul class="search-results" id="search-results" role="list"></ul>
 </dialog>

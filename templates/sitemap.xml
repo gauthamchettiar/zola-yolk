@@ -1,17 +1,16 @@
-{%- import "macros/sections.html" as paths -%}
 {#
-  Zola 0.22.1's sitemap.xml, minus posts with list = "never". Entries carry no
+  Zola 0.23.6's sitemap.xml, minus posts with list = "never". Entries carry no
   `extra`, so those posts are collected first and matched by permalink.
   On a Zola upgrade, re-apply the filter to the new built-in.
 #}
-{%- set _paths = paths::resolve(names=config.extra.content_sections | default(value=[]), fallback=true) -%}
+{%- set _paths = <sections.resolve names={config.extra.content_sections | default(value=[])} fallback={true} /> -%}
 {%- set_global _unlisted = [] -%}
 {%- for path in _paths | split(pat="\n") -%}
   {%- if path -%}
   {%- set sec = get_section(path=path) -%}
   {%- for candidate in sec.pages -%}
     {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) == "never" -%}
-      {%- set_global _unlisted = _unlisted | concat(with=candidate.permalink) -%}
+      {%- set_global _unlisted = [..._unlisted, candidate.permalink] -%}
     {%- endif -%}
   {%- endfor -%}
   {%- endif -%}

@@ -1,0 +1,204 @@
+{#
+  Block components: {% <border color="pink"> %}…{% </border> %}. The body is
+  Markdown; from a template, HTML passes through as long as it isn't indented
+  four spaces (Markdown would read that as code).
+  Colours: white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted
+#}
+
+{# A framed block. size: sm | md | lg | xl · style: solid | dashed | dotted | double #}
+{% component border(size = "md", color = "white", style = "solid") -%}
+<div class="border" data-size="{{ size }}" data-color="{{ color }}" data-style="{{ style }}">{{ body | markdown | safe }}</div>
+{%- endcomponent border %}
+
+{# Text alignment. align: left | center | right #}
+{% component align(align = "left") -%}
+<div class="align" data-align="{{ align }}">{{ body | markdown | safe }}</div>
+{%- endcomponent align %}
+
+{# align presets. #}
+{% component center() -%}
+<div class="align" data-align="center">{{ body | markdown | safe }}</div>
+{%- endcomponent center %}
+
+{% component left() -%}
+<div class="align" data-align="left">{{ body | markdown | safe }}</div>
+{%- endcomponent left %}
+
+{% component right() -%}
+<div class="align" data-align="right">{{ body | markdown | safe }}</div>
+{%- endcomponent right %}
+
+{# Breaks out of the reading column. size: sm | md | lg | xl #}
+{% component wide(size = "md") -%}
+<div class="wide" data-size="{{ size }}">{{ body | markdown | safe }}</div>
+{%- endcomponent wide %}
+
+{# Side by side; each top-level block is a column. gap: sm | md | lg · span: width share when nested #}
+{% component row(gap = "md", span = "") -%}
+<div class="row" data-gap="{{ gap }}"{% if span %} style="--span: {{ span }}"{% endif %}>{{ body | markdown | safe }}</div>
+{%- endcomponent row %}
+
+{# Stacked; one column inside a row. gap: sm | md | lg · span: width share #}
+{% component col(gap = "md", span = "") -%}
+<div class="col" data-gap="{{ gap }}"{% if span %} style="--span: {{ span }}"{% endif %}>{{ body | markdown | safe }}</div>
+{%- endcomponent col %}
+
+{# Shown only below the 48rem breakpoint. #}
+{% component mobile() -%}
+<div class="only-mobile">{{ body | markdown | safe }}</div>
+{%- endcomponent mobile %}
+
+{# Shown only above the 48rem breakpoint. #}
+{% component desktop() -%}
+<div class="only-desktop">{{ body | markdown | safe }}</div>
+{%- endcomponent desktop %}
+
+{#
+  Tabs; each top-level block is a panel, labelled by `titles` in order.
+  id: names the radio group; defaults to a hash of titles, group and body, so
+  only two otherwise identical blocks on a page need one · group: blocks with
+  the same group switch together (partials/tabs.html)
+#}
+{% component tabs(titles: array, id = "", group = "") -%}
+{%- set id = id or get_hash(literal=titles | join(sep="\n") ~ group ~ body, sha_type=256, base64=false)[:8] -%}
+<div class="tabs"{% if group %} data-group="{{ group }}"{% endif %}>
+{%- for title in titles %}
+  <input type="radio" name="tabs-{{ id }}" id="tabs-{{ id }}-{{ loop.index0 }}"{% if loop.first %} checked{% endif %}>
+  <label for="tabs-{{ id }}-{{ loop.index0 }}">{{ title }}</label>
+{%- endfor %}
+  <div class="tabs-panels">{{ body | markdown | safe }}</div>
+</div>
+{%- endcomponent tabs %}
+
+{#
+  Image with width/height and WebP variants in a srcset; the original is never served.
+  Widths stop at 2016, the 42rem column on a 3x screen. PNGs (screenshots, text) get
+  quality 90, other sources 80; Zola's lossless WebP is larger than either, often
+  larger than the PNG.
+  src: path under static/ · eager: load now (above the fold) · sizes: the sizes attribute
+#}
+{% component img(src: string, alt = "", eager = false, sizes = "(max-width: 42rem) 100vw, 42rem") -%}
+{%- set path = "static/" ~ src | trim_start(pat="/") -%}
+{%- set meta = get_image_metadata(path=path) -%}
+{%- set quality = 90 if path | split(pat=".") | last | lower == "png" else 80 -%}
+{%- set_global srcset = [] -%}
+{%- set_global largest = "" -%}
+{%- for w in [480, 720, 1080, 1440, 2016, meta.width] -%}
+{%- if w < meta.width or (loop.last and meta.width <= 2016) -%}
+{%- set variant = resize_image(path=path, width=w, op="fit_width", format="webp", quality=quality) -%}
+{%- set_global srcset = [...srcset, variant.url ~ " " ~ w ~ "w"] -%}
+{%- set_global largest = variant.url -%}
+{%- endif -%}
+{%- endfor -%}
+<img src="{{ largest | safe }}" srcset="{{ srcset | join(sep=", ") | safe }}" sizes="{{ sizes }}" alt="{{ alt }}" width="{{ meta.width }}" height="{{ meta.height }}"{% if eager %} fetchpriority="high"{% else %} loading="lazy"{% endif %} decoding="async">
+{%- endcomponent img %}
+
+{#
+  One fenced ```mermaid or ```math block as markup for a diagram or formula,
+  rendered client-side by partials/render.html. inline: math in running text
+#}
+{% component render(inline = false) -%}
+{%- set lines = body | trim | split(pat="\n") -%}
+{%- set lang = lines | first | trim | replace(from="```", to="") | replace(from="~~~", to="") | trim -%}
+{#- Escaped here: content templating doesn't autoescape. -#}
+{%- set source = lines[1:-1] | join(sep="\n") | escape_html | safe -%}
+{%- if lang == "mermaid" -%}
+<pre class="mermaid">{{ source }}</pre>
+{%- elif lang == "math" -%}
+{%- if inline -%}
+<span class="math-inline">{{ source }}</span>
+{%- else -%}
+<div class="math-block">{{ source }}</div>
+{%- endif -%}
+{%- else -%}
+<pre>{{ source }}</pre>
+{%- endif -%}
+{%- endcomponent render %}
+
+{# An attributed quotation. cite: the work · url: source link #}
+{% component quote(author = "", cite = "", url = "", color = "pink") -%}
+<figure class="quote" data-color="{{ color }}">
+  <blockquote{% if url %} cite="{{ url }}"{% endif %}>{{ body | markdown | safe }}</blockquote>
+  {%- if author or cite %}
+  <figcaption>
+    {%- if author %}{{ author }}{% endif -%}
+    {%- if author and cite %}, {% endif -%}
+    {%- if cite %}<cite>{% if url %}<a href="{{ url }}">{{ cite }}</a>{% else %}{{ cite }}{% endif %}</cite>{% endif -%}
+  </figcaption>
+  {%- endif %}
+</figure>
+{%- endcomponent quote %}
+
+{# A callout. icon: Font Awesome name #}
+{% component admonition(title = "", icon = "circle-info", color = "yellow") -%}
+<aside class="admonition" data-color="{{ color }}"{% if not title %} data-untitled{% endif %}>
+  {%- if icon or title %}
+  <p class="admonition-title">
+    {%- if icon %}{{ <icon name={icon} /> }}{% endif -%}
+    {%- if title %}<span>{{ title }}</span>{% endif -%}
+  </p>
+  {%- endif %}
+  {{ body | markdown | safe }}
+</aside>
+{%- endcomponent admonition %}
+
+{# admonition presets. #}
+{% component note(title = "Note") -%}
+{% <admonition title={title} icon="note-sticky" color="yellow"> %}{{ body | safe }}{% </admonition> %}
+{%- endcomponent note %}
+
+{% component warning(title = "Warning") -%}
+{% <admonition title={title} icon="triangle-exclamation" color="pink"> %}{{ body | safe }}{% </admonition> %}
+{%- endcomponent warning %}
+
+{% component danger(title = "Danger") -%}
+{% <admonition title={title} icon="circle-exclamation" color="red"> %}{{ body | safe }}{% </admonition> %}
+{%- endcomponent danger %}
+
+{% component info(title = "Info") -%}
+{% <admonition title={title} icon="circle-info" color="green"> %}{{ body | safe }}{% </admonition> %}
+{%- endcomponent info %}
+
+{% component tip(title = "Tip") -%}
+{% <admonition title={title} icon="lightbulb" color="blue"> %}{{ body | safe }}{% </admonition> %}
+{%- endcomponent tip %}
+
+{# Collapsible section. state: expanded | collapsed · style: simple | border #}
+{% component expand(title = "Details", state = "collapsed", style = "simple", class = "") -%}
+<details data-style="{{ style }}"{% if class %} class="{{ class }}"{% endif %}{% if state == "expanded" %} open{% endif %}>
+  <summary>{{ title }}</summary>
+  {{ body | markdown | safe }}
+</details>
+{%- endcomponent expand %}
+
+{#
+  toc helper: bare <li>s for `items` (page.toc shape). A heading deeper than
+  max_level is dropped with its children; an excluded one is dropped alone and
+  its children move up.
+#}
+{% component toc_items(items: array, max_level: integer, exclude: array) -%}
+  {%- for item in items %}
+    {%- if item.level <= max_level %}
+      {%- if item.id not in exclude -%}
+        {%- set child_html = "" -%}
+        {%- if item.children -%}
+          {%- set child_html = <toc_items items={item.children} max_level={max_level} exclude={exclude} /> -%}
+        {%- endif -%}
+<li><a href="{{ item.permalink }}">{{ item.title }}</a>{% if child_html | trim | length > 0 %}<ol>{{ child_html | safe }}</ol>{% endif %}</li>
+      {%- elif item.children -%}
+{{- <toc_items items={item.children} max_level={max_level} exclude={exclude} /> -}}
+      {%- endif %}
+    {%- endif %}
+  {%- endfor %}
+{%- endcomponent toc_items %}
+
+{#
+  Table of contents for a page, in an `expand`. Called from page.html: content
+  is templated before the page's headings exist.
+#}
+{% component toc(page: map, title = "Table of Contents", state = "collapsed", max_level = 6, exclude = []) -%}
+{%- if page.toc %}
+{%- set items_html = <toc_items items={page.toc} max_level={max_level} exclude={exclude} /> %}
+{% <expand title={title} state={state} class="toc"> %}<ol>{{ items_html | safe }}</ol>{% </expand> %}
+{%- endif -%}
+{%- endcomponent toc %}

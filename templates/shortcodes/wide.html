@@ -1,6 +1,0 @@
-{#
-  wide shortcode — lets content break out of the reading column.
-  Parameters: see blocks::wide in macros/blocks.html.
-#}
-{%- import "macros/blocks.html" as blocks -%}
-{{ blocks::wide(content=body | markdown, size=size | default(value="md")) }}

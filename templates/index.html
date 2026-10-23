@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}{{ config.title | default(value="Site") }}{% endblock title %}
+{% block title %}{{ config.title or "Site" }}{% endblock title %}
 
 {% block content %}
 {#- Visually hidden: the title is already in the header. -#}
-<h1 class="visually-hidden">{{ section.title | default(value=config.title | default(value="Site")) }}</h1>
+<h1 class="visually-hidden">{{ section.title or config.title or "Site" }}</h1>
 {% include "partials/content.html" %}
 <h2>Recent posts</h2>
-{{ list::recents(limit=config.extra.recent_limit | default(value=10)) }}
+{{ <list.recents limit={config.extra.recent_limit | default(value=10)} /> }}
 {% endblock content %}

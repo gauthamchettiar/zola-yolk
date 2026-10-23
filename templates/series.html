@@ -3,14 +3,13 @@
   section (see content/series/_index.md).
 #}
 {% extends "base.html" %}
-{% import "macros/series.html" as series %}
 
-{% block title %}{{ section.title }} | {{ config.title | default(value="Site") }}{% endblock title %}
+{% block title %}{{ section.title }} | {{ config.title or "Site" }}{% endblock title %}
 
 {% block content %}
 <header>
   <h1>{{ section.title }}</h1>
 </header>
 {%- include "partials/content.html" %}
-{{ series::show(view="index") }}
+{{ <series.show view="index" /> }}
 {% endblock content %}

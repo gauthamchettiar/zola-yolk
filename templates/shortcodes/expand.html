@@ -1,6 +1,0 @@
-{#
-  expand shortcode — wraps content in a collapsible <details>/<summary>.
-  Parameters: see blocks::expand in macros/blocks.html.
-#}
-{%- import "macros/blocks.html" as blocks -%}
-{{ blocks::expand(content=body | markdown, title=title | default(value="Details"), state=state | default(value="collapsed"), style=style | default(value="simple")) }}

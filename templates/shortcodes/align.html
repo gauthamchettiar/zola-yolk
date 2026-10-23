@@ -1,6 +1,0 @@
-{#
-  align shortcode — text alignment for a block.
-  Parameters: see blocks::align in macros/blocks.html.
-#}
-{%- import "macros/blocks.html" as blocks -%}
-{{ blocks::align(content=body | markdown, align=align | default(value="left")) }}

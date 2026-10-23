@@ -1,7 +1,7 @@
 // The few pieces that genuinely need a class of their own.
 
 // SVG icon painted with a CSS mask, so it inherits the surrounding text colour.
-// The file is handed in per-instance as --icon-url by macros/widgets.html.
+// The file is handed in per-instance as --icon-url by components/widgets.html.
 .icon {
   display: inline-block;
   width: 1em;
@@ -210,7 +210,7 @@ dialog {
   font-size: 0.85rem;
 }
 
-// Shared colour map for the colour-taking shortcodes.
+// Shared colour map for the colour-taking components.
 .border, .mark, .quote, .admonition, .color {
   --accent: var(--color-text);
 
@@ -226,7 +226,7 @@ dialog {
   &[data-color="muted"]  { --accent: var(--color-text-muted); }
 }
 
-// `border` shortcode.
+// `border` component.
 .border {
   --border-width: 2px;
 
@@ -253,7 +253,7 @@ dialog {
   }
 }
 
-// `mark` shortcode (padding comes from the bare <mark> rule).
+// `mark` component (padding comes from the bare <mark> rule).
 .mark {
   &[data-decoration="highlight"] {
     background-color: var(--accent);
@@ -267,12 +267,12 @@ dialog {
   }
 }
 
-// `color` shortcode.
+// `color` component.
 .color {
   color: var(--accent);
 }
 
-// `shimmer` shortcode: cycles the accent colours.
+// `shimmer` component: cycles the accent colours.
 .shimmer {
   --shimmer-1: var(--color-primary-accent);
   --shimmer-2: var(--color-secondary-accent);
@@ -345,7 +345,7 @@ dialog {
   }
 }
 
-// `quote` shortcode.
+// `quote` component.
 .quote {
   --quote-rule: 4px;
   --quote-indent: 1rem;
@@ -373,7 +373,7 @@ dialog {
   cite { font-style: italic; }
 }
 
-// `admonition` shortcode. A stronger tint than 4% drops the title below AA.
+// `admonition` component. A stronger tint than 4% drops the title below AA.
 .admonition {
   margin: 1.5rem 0;
   padding: 0.75rem 1rem;
@@ -402,7 +402,7 @@ dialog {
   > :last-child { margin-bottom: 0; }
 }
 
-// `tabs` shortcode: a radio group, so it needs no JS and arrow keys work.
+// `tabs` component: a radio group, so it needs no JS and arrow keys work.
 // Radios are hidden with opacity, not display: none, to stay focusable.
 .tabs {
   margin: 1.5rem 0;
@@ -457,7 +457,7 @@ dialog {
   }
 }
 
-// `row` / `col` shortcodes: flex containers spaced by `gap`.
+// `row` / `col` components: flex containers spaced by `gap`.
 .row, .col {
   --gap: 1rem;
 
@@ -503,14 +503,14 @@ dialog {
   flex-direction: column;
 }
 
-// `align` shortcode and its presets.
+// `align` component and its presets.
 .align {
   &[data-align="left"] { text-align: left; }
   &[data-align="center"] { text-align: center; }
   &[data-align="right"] { text-align: right; }
 }
 
-// `wide` shortcode: centred on the page at any nesting depth
+// `wide` component: centred on the page at any nesting depth
 // (left: 50% + translate: -50%), capped at the viewport minus the gutter.
 .wide {
   --wide-width: 56rem;
@@ -530,14 +530,14 @@ dialog {
   > :last-child { margin-bottom: 0; }
 }
 
-// `render` shortcode output (see partials/render.html).
+// `render` component output (see partials/render.html).
 .mermaid, .math-block {
   overflow-x: auto;
   margin-block: 1.5rem;
   text-align: center;
 }
 
-// `mobile` / `desktop` shortcodes.
+// `mobile` / `desktop` components.
 .only-mobile { display: none; }
 
 @media (max-width: 48rem) {

@@ -1,7 +1,7 @@
 # zola-yolk 🟡
 
 A minimal, dark, monospace Zola theme with full-text search, series, related
-posts and a set of shortcodes. [Live demo](https://zola-yolk.gauthamchettiar.com).
+posts and a set of components. Requires Zola 0.23+. [Live demo](https://zola-yolk.gauthamchettiar.com).
 
 ![screenshot](/static/images/screenshots/home-dark.webp)
 
@@ -11,7 +11,7 @@ posts and a set of shortcodes. [Live demo](https://zola-yolk.gauthamchettiar.com
 - Search dialog (menu item or <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd>)
 - Date-first listings, table of contents, tags at the foot of each post
 - [Series](#series) and [related posts](#related-posts)
-- Every shortcode is also a template macro
+- Components work the same in posts and in templates
 
 Browser support: Chrome 123+, Safari 17.5+, Firefox 120+.
 
@@ -25,7 +25,8 @@ cp -r themes/zola-yolk/example_content/. content/
 ```
 
 Then fill in the `CHANGE ME` values in `zola.toml`. `example_content/` provides
-the Posts, Series and Tags pages the menu links to.
+the Posts and Series pages the menu links to; Zola builds Tags from the first
+tagged post.
 
 ## Configuration
 
@@ -43,11 +44,11 @@ The rest of the styles: `_base.scss` (elements), `_layout.scss` (header, nav),
 
 ```toml
 [extra]
-series = "Shortcodes"
+series = "Components"
 series_part = 2   # 0 = the series' overview page
 ```
 
-A post in a series gets a "Part 2 of 3 from series “Shortcodes”" line under
+A post in a series gets a "Part 2 of 3 from series “Components”" line under
 its date and previous / next links under it. The series name links to the
 overview page, or to the series' entry on the listing page.
 
@@ -84,19 +85,12 @@ cd scripts/py-ssg-tools
 uv run pst sync icons --source font-awesome --dest ../../static/icons/font-awesome/ --version 7.x
 ```
 
-### Icon shortcode
+### Icon component
 
 ```
-{{ icon(name="star") }}
-{{ icon(name="github", style="brands") }}
-{{ icon(name="star", style="regular", class="my-class", aria="favourite") }}
-```
-
-From a template:
-
-```jinja2
-{% import "macros/widgets.html" as widgets %}
-{{ widgets::icon(name="star") }}
+{{ <icon name="star" /> }}
+{{ <icon name="github" style="brands" /> }}
+{{ <icon name="star" style="regular" class="my-class" aria="favourite" /> }}
 ```
 
 - `name` — Font Awesome icon name (required)
@@ -107,16 +101,34 @@ From a template:
 
 Icon names come from [Font Awesome Free](https://fontawesome.com/search?o=r&m=free).
 
-## Shortcodes
+## Components
 
-Each shortcode has a matching macro — inline ones in `macros/widgets.html`,
-block ones in `macros/blocks.html` (taking `content` as HTML). The demo's
-[Shortcodes](content/posts/shortcodes.md) posts show every one.
+[Tera components](https://keats.github.io/tera/#components), registered
+globally — the same call works in a post and in a template, nothing to import.
+Inline ones live in `templates/components/widgets.html`, block ones in
+`templates/components/blocks.html`. The demo's
+[Components](content/posts/shortcodes.md) posts show every one.
+
+```
+{{ <mark text="highlighted" color="green" /> }}
+
+{% <border size="lg" color="pink"> %}
+Any **Markdown**.
+{% </border> %}
+```
+
+Strings go in quotes, anything else in braces: `new_tab={false}`,
+`titles={["Python", "Java"]}`. Block bodies are Markdown; from a template,
+unindented HTML passes through as is.
+
+Zola templates every post before parsing its Markdown, so literal `{{`, `{%`
+or `{#` in a post needs `{% raw %}…{% endraw %}` (or the file listed under
+`skip_content_templating`).
 
 Colours: `white`, `red`, `orange`, `yellow`, `lime`, `green`, `cyan`, `blue`,
 `purple`, `pink`, `muted`.
 
-| Shortcode | Parameters |
+| Component | Parameters |
 |---|---|
 | `elink(text, href)` | `new_tab`, `show_icon` (both `true`) |
 | `mark(text)` | `color` (`yellow`), `decoration` (`highlight` \| `border`) |
@@ -131,11 +143,9 @@ Colours: `white`, `red`, `orange`, `yellow`, `lime`, `green`, `cyan`, `blue`,
 | `align` | `align` (`left` \| `center` \| `right`); presets `center`, `left`, `right` |
 | `wide` | `size` (`sm` `md` `lg` `xl`) |
 | `row` / `col` | `gap` (`sm` `md` `lg`), `span` (width share) |
-| `tabs(titles)` | `group` — one tab per fenced code block; same group switches together |
+| `tabs(titles)` | `group`, `id` — one tab per fenced code block; same group switches together |
 | `render` | `inline` — one ` ```mermaid ` or ` ```math ` block (needs `enable_mermaid` / `enable_math`) |
 | `mobile` / `desktop` | shown below / above `48rem` |
-
-Block shortcodes wrap their body: `{% border() %}…{% end %}`.
 
 ## License
 

@@ -1,57 +1,51 @@
-{% import "macros/sections.html" as paths %}
 {#
   Post listings. A post's `list` ([extra]) decides where it shows:
     always — everywhere (default) · local — its own section and series · never — nowhere
-  It still renders at its permalink. Tera macros return strings, so each
+  It still renders at its permalink. Components return strings, so each
   listing repeats the check:
     page.extra.list | default(value=config.extra.list | default(value="always"))
 #}
 
 {# One <li> per page: date, then title. #}
-{% macro items(pages) -%}
+{% component list.items(pages: array) -%}
 {%- for page in pages %}
 <li>
   {%- if page.date %}<time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time>
   {%- else %}<span aria-hidden="true"></span>{% endif -%}
   <a href="{{ page.permalink }}">{{ page.title }}</a></li>
 {%- endfor -%}
-{%- endmacro items %}
+{%- endcomponent list.items %}
 
 {# Pages grouped by year, newest first; undated pages last. #}
-{% macro by_year(pages) -%}
+{% component list.by_year(pages: array) -%}
 {%- if pages | length > 0 -%}
-  {%- set dated = pages | filter(attribute="year") -%}
-  {%- for year in dated | map(attribute="year") | unique | sort | reverse %}
+  {%- set dated = [p for p in pages if p.year] -%}
+  {%- for year in [p.year for p in dated] | unique | sort | reverse %}
 <section>
   <h2>{{ year }}</h2>
-  <ul class="post-list">{{ self::items(pages=dated | filter(attribute="year", value=year) | sort(attribute="date") | reverse) }}</ul>
+  <ul class="post-list">{{ <list.items pages={[p for p in dated if p.year == year] | sort(attribute="date") | reverse} /> }}</ul>
 </section>
   {%- endfor -%}
 
-  {%- set_global _undated = [] -%}
-  {%- for page in pages -%}
-    {%- if not page.year -%}{%- set_global _undated = _undated | concat(with=page) -%}{%- endif -%}
-  {%- endfor -%}
-  {%- if _undated | length > 0 %}
-<ul class="post-list">{{ self::items(pages=_undated) }}</ul>
+  {%- set undated = [p for p in pages if not p.year] -%}
+  {%- if undated | length > 0 %}
+<ul class="post-list">{{ <list.items pages={undated} /> }}</ul>
   {%- endif -%}
 {%- else %}
 <p>No posts yet.</p>
 {%- endif -%}
-{%- endmacro by_year %}
+{%- endcomponent list.by_year %}
 
 {#
   Related posts under a post. source: a list of paths (used as given) or true
   (posts sharing tags, most shared first, then newest). Tag matches skip the
   post's own series and posts not listed "always".
 #}
-{% macro related(page, source=true, limit=0, title="Related") -%}
+{% component list.related(page: map, source, limit = 0, title = "Related", @config) -%}
 {%- set_global _related = [] -%}
 
-{%- if source is iterable -%}
-  {%- for path in source -%}
-    {%- set_global _related = _related | concat(with=get_page(path=path)) -%}
-  {%- endfor -%}
+{%- if source is array -%}
+  {%- set_global _related = [get_page(path=path) for path in source] -%}
 
 {%- elif page.taxonomies.tags -%}
   {%- set tags = page.taxonomies.tags -%}
@@ -61,13 +55,13 @@
   {%- set_global _pool = [] -%}
   {%- for term in taxonomy.items -%}
     {%- if term.name in tags -%}
-      {%- set_global _pool = _pool | concat(with=term.pages) -%}
+      {%- set_global _pool = [..._pool, ...term.pages] -%}
     {%- endif -%}
   {%- endfor -%}
   {#- Undated posts are dropped: sorting on a missing date aborts the build. -#}
-  {%- set_global _pool = _pool | filter(attribute="date") | sort(attribute="date") | reverse -%}
+  {%- set_global _pool = [p for p in _pool if p.date] | sort(attribute="date") | reverse -%}
 
-  {#- Tera can't sort on a computed score, so take one pass per score, highest first. -#}
+  {#- One pass per score, highest first, keeping date order within each. -#}
   {%- set_global _seen = [] -%}
   {%- for step in range(end=tag_count) -%}
     {%- set score = tag_count - step -%}
@@ -76,13 +70,10 @@
         {%- set candidate_series = candidate.extra.series | default(value="") -%}
         {%- set candidate_list = candidate.extra.list | default(value=config.extra.list | default(value="always")) -%}
         {%- if candidate_list == "always" and (not series or candidate_series != series) -%}
-          {%- set_global _shared = 0 -%}
-          {%- for tag in candidate.taxonomies.tags -%}
-            {%- if tag in tags -%}{%- set_global _shared = _shared + 1 -%}{%- endif -%}
-          {%- endfor -%}
-          {%- if _shared == score -%}
-            {%- set_global _seen = _seen | concat(with=candidate.permalink) -%}
-            {%- set_global _related = _related | concat(with=candidate) -%}
+          {%- set shared = [tag for tag in candidate.taxonomies.tags if tag in tags] | length -%}
+          {%- if shared == score -%}
+            {%- set_global _seen = [..._seen, candidate.permalink] -%}
+            {%- set_global _related = [..._related, candidate] -%}
           {%- endif -%}
         {%- endif -%}
       {%- endif -%}
@@ -91,36 +82,35 @@
 {%- endif -%}
 
 {%- if limit > 0 -%}
-  {%- set_global _related = _related | slice(end=limit) -%}
+  {%- set_global _related = _related[:limit] -%}
 {%- endif -%}
 {%- if _related | length > 0 %}
 <section class="related">
   <h2>{{ title }}</h2>
-  {#- list::, not self::: page.html also imports blocks, which takes `self` there. -#}
-  <ul class="post-list">{{ list::items(pages=_related) }}</ul>
+  <ul class="post-list">{{ <list.items pages={_related} /> }}</ul>
 </section>
 {%- endif -%}
-{%- endmacro related %}
+{%- endcomponent list.related %}
 
 {# Newest posts listed "always" across the post sections. limit: 0 = all #}
-{% macro recents(limit=0) -%}
-{%- set _paths = paths::resolve(names=config.extra.content_sections | default(value=[]), fallback=true) -%}
+{% component list.recents(limit = 0, @config) -%}
+{%- set _paths = <sections.resolve names={config.extra.content_sections | default(value=[])} fallback={true} /> -%}
 {%- set_global _pages = [] -%}
 {%- for path in _paths | split(pat="\n") -%}
   {%- if path -%}
   {%- set sec = get_section(path=path) -%}
   {%- for candidate in sec.pages -%}
     {%- if candidate.date and candidate.extra.list | default(value=config.extra.list | default(value="always")) == "always" -%}
-      {%- set_global _pages = _pages | concat(with=candidate) -%}
+      {%- set_global _pages = [..._pages, candidate] -%}
     {%- endif -%}
   {%- endfor -%}
   {%- endif -%}
 {%- endfor -%}
 {%- set_global _pages = _pages | sort(attribute="date") | reverse -%}
-{%- if limit > 0 -%}{%- set_global _pages = _pages | slice(end=limit) -%}{%- endif -%}
+{%- if limit > 0 -%}{%- set_global _pages = _pages[:limit] -%}{%- endif -%}
 {%- if _pages | length > 0 %}
-<ul class="post-list">{{ self::items(pages=_pages) }}</ul>
+<ul class="post-list">{{ <list.items pages={_pages} /> }}</ul>
 {%- else %}
 <p>No posts yet.</p>
 {%- endif -%}
-{%- endmacro recents %}
+{%- endcomponent list.recents %}

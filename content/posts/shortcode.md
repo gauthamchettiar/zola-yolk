@@ -1,34 +1,46 @@
 +++
-title = "Shortcode: Elements"
+title = "Components: Elements"
 date = 2026-04-20
-description = "Shortcodes that insert content: icons, links, marks, quotes, callouts and screen-size-conditional blocks."
+description = "Components that insert content: icons, links, marks, quotes, callouts and screen-size-conditional blocks."
 
 [taxonomies]
-tags = ["shortcode", "syntax", "zola"]
+tags = ["component", "syntax", "zola"]
 
 [extra]
-series = "Shortcodes"
+series = "Components"
 series_part = 1
 +++
 
-Shortcodes for *inserting* content. See also [Layouts](@/posts/layout.md) and
+Components for *inserting* content. See also [Layouts](@/posts/layout.md) and
 [Externals](@/posts/externals.md).
+
+## Calling a Component
+
+{% raw %}Single elements are self-closing tags in `{{ }}`; blocks open and close in
+`{% %}` around a Markdown body:{% endraw %}
+
+{% raw %}
+```md
+{{ <mark text="highlighted" /> }}
+
+{% <note title="Heads up"> %}
+Worth **knowing**.
+{% </note> %}
+```
+{% endraw %}
+
+Strings go in quotes; anything else in braces: `new_tab={false}`,
+`titles={["Python", "Java"]}`. The same call works in a template.
 
 ## Icons
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ```md
-{​{ icon(name="star") }​}
-{​{ icon(name="github", style="brands") }​}
-{​{ icon(name="star", style="regular", class="text-accent", aria="favorite") }​}
+{{ <icon name="star" /> }}
+{{ <icon name="github" style="brands" /> }}
+{{ <icon name="star" style="regular" class="text-accent" aria="favorite" /> }}
 ```
-```jinja2
-{​% import "macros/widgets.html" as widgets %​}
-{​{ widgets::icon(name="star") }​}
-{​{ widgets::icon(name="github", style="brands") }​}
-{​{ widgets::icon(name="star", style="regular", class="text-accent", aria="favorite") }​}
-```
-{% end %}
+{% endraw %}
 
 name
 : Font Awesome icon name. Required.
@@ -46,25 +58,19 @@ aria
 : accessible label. Omit it and the icon renders `aria-hidden`, which is what
   you want whenever the surrounding text already names it.
 
-star&nbsp;&nbsp; : {{ icon(name="star") }}  
-github : {{ icon(name="github", style="brands") }}  
-lemon&nbsp; : {{ icon(name="lemon", style="regular") }}  
+star&nbsp;&nbsp; : {{ <icon name="star" /> }}  
+github : {{ <icon name="github" style="brands" /> }}  
+lemon&nbsp; : {{ <icon name="lemon" style="regular" /> }}  
 
 ## External Links
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ```md
-{​{ elink(text="Example", href="https://example.com") }​}
-{​{ elink(text="Example", href="https://example.com", new_tab=false) }​}
-{​{ elink(text="Example", href="https://example.com", show_icon=false) }​}
+{{ <elink text="Example" href="https://example.com" /> }}
+{{ <elink text="Example" href="https://example.com" new_tab={false} /> }}
+{{ <elink text="Example" href="https://example.com" show_icon={false} /> }}
 ```
-```jinja2
-{​% import "macros/widgets.html" as widgets %​}
-{​{ widgets::elink(text="Example", href="https://example.com") }​}
-{​{ widgets::elink(text="Example", href="https://example.com", new_tab=false) }​}
-{​{ widgets::elink(text="Example", href="https://example.com", show_icon=false) }​}
-```
-{% end %}
+{% endraw %}
 
 text, href
 : required
@@ -72,23 +78,18 @@ text, href
 new_tab, show_icon
 : `true` (default), `false`
 
-default&nbsp;&nbsp;&nbsp; : {{ elink(text="Example", href="https://example.com") }}  
-no new tab : {{ elink(text="Example", href="https://example.com", new_tab=false) }}  
-no icon&nbsp;&nbsp;&nbsp; : {{ elink(text="Example", href="https://example.com", show_icon=false) }}  
+default&nbsp;&nbsp;&nbsp; : {{ <elink text="Example" href="https://example.com" /> }}  
+no new tab : {{ <elink text="Example" href="https://example.com" new_tab={false} /> }}  
+no icon&nbsp;&nbsp;&nbsp; : {{ <elink text="Example" href="https://example.com" show_icon={false} /> }}  
 
 ## Mark
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ```md
-{​{ mark(text="highlighted") }​}
-{​{ mark(text="outlined", color="pink", decoration="border") }​}
+{{ <mark text="highlighted" /> }}
+{{ <mark text="outlined" color="pink" decoration="border" /> }}
 ```
-```jinja2
-{​% import "macros/widgets.html" as widgets %​}
-{​{ widgets::mark(text="highlighted") }​}
-{​{ widgets::mark(text="outlined", color="pink", decoration="border") }​}
-```
-{% end %}
+{% endraw %}
 
 color
 : `white`, `red`, `orange`, `yellow` (default), `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `muted`
@@ -98,53 +99,43 @@ decoration
 
 | colour | filled | outlined |
 |---|---|---|
-| `white` | {{ mark(text="white", color="white") }} | {{ mark(text="white", color="white", decoration="border") }} |
-| `red` | {{ mark(text="red", color="red") }} | {{ mark(text="red", color="red", decoration="border") }} |
-| `orange` | {{ mark(text="orange", color="orange") }} | {{ mark(text="orange", color="orange", decoration="border") }} |
-| `yellow` | {{ mark(text="yellow") }} | {{ mark(text="yellow", decoration="border") }} |
-| `lime` | {{ mark(text="lime", color="lime") }} | {{ mark(text="lime", color="lime", decoration="border") }} |
-| `green` | {{ mark(text="green", color="green") }} | {{ mark(text="green", color="green", decoration="border") }} |
-| `cyan` | {{ mark(text="cyan", color="cyan") }} | {{ mark(text="cyan", color="cyan", decoration="border") }} |
-| `blue` | {{ mark(text="blue", color="blue") }} | {{ mark(text="blue", color="blue", decoration="border") }} |
-| `purple` | {{ mark(text="purple", color="purple") }} | {{ mark(text="purple", color="purple", decoration="border") }} |
-| `pink` | {{ mark(text="pink", color="pink") }} | {{ mark(text="pink", color="pink", decoration="border") }} |
-| `muted` | {{ mark(text="muted", color="muted") }} | {{ mark(text="muted", color="muted", decoration="border") }} |
+| `white` | {{ <mark text="white" color="white" /> }} | {{ <mark text="white" color="white" decoration="border" /> }} |
+| `red` | {{ <mark text="red" color="red" /> }} | {{ <mark text="red" color="red" decoration="border" /> }} |
+| `orange` | {{ <mark text="orange" color="orange" /> }} | {{ <mark text="orange" color="orange" decoration="border" /> }} |
+| `yellow` | {{ <mark text="yellow" /> }} | {{ <mark text="yellow" decoration="border" /> }} |
+| `lime` | {{ <mark text="lime" color="lime" /> }} | {{ <mark text="lime" color="lime" decoration="border" /> }} |
+| `green` | {{ <mark text="green" color="green" /> }} | {{ <mark text="green" color="green" decoration="border" /> }} |
+| `cyan` | {{ <mark text="cyan" color="cyan" /> }} | {{ <mark text="cyan" color="cyan" decoration="border" /> }} |
+| `blue` | {{ <mark text="blue" color="blue" /> }} | {{ <mark text="blue" color="blue" decoration="border" /> }} |
+| `purple` | {{ <mark text="purple" color="purple" /> }} | {{ <mark text="purple" color="purple" decoration="border" /> }} |
+| `pink` | {{ <mark text="pink" color="pink" /> }} | {{ <mark text="pink" color="pink" decoration="border" /> }} |
+| `muted` | {{ <mark text="muted" color="muted" /> }} | {{ <mark text="muted" color="muted" decoration="border" /> }} |
 
 ## Color
 
 Like `mark`, but only the text colour.
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ```md
-{​{ color(text="important") }​}
-{​{ color(text="careful", color="red") }​}
+{{ <color text="important" /> }}
+{{ <color text="careful" color="red" /> }}
 ```
-```jinja2
-{​% import "macros/widgets.html" as widgets %​}
-{​{ widgets::color(text="important") }​}
-{​{ widgets::color(text="careful", color="red") }​}
-```
-{% end %}
+{% endraw %}
 
 color
 : same colours as `mark`, default `yellow`
 
-{{ color(text="white", color="white") }} {{ color(text="red", color="red") }} {{ color(text="orange", color="orange") }} {{ color(text="yellow") }} {{ color(text="lime", color="lime") }} {{ color(text="green", color="green") }} {{ color(text="cyan", color="cyan") }} {{ color(text="blue", color="blue") }} {{ color(text="purple", color="purple") }} {{ color(text="pink", color="pink") }} {{ color(text="muted", color="muted") }}
+{{ <color text="white" color="white" /> }} {{ <color text="red" color="red" /> }} {{ <color text="orange" color="orange" /> }} {{ <color text="yellow" /> }} {{ <color text="lime" color="lime" /> }} {{ <color text="green" color="green" /> }} {{ <color text="cyan" color="cyan" /> }} {{ <color text="blue" color="blue" /> }} {{ <color text="purple" color="purple" /> }} {{ <color text="pink" color="pink" /> }} {{ <color text="muted" color="muted" /> }}
 ## Shimmer
 
 Animated multi-colour text. Off under `prefers-reduced-motion`.
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ```md
-{​{ shimmer(text="look at me") }​}
-{​{ shimmer(text="smooth", type="background", style="wave") }​}
+{{ <shimmer text="look at me" /> }}
+{{ <shimmer text="smooth" type="background" style="wave" /> }}
 ```
-```jinja2
-{​% import "macros/widgets.html" as widgets %​}
-{​{ widgets::shimmer(text="look at me") }​}
-{​{ widgets::shimmer(text="smooth", type="background", style="wave") }​}
-```
-{% end %}
+{% endraw %}
 
 type
 : `text` (default), `background`
@@ -152,24 +143,20 @@ type
 style
 : `cycle` (default), `wave`
 
-text, cycle&nbsp;&nbsp;&nbsp;&nbsp; : {{ shimmer(text="look at me") }}  
-text, wave&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ shimmer(text="look at me", style="wave") }}  
-background, cycle : {{ shimmer(text="look at me", type="background") }}  
-background, wave&nbsp; : {{ shimmer(text="look at me", type="background", style="wave") }}
+text, cycle&nbsp;&nbsp;&nbsp;&nbsp; : {{ <shimmer text="look at me" /> }}  
+text, wave&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ <shimmer text="look at me" style="wave" /> }}  
+background, cycle : {{ <shimmer text="look at me" type="background" /> }}  
+background, wave&nbsp; : {{ <shimmer text="look at me" type="background" style="wave" /> }}
 
 ## Quotes
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ```md
-{​% quote(author="Alan Kay", cite="1971") %​}
+{% <quote author="Alan Kay" cite="1971"> %}
 The best way to predict the future is to invent it.
-{​% end %​}
+{% </quote> %}
 ```
-```jinja2
-{​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::quote(content="<p>The best way to predict the future is to invent it.</p>", author="Alan Kay", cite="1971") }​}
-```
-{% end %}
+{% endraw %}
 
 author, cite, url
 : who said it, the work, and a source link. All optional.
@@ -177,32 +164,27 @@ author, cite, url
 color
 : same colours as `mark`, default `pink`
 
-{% quote(author="Alan Kay", cite="1971") %}
+{% <quote author="Alan Kay" cite="1971"> %}
 The best way to predict the future is to invent it.
-{% end %}
+{% </quote> %}
 
-{% quote(author="Tim Berners-Lee", cite="Weaving the Web", url="https://example.com", color="green") %}
+{% <quote author="Tim Berners-Lee" cite="Weaving the Web" url="https://example.com" color="green"> %}
 The Web does not just connect machines, it connects people.
-{% end %}
+{% </quote> %}
 
 ## Admonitions
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ```md
-{​% admonition(title="Note") %​}
+{% <admonition title="Note"> %}
 Worth knowing.
-{​% end %​}
+{% </admonition> %}
 
-{​% admonition(title="Careful", icon="triangle-exclamation", color="pink") %​}
+{% <admonition title="Careful" icon="triangle-exclamation" color="pink"> %}
 This one bites.
-{​% end %​}
+{% </admonition> %}
 ```
-```jinja2
-{​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::admonition(content="<p>Worth knowing.</p>", title="Note") }​}
-{​{ blocks::admonition(content="<p>This one bites.</p>", title="Careful", icon="triangle-exclamation", color="pink") }​}
-```
-{% end %}
+{% endraw %}
 
 title
 : optional
@@ -213,78 +195,69 @@ icon
 color
 : same colours as `mark`, default `yellow`
 
-{% admonition(title="Note") %}
+{% <admonition title="Note"> %}
 Worth knowing.
-{% end %}
+{% </admonition> %}
 
-{% admonition(title="Careful", icon="triangle-exclamation", color="pink") %}
+{% <admonition title="Careful" icon="triangle-exclamation" color="pink"> %}
 This one bites.
-{% end %}
+{% </admonition> %}
 
-{% admonition(icon="lightbulb", color="green") %}
+{% <admonition icon="lightbulb" color="green"> %}
 An icon with no title works too.
-{% end %}
+{% </admonition> %}
 
 ### Admonition Presets
 
 `note`, `warning`, `danger`, `info` and `tip`: `admonition` with a fixed colour and icon.
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ```md
-{​% note() %​}
+{% <note> %}
 Worth knowing.
-{​% end %​}
+{% </note> %}
 
-{​% warning(title="Careful") %​}
+{% <warning title="Careful"> %}
 This one bites.
-{​% end %​}
+{% </warning> %}
 ```
-```jinja2
-{​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::admonition(content="<p>Worth knowing.</p>", title="Note", icon="note-sticky", color="yellow") }​}
-{​{ blocks::admonition(content="<p>This one bites.</p>", title="Careful", icon="triangle-exclamation", color="pink") }​}
-```
-{% end %}
+{% endraw %}
 
-{% note() %}
+{% <note> %}
 Worth knowing.
-{% end %}
+{% </note> %}
 
-{% warning() %}
+{% <warning> %}
 This one bites.
-{% end %}
+{% </warning> %}
 
-{% danger() %}
+{% <danger> %}
 Don't do this in production.
-{% end %}
+{% </danger> %}
 
-{% info() %}
+{% <info> %}
 Good to know.
-{% end %}
+{% </info> %}
 
-{% tip(title="Shortcut") %}
+{% <tip title="Shortcut"> %}
 There's a faster way to do this.
-{% end %}
+{% </tip> %}
 
 ## Expand
 
 A collapsible section.
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ```md
-{​% expand(title="Show the answer", state="expanded") %​}
+{% <expand title="Show the answer" state="expanded"> %}
 42.
-{​% end %​}
+{% </expand> %}
 
-{​% expand(title="In a border", style="border") %​}
+{% <expand title="In a border" style="border"> %}
 Framed.
-{​% end %​}
+{% </expand> %}
 ```
-```jinja2
-{​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::expand(content="<p>Hidden until opened.</p>", title="Show the answer", style="border") }​}
-```
-{% end %}
+{% endraw %}
 
 title
 : summary text. Default `Details`.
@@ -295,49 +268,44 @@ state
 style
 : `simple` (default), `border`
 
-{% expand() %}
+{% <expand> %}
 Hidden until opened.
-{% end %}
+{% </expand> %}
 
-{% expand(title="Show the answer", state="expanded") %}
+{% <expand title="Show the answer" state="expanded"> %}
 The answer is forty-two.
-{% end %}
+{% </expand> %}
 
-{% expand(title="Show the answer, bordered", style="border") %}
+{% <expand title="Show the answer, bordered" style="border"> %}
 The answer is still forty-two.
-{% end %}
+{% </expand> %}
 
-{% expand(title="Open by default, bordered", state="expanded", style="border") %}
+{% <expand title="Open by default, bordered" state="expanded" style="border"> %}
 A bordered expand, already open.
-{% end %}
+{% </expand> %}
 
 ## Mobile and Desktop Content
 
 `mobile` shows below `48rem`, `desktop` above it.
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ```md
-{​% mobile() %​}
+{% <mobile> %}
 Only visible on small screens.
-{​% end %​}
+{% </mobile> %}
 
-{​% desktop() %​}
+{% <desktop> %}
 Only visible on larger screens.
-{​% end %​}
+{% </desktop> %}
 ```
-```jinja2
-{​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::mobile(content="<p>Only visible on small screens.</p>") }​}
-{​{ blocks::desktop(content="<p>Only visible on larger screens.</p>") }​}
-```
-{% end %}
+{% endraw %}
 
 Resize the window to see these switch:
 
-{% mobile() %}
+{% <mobile> %}
 Your screen is **narrow**!
-{% end %}
+{% </mobile> %}
 
-{% desktop() %}
+{% <desktop> %}
 Your screen is **wide**!
-{% end %}
+{% </desktop> %}

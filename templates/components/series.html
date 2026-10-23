@@ -1,9 +1,8 @@
-{% import "macros/sections.html" as paths %}
 {#
   Series: posts with `series = "Name"` and `series_part = N` under [extra].
   Part 0 is the overview: sorts first, isn't counted as a part, gets no label.
 
-  One macro, three views, so they share one idea of what a series contains:
+  One component, three views, so they share one idea of what a series contains:
     label — "Part X of N from series “Name”" in a post's header
     nav   — previous/next links under a post
     index — every series with its parts (templates/series.html)
@@ -12,7 +11,7 @@
   {series} are filled in, {series} linking to the overview or else to the
   series' entry on the config.extra.series_page listing.
 #}
-{% macro show(view="label", page=false, text="Part {part} of {count} from series “{series}”") -%}
+{% component series.show(view = "label", page = none, text = "Part {part} of {count} from series “{series}”", @config) -%}
 {%- set_global _name = "" -%}
 {%- set_global _current = "" -%}
 {%- set_global _part = -1 -%}
@@ -24,20 +23,20 @@
 
 {#- Candidate pages: everything in the post sections except list = "never". -#}
 {%- set_global _pool = [] -%}
-{%- set _paths = paths::resolve(names=config.extra.content_sections | default(value=[]), fallback=true) -%}
+{%- set _paths = <sections.resolve names={config.extra.content_sections | default(value=[])} fallback={true} /> -%}
 {%- for path in _paths | split(pat="\n") -%}
   {%- if path -%}
   {%- set sec = get_section(path=path) -%}
   {%- for candidate in sec.pages -%}
     {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) != "never" -%}
-      {%- set_global _pool = _pool | concat(with=candidate) -%}
+      {%- set_global _pool = [..._pool, candidate] -%}
     {%- endif -%}
   {%- endfor -%}
   {%- endif -%}
 {%- endfor -%}
 
 {%- if view == "index" -%}
-  {%- set _names = _pool | filter(attribute="extra.series") | map(attribute="extra.series") | unique | sort -%}
+  {%- set _names = [p.extra.series for p in _pool if p.extra.series is defined] | unique | sort -%}
 {%- else -%}
   {%- set _names = [_name] -%}
 {%- endif -%}
@@ -47,17 +46,13 @@
 {%- endif -%}
 
 {%- for series_name in _names -%}
-{%- set _members = _pool | filter(attribute="extra.series", value=series_name) -%}
+{%- set _members = [p for p in _pool if p.extra.series is defined and p.extra.series == series_name] -%}
 {#- Numbered parts in order, then unnumbered ones (sorting on a missing key aborts the build). -#}
-{%- set_global _ordered = _members | filter(attribute="extra.series_part") | sort(attribute="extra.series_part") -%}
-{%- for member in _members -%}
-  {%- if member.extra.series_part is not defined -%}
-    {%- set_global _ordered = _ordered | concat(with=member) -%}
-  {%- endif -%}
-{%- endfor -%}
+{%- set _ordered = [m for m in _members if m.extra.series_part is defined] | sort(attribute="extra.series_part") -%}
+{%- set _ordered = [..._ordered, ...[m for m in _members if m.extra.series_part is not defined]] -%}
 
 {%- set _length = _ordered | length -%}
-{%- set _overview = _ordered | filter(attribute="extra.series_part", value=0) -%}
+{%- set _overview = [m for m in _ordered if m.extra.series_part is defined and m.extra.series_part == 0] -%}
 {%- set _overviews = _overview | length -%}
 {%- set _count = _length - _overviews -%}
 {%- set _parts = _count ~ " part" -%}
@@ -92,13 +87,13 @@
 {%- if _index > -1 and _part != 0 -%}
   {%- if _part > 0 %}{% set _number = _part %}{% else %}{% set _number = _index + 1 - _overviews %}{% endif -%}
   {#- Escape the text first so the link is its only markup. -#}
-  {%- set _series = series_name | escape -%}
+  {%- set _series = series_name | escape_html -%}
   {%- set _href = "" -%}
   {%- if _overviews > 0 -%}
     {%- set _intro = _overview | first -%}
     {%- set _href = _intro.permalink -%}
   {%- else -%}
-    {%- set _listing = paths::resolve(names=[config.extra.series_page | default(value="series")]) | trim -%}
+    {%- set _listing = <sections.resolve names={[config.extra.series_page | default(value="series")]} /> | trim -%}
     {%- if _listing -%}
       {%- set _listing_section = get_section(path=_listing, metadata_only=true) -%}
       {%- set _anchor = series_name | slugify -%}
@@ -106,7 +101,7 @@
     {%- endif -%}
   {%- endif -%}
   {%- if _href %}{% set _series = '<a href="' ~ _href ~ '">' ~ _series ~ '</a>' %}{% endif -%}
-<p class="series-label">{{ text | escape | replace(from="{part}", to=_number ~ "") | replace(from="{count}", to=_count ~ "") | replace(from="{series}", to=_series) | safe }}</p>
+<p class="series-label">{{ text | escape_html | replace(from="{part}", to=_number ~ "") | replace(from="{count}", to=_count ~ "") | replace(from="{series}", to=_series) | safe }}</p>
 {%- endif -%}
 
 {%- else -%}
@@ -130,4 +125,4 @@
 {%- endif -%}
 {%- endif -%}
 {%- endfor -%}
-{%- endmacro show %}
+{%- endcomponent series.show %}

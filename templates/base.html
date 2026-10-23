@@ -1,14 +1,8 @@
-{#
-  Root skeleton. list, widgets and navigation are imported here for every
-  template; blocks is not, since its recursive `toc` needs a local import.
-#}
-{% import "macros/list.html" as list %}
-{% import "macros/widgets.html" as widgets %}
-{% import "macros/navigation.html" as navigation %}
+{#- Root skeleton. Components (templates/components/) are global; nothing to import. -#}
 <!DOCTYPE html>
-<html lang="{{ config.default_language | default(value="en") }}" dir="{{ config.extra.language_direction | default(value="ltr") }}">
+<html lang="{{ config.default_language or "en" }}" dir="{{ config.extra.language_direction | default(value="ltr") }}">
 <head>
-  <title>{% block title %}{{ config.title | default(value="Site") }}{% endblock title %}</title>
+  <title>{% block title %}{{ config.title or "Site" }}{% endblock title %}</title>
   {%- include "partials/head.html" %}
 </head>
 <body>
@@ -25,15 +19,15 @@
   {%- set render_body = "" %}
   {%- if page is defined %}{% set render_body = page.content %}
   {%- elif section is defined %}{% set render_body = section.content %}{% endif %}
-  {%- set needs_mermaid = config.extra.enable_mermaid and render_body is containing('class="mermaid"') %}
-  {%- set needs_math = config.extra.enable_math and render_body is containing('class="math-') %}
+  {%- set needs_mermaid = config.extra.enable_mermaid and render_body is containing(pat='class="mermaid"') %}
+  {%- set needs_math = config.extra.enable_math and render_body is containing(pat='class="math-') %}
   {%- if needs_mermaid or needs_math %}
   {%- include "partials/render.html" %}
   {%- endif %}
-  {%- if render_body is containing('class="tabs" data-group=') %}
+  {%- if render_body is containing(pat='class="tabs" data-group=') %}
   {%- include "partials/tabs.html" %}
   {%- endif %}
-  {%- if render_body is containing('type="checkbox"') %}
+  {%- if render_body is containing(pat='type="checkbox"') %}
   {%- include "partials/tasklist.html" %}
   {%- endif %}
 </body>

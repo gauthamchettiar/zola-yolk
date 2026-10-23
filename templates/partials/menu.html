@@ -1,0 +1,22 @@
+{#
+  Main menu from config.extra.main_menu, plus a Search button when
+  enable_search is on. The current page or section gets aria-current; a "/"
+  item only matches exactly.
+#}
+{%- if config.extra.main_menu or config.extra.enable_search %}
+<nav class="site-nav" aria-label="Main">
+  <ul>
+    {%- set here = current_path | default(value="") | trim_end(pat="/") %}
+    {%- for item in config.extra.main_menu | default(value=[]) %}
+    {%- set target = item.url | trim_end(pat="/") %}
+    {%- set current = "" %}
+    {%- if here == target %}{% set current = "page" %}
+    {%- elif target and here is starting_with(pat=target ~ "/") %}{% set current = "true" %}{% endif %}
+    <li><a href="{{ item.url }}"{% if current %} aria-current="{{ current }}"{% endif %}>{{ item.name }}</a></li>
+    {%- endfor %}
+    {%- if config.extra.enable_search %}
+    <li><button type="button" id="search-toggle" aria-haspopup="dialog">Search</button></li>
+    {%- endif %}
+  </ul>
+</nav>
+{%- endif -%}

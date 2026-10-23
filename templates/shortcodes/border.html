@@ -1,6 +1,0 @@
-{#
-  border shortcode — frames a block of content.
-  Parameters: see blocks::border in macros/blocks.html.
-#}
-{%- import "macros/blocks.html" as blocks -%}
-{{ blocks::border(content=body | markdown, size=size | default(value="md"), color=color | default(value="white"), style=style | default(value="solid")) }}

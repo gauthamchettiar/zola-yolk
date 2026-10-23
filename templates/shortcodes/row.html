@@ -1,6 +1,0 @@
-{#
-  row shortcode — lays its contents out side by side.
-  Parameters: see blocks::row in macros/blocks.html.
-#}
-{%- import "macros/blocks.html" as blocks -%}
-{{ blocks::row(content=body | markdown, gap=gap | default(value="md"), span=span | default(value="")) }}

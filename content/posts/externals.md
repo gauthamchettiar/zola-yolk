@@ -1,13 +1,13 @@
 +++
-title = "Shortcode: Externals"
+title = "Components: Externals"
 date = 2026-04-18
-description = "Shortcodes that lean on a bundled external library: Mermaid diagrams and KaTeX math notation."
+description = "Components that lean on a bundled external library: Mermaid diagrams and KaTeX math notation."
 
 [taxonomies]
-tags = ["shortcode", "syntax", "zola"]
+tags = ["component", "syntax", "zola"]
 
 [extra]
-series = "Shortcodes"
+series = "Components"
 series_part = 3
 +++
 
@@ -24,72 +24,60 @@ the block shows as plain source.
 
 ### Mermaid
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ````md
-{​% render() %​}
+{% <render> %}
 ```mermaid
 graph TD
-  A[Write Markdown] --> B{Shortcode?}
+  A[Write Markdown] --> B{Component?}
   B -->|render| C[Diagram]
   B -->|none| D[Code block]
 ```
-{​% end %​}
+{% </render> %}
 ````
-```jinja2
-{​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::render(content="graph TD\n  A --> B", lang="mermaid") }​}
-```
-{% end %}
+{% endraw %}
 
-{% render() %}
+{% <render> %}
 ```mermaid
 graph TD
-  A[Write Markdown] --> B{Shortcode?}
+  A[Write Markdown] --> B{Component?}
   B -->|render| C[Diagram]
   B -->|none| D[Code block]
 ```
-{% end %}
+{% </render> %}
 
 ### Math
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ````md
-{​% render() %​}
+{% <render> %}
 ```math
 E = mc^2
 ```
-{​% end %​}
+{% </render> %}
 ````
-```jinja2
-{​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::render(content="E = mc^2", lang="math") }​}
-```
-{% end %}
+{% endraw %}
 
-{% render() %}
+{% <render> %}
 ```math
 E = mc^2
 ```
-{% end %}
+{% </render> %}
 
 Inline:
 
-{% tabs(titles=["markdown content", "template files"], group="usage") %}
+{% raw %}
 ````md
-{​% render(inline=true) %​}
+{% <render inline={true}> %}
 ```math
 E = mc^2
 ```
-{​% end %​}
+{% </render> %}
 ````
-```jinja2
-{​% import "macros/blocks.html" as blocks %​}
-{​{ blocks::render(content="E = mc^2", lang="math", inline=true) }​}
-```
-{% end %}
+{% endraw %}
 
-Einstein's mass–energy equivalence, {% render(inline=true) %}
+Einstein's mass–energy equivalence, {% <render inline={true}> %}
 ```math
 E = mc^2
 ```
-{% end %}, sits in the middle of this sentence.
+{% </render> %}, sits in the middle of this sentence.

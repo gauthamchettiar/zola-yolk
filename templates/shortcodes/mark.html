@@ -1,6 +1,0 @@
-{#
-  mark shortcode — calls out a run of text.
-  Parameters: see widgets::mark in macros/widgets.html.
-#}
-{%- import "macros/widgets.html" as widgets -%}
-{{- widgets::mark(text=text, color=color | default(value="yellow"), decoration=decoration | default(value="highlight")) -}}

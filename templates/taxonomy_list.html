@@ -1,18 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}{{ taxonomy.name | capitalize }} | {{ config.title | default(value="Site") }}{% endblock title %}
+{% block title %}{{ taxonomy.name | capitalize }} | {{ config.title or "Site" }}{% endblock title %}
 
 {% block content %}
 <h1>{{ taxonomy.name | capitalize }}</h1>
 <ul>
   {#- Counts match the tag pages; empty tags are skipped. -#}
   {%- for term in terms %}
-  {%- set_global _shown = 0 -%}
-  {%- for candidate in term.pages -%}
-    {%- if candidate.extra.list | default(value=config.extra.list | default(value="always")) == "always" -%}
-      {%- set_global _shown = _shown + 1 -%}
-    {%- endif -%}
-  {%- endfor -%}
+  {%- set _shown = [p for p in term.pages if p.extra.list | default(value=config.extra.list | default(value="always")) == "always"] | length -%}
   {%- if _shown > 0 %}
   <li><a href="{{ term.permalink }}">{{ term.name }}</a> ({{ _shown }})</li>
   {%- endif -%}

@@ -1,6 +1,0 @@
-{#
-  col shortcode — stacks its contents, and forms one column inside a `row`.
-  Parameters: see blocks::col in macros/blocks.html.
-#}
-{%- import "macros/blocks.html" as blocks -%}
-{{ blocks::col(content=body | markdown, gap=gap | default(value="md"), span=span | default(value="")) }}

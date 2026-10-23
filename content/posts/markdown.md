@@ -56,12 +56,14 @@ Heading 2
 ### Heading IDs
 
 Every heading gets an `id` derived from its text, which is what makes anchor
-links work. Override it with `{#custom-id}`:
+links work. Override it with {% raw %}`{#custom-id}`{% endraw %}:
 
+{% raw %}
 ```
 #### My Heading                        → id="my-heading"
 #### Heading with custom id {#custom}  → id="custom"
 ```
+{% endraw %}
 
 #### My Heading                      
 #### Heading with custom id {#custom}
@@ -84,15 +86,15 @@ That heading is reachable at `[Custom Heading](#custom)` ->  [Custom Heading](#c
 | `<sub>sub</sub>script` | <sub>sub</sub>script |
 | `<sup>super</sup>script` | <sup>super</sup>script |
 
-{% tip() %}
+{% <tip> %}
 Backslash-escape any Markdown character to render it literally — `\*`, `\_`,
 `\#`, `\[`, `` \` ``. HTML entities such as `&copy;`, `&amp;` and `&#169;` pass
 straight through.
-{% end %}
+{% </tip> %}
 
-{% warning() %}
+{% <warning> %}
 `++inserted++`, `==mark==`, `~sub~`, `^sup^` are **not** supported by Zola's renderer — use inline HTML instead (shown above).
-{% end %}
+{% </warning> %}
 
 ## Paragraphs and Line Breaks
 
@@ -189,14 +191,14 @@ Created with `---`, `***`, or `___`:
 > The best way to predict the future is to invent it.  
 > — Alan Kay
 
-{% tip() %} 
+{% <tip> %} 
 Blockquotes nest, and can hold any other block — lists, code, headings.
-{% end %}
+{% </tip> %}
 
-{% note(title="") %}
-There is an alternate [shortcode version](/posts/shortcode/#quotes) that supports author, cite and colours.  
+{% <note title=""> %}
+There is an alternate [component version](/posts/shortcode/#quotes) that supports author, cite and colours.  
 
-{% end %}
+{% </note> %}
 
 ## Footnote
 
@@ -239,11 +241,11 @@ fn main() {
 }
 ```
 
-{% tip() %}
+{% <tip> %}
 - Tildes work as fences too, which is handy when the code itself contains
 backticks - just use `~~~` instead of ```.
 - Indenting by four spaces also makes a code block, with no language
-{% end %}
+{% </tip> %}
 
 ## Table
 
@@ -308,14 +310,14 @@ Read the [Zola docs][docs] and the [docs][] again.
 `zola check` fails the build if the target does not exist, so these cannot rot:
 
 ```
-[Shortcode: Elements](@/posts/shortcode.md)
+[Components: Elements](@/posts/shortcode.md)
 ```
 
-Look &nbsp; : &nbsp;[Shortcode: Elements](@/posts/shortcode.md)
+Look &nbsp; : &nbsp;[Components: Elements](@/posts/shortcode.md)
 
-{% warning() %}
+{% <warning> %}
 A bare URL such as `https://example.com` is **not** auto-linked — wrap it in `<>` angle brackets or use `[text](url)`.
-{% end %}
+{% </warning> %}
 
 ## Images
 
@@ -352,7 +354,7 @@ is not parsed** — `**this**` stays literal:
 
 These work, but only once enabled under `[markdown]` in `config.toml` 
 
-{% wide() %}
+{% <wide> %}
 | Setting | Effect | Accepted values |
 |---|---|---|
 | `render_emoji` | `:smile:` renders as an emoji | `true`, `false` (default) |
@@ -364,7 +366,7 @@ These work, but only once enabled under `[markdown]` in `config.toml`
 | `external_links_no_follow` | adds `rel="nofollow"` to external links | `true`, `false` (default) |
 | `external_links_no_referrer` | adds `rel="noreferrer"` to external links | `true`, `false` (default) |
 | `external_links_class` | adds a class attribute to external links | any string, unset by default |
-{% end %}
+{% </wide> %}
 
 Zola already tells external links apart from internal ones — every link whose
 host isn't the site's own gets `rel="external"` — so nothing above is needed

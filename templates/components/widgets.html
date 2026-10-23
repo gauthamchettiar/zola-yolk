@@ -1,4 +1,9 @@
-{% import "macros/icon.html" as base %}
+{#
+  Inline components. Registered globally: the same call works in Markdown and
+  in templates, e.g. {{ <mark text="x" color="green" /> }}. Non-string
+  arguments go in braces: new_tab={false}, page={page}.
+#}
+
 {#
   Renders an SVG icon from the static/icons folder using a CSS mask.
   Parameters:
@@ -9,49 +14,50 @@
     aria   — aria-label text; omit (or leave empty) to render aria-hidden="true" instead
              (correct when the icon is decorative or inside an already-labelled element)
 #}
-{% macro icon(source="font-awesome", style="solid", name="question", class="", aria="") -%}
-{{- base::icon(source=source, style=style, name=name, class=class, aria=aria) -}}
-{%- endmacro icon %}
+{% component icon(source = "font-awesome", style = "solid", name = "question", class = "", aria = "") -%}
+{%- set _icon_url = get_url(path="icons/" ~ source ~ "/" ~ style ~ "/" ~ name ~ ".svg") -%}
+<span class="icon{% if class %} {{ class }}{% endif %}" style="--icon-url: url('{{ _icon_url }}')"{% if aria %} role="img" aria-label="{{ aria }}"{% else %} aria-hidden="true"{% endif %}></span>
+{%- endcomponent icon %}
 
 {# External link. new_tab: target=_blank · show_icon: append ↗ #}
-{% macro elink(text, href, new_tab=true, show_icon=true) -%}
+{% component elink(text: string, href: string, new_tab = true, show_icon = true) -%}
 <a href="{{ href | safe }}"{% if new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ text | safe }}
-{%- if show_icon %}&nbsp;{{ base::icon(name="arrow-up-right-from-square") }}{% endif -%}
+{%- if show_icon %}&nbsp;{{ <icon name="arrow-up-right-from-square" /> }}{% endif -%}
 </a>
-{%- endmacro elink %}
+{%- endcomponent elink %}
 
 {#
   Called-out text. decoration: highlight | border
   Colours: white | red | orange | yellow | lime | green | cyan | blue | purple | pink | muted
 #}
-{% macro mark(text, color="yellow", decoration="highlight") -%}
+{% component mark(text: string, color = "yellow", decoration = "highlight") -%}
 <mark class="mark" data-color="{{ color }}" data-decoration="{{ decoration }}">{{ text | safe }}</mark>
-{%- endmacro mark %}
+{%- endcomponent mark %}
 
 {# Coloured text; same colours as mark. #}
-{% macro color(text, color="yellow") -%}
+{% component color(text: string, color = "yellow") -%}
 <span class="color" data-color="{{ color }}">{{ text | safe }}</span>
-{%- endmacro color %}
+{%- endcomponent color %}
 
 {# Animated multi-colour text. type: text | background · style: cycle | wave #}
-{% macro shimmer(text, type="text", style="cycle") -%}
+{% component shimmer(text: string, type = "text", style = "cycle") -%}
 <span class="shimmer" data-type="{{ type }}" data-style="{{ style }}">{{ text | safe }}</span>
-{%- endmacro shimmer %}
+{%- endcomponent shimmer %}
 
 {# "<date> | <n> min" under a post's title. #}
-{% macro meta(page) -%}
+{% component meta(page: map) -%}
 {%- if page.date -%}
 <p class="page-meta"><time datetime="{{ page.date | date(format='%Y-%m-%d') }}">{{ page.date | date(format='%Y-%m-%d') }}</time> | {{ page.reading_time }} min</p>
 {%- endif -%}
-{%- endmacro meta %}
+{%- endcomponent meta %}
 
 {# A post's tags as #links, for its foot. #}
-{% macro tags(page) -%}
+{% component tags(page: map) -%}
 {%- if page.taxonomies.tags -%}
 <ul class="page-tags" aria-label="Tags">
 {%- for tag in page.taxonomies.tags %}
-  <li><a href="{{ get_taxonomy_url(kind='tags', name=tag) }}" rel="tag">{{ tag }}</a></li>
+  <li><a href="{{ get_taxonomy_url(kind='tags', term=tag) }}" rel="tag">{{ tag }}</a></li>
 {%- endfor %}
 </ul>
 {%- endif -%}
-{%- endmacro tags %}
+{%- endcomponent tags %}
